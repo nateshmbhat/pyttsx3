@@ -21,6 +21,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.'''
 
 from distutils.core import setup
+import platform
+from setuptools import setup
+
+install_requires = []
+if platform.system() == 'Windows':
+    install_requires = [
+        'win32com'
+    ]
+elif platform.system() == 'Darwin':
+    install_requires = [
+        'pyobjc>=2.4'
+    ]
 
 setup(
 
@@ -39,5 +51,5 @@ It also supports multiple TTS engines like Sapi5 , nsss , espeak .
     download_url = 'https://github.com/nateshmbhat/pyttsx3/archive/v1.13.tar.gz',
     keywords=['ivona','pyttsx for python3' , 'TTS for python3' , 'pyttsx3' ,'text to speech for python','tts','text to speech','speech','speech synthesis','offline text to speech','offline tts','gtts'],
     classifiers = [] ,
-
+    install_requires=install_requires
 )

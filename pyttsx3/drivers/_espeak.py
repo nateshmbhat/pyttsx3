@@ -1,11 +1,4 @@
-'''espeak.py a thin ctypes wrapper for the espeak dll
 
-Gary Bishop
-July 2007
-Modified October 2007 for the version 2 interface to espeak and more pythonic interfaces
-
-Free for any use.
-'''
 
 from __future__ import print_function
 from ctypes import cdll, c_int, c_char_p, c_wchar_p, POINTER, c_short, c_uint, c_long, c_void_p

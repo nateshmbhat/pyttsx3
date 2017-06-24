@@ -43,6 +43,8 @@ engine = pyttsx3.init();
 engine.say("I will speak this text");
 engine.runAndWait() ; 
 ```
+**Full documentation of the usage is already listed in : https://pyttsx.readthedocs.io/en/latest/engine.html
+
 #### Included TTS engines :
 + sapi5
 + nsss
@@ -50,4 +52,3 @@ engine.runAndWait() ;
 
 **Feel free to wrap another text-to-speech engine for use with pyttsx.**
 
-**The Documentation for using the library is included in the docs directory of this repository.**

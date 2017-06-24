@@ -1,5 +1,5 @@
 '''
-pyttsx package.
+pyttsx3 package.
 
 Copyright (c) 2009, 2013 Peter Parente
 

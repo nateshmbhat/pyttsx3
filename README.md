@@ -47,7 +47,6 @@ engine = pyttsx3.init();
 engine.say("I will speak this text");
 engine.runAndWait() ; 
 ```
-**Full documentation of the usage is included in the docs directory
 
 #### Included TTS engines :
 + sapi5

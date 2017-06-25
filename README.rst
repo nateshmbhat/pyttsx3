@@ -14,8 +14,8 @@ This project has been dead for over some years now and `pip install pyttsx` does
 
 
 
-Note : pyttsx3 library now works for both python2 and python3
-*************************************************************
+Note : pyttsx3 library now works for both python2 and python3 and is also cross-platform
+****************************************************************************************
 
 How to install :
 ****************
@@ -59,7 +59,7 @@ Included TTS engines :
 * nsss
 * espeak
 
-**Feel free to wrap another text-to-speech engine for use with pyttsx.**
+**Feel free to wrap another text-to-speech engine for use with pyttsx3.**
 ########################################################################
 
 Project Links :

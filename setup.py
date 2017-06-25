@@ -52,5 +52,5 @@ It also supports multiple TTS engines like Sapi5 , nsss , espeak .
     download_url = 'https://github.com/nateshmbhat/pyttsx3/archive/v2.0.tar.gz',
     keywords=['ivona','pyttsx for python3' , 'TTS for python3' , 'pyttsx3' ,'text to speech for python','tts','text to speech','speech','speech synthesis','offline text to speech','offline tts','gtts'],
     classifiers = [] ,
-    install_requires=install_requires,
+    install_requires=install_requires
 )

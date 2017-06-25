@@ -1,5 +1,6 @@
-# pyttsx3 ( pyttsx for python3 : offline tts for python )
-
+*******************************************************
+pyttsx3 ( pyttsx for python3 : offline tts for python )
+*******************************************************
 
 Pyttsx for python3 [ Offline text to speech for python3]
 
@@ -13,29 +14,31 @@ This project has been dead for over some years now and `pip install pyttsx` does
 
 
 
-### Note : pyttsx3 library now works for both python2 and python3
-
+Note : pyttsx3 library now works for both python2 and python3**
+***************************************************
 
 How to install : 
-----------------
+###########
+::
 
-`pip install pyttsx3`
+	pip install pyttsx3
+
 
 
 
 Fixes for possible errors :
----------------------------
+######################
 
-+ **No module named win32com.client**
-+ **No module named win32**
-+ **No module named win32api**
+* **No module named win32com.client**
+* **No module named win32**
+* **No module named win32api**
 ```
 pip install pypiwin32
 ```
 
 
 Usage :
--------
+#######################
 
 ```
 import pyttsx3;
@@ -44,17 +47,22 @@ engine.say("I will speak this text");
 engine.runAndWait() ; 
 ```
 
-**Full documentation of the Library is available at : https://pyttsx3.readthedocs.io/en/latest/**
+**Full documentation of the Library is available at **
+*****************************
+https://pyttsx3.readthedocs.io/en/latest/**
 
-#### Included TTS engines :
-+ sapi5
-+ nsss
-+ espeak
+Included TTS engines :
+############################
+* sapi5
+* nsss
+* espeak
 
 **Feel free to wrap another text-to-speech engine for use with pyttsx.**
+*****************************
 
-### Project Links :
+Project Links :
+#########################
 
-+ Python Package Index for downloads (https://pypi.python.org)
-+ GitHub site for source , bugs, and Q&A (https://github.com/nateshmbhat/pyttsx3)
-+ Read the Full documentation at (https://pyttsx3.readthedocs.org)
+* Python Package Index for downloads (https://pypi.python.org)
+* GitHub site for source , bugs, and Q&A (https://github.com/nateshmbhat/pyttsx3)
+* Read the Full documentation at (https://pyttsx3.readthedocs.org)

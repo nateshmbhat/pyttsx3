@@ -20,16 +20,11 @@ Fixes for possible errors :
 ---------------------------
 
 + **No module named win32com.client**
-  
++ **No module named win32**
++ **No module named win32api**
 ```
-pip install win32
-pip install win32com
+pip install pypiwin32
 ```
-
-+ **No moudle named win32api**
-  
-`pip install pypiwin32`
-
 
 How to install : 
 ----------------

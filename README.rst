@@ -15,17 +15,17 @@ This project has been dead for over some years now and `pip install pyttsx` does
 
 
 Note : pyttsx3 library now works for both python2 and python3
-************************************************************************
+*************************************************************
 
-How to install : 
-################
+How to install :
+****************
 ::
 
 	pip install pyttsx3
 
 
 Fixes for possible errors :
-##############################
+***************************
 
 * **No module named win32com.client**
 * **No module named win32**
@@ -38,7 +38,7 @@ Fixes for possible errors :
 
 
 Usage :
-###################
+*******
 
 ::
 
@@ -49,21 +49,21 @@ Usage :
 
 
 **Full documentation of the Library is available at**
-****************************************************************
+#####################################################
 
 https://pyttsx3.readthedocs.io/en/latest/
 
 Included TTS engines :
-####################################
+**********************
 * sapi5
 * nsss
 * espeak
 
 **Feel free to wrap another text-to-speech engine for use with pyttsx.**
-******************************************************************************
+########################################################################
 
 Project Links :
-###################
+***************
 
 * Python Package Index for downloads (https://pypi.python.org)
 * GitHub site for source , bugs, and Q&A (https://github.com/nateshmbhat/pyttsx3)

@@ -2,7 +2,7 @@
 pyttsx3 - Text-to-speech x-platform
 ==================================
 
-This documentation describes the pyttsx Python package v |release| and was rendered on |today|.
+This documentation describes the pyttsx3 Python package v |release| and was rendered on |today|.
 
 .. rubric:: Table of Contents
 

@@ -6,7 +6,7 @@ import time
 import math
 import weakref
 from ..voice import Voice
-from . import toUtf8
+from . import toUtf8,fromUtf8
 
 # common voices
 MSSAM = 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Speech\\Voices\\Tokens\\MSSam'
@@ -47,7 +47,7 @@ class SAPI5Driver(object):
         self._proxy.setBusy(True)
         self._proxy.notify('started-utterance')
         self._speaking = True
-        self._tts.Speak(toUtf8(text), 19)
+        self._tts.Speak(fromUtf8(toUtf8(text)), 19)
 
     def stop(self):
         if not self._speaking:

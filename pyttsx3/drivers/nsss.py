@@ -8,6 +8,7 @@ def buildDriver(proxy):
     return NSSpeechDriver.alloc().initWithProxy(proxy)
 
 class NSSpeechDriver(NSObject):
+    @objc.python_method
     def initWithProxy(self, proxy):
         self = super(NSSpeechDriver, self).init()
         if self:
@@ -38,17 +39,19 @@ class NSSpeechDriver(NSObject):
         self._proxy.setBusy(False)
         yield
 
+    @objc.python_method
     def say(self, text):
         self._proxy.setBusy(True)
         self._completed = True
         self._proxy.notify('started-utterance')
-        self._tts.startSpeakingString_(unicode(text))
+        self._tts.startSpeakingString_(text)
 
     def stop(self):
         if self._proxy.isBusy():
             self._completed = False
         self._tts.stopSpeaking()
 
+    @objc.python_method
     def _toVoice(self, attr):
         try:
             lang = attr['VoiceLocaleIdentifier']
@@ -58,6 +61,7 @@ class NSSpeechDriver(NSObject):
                      [lang], attr['VoiceGender'],
                      attr['VoiceAge'])
 
+    @objc.python_method
     def getProperty(self, name):
         if name == 'voices':
             return [self._toVoice(NSSpeechSynthesizer.attributesForVoice_(v))
@@ -71,6 +75,7 @@ class NSSpeechDriver(NSObject):
         else:
             raise KeyError('unknown property %s' % name)
 
+    @objc.python_method
     def setProperty(self, name, value):
         if name == 'voice':
             # vol/rate gets reset, so store and restore it

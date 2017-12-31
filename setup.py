@@ -25,11 +25,11 @@ from setuptools import setup
 
 install_requires = []
 if platform.system() == 'Windows':
-    install_requires = [
+    install_requires += [
         'pypiwin32'
     ]
 elif platform.system() == 'Darwin':
-    install_requires = [
+    install_requires += [
         'pyobjc>=2.4'
     ]
 

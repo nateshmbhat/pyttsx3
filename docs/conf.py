@@ -152,6 +152,3 @@ texinfo_documents = [
      author, 'pyttsx3', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-
-

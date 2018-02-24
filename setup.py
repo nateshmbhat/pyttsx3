@@ -23,6 +23,7 @@ SOFTWARE.'''
 import platform
 from setuptools import setup
 
+# Ubuntu: sudo apt install espeak
 install_requires = []
 if platform.system() == 'Windows':
     install_requires += [

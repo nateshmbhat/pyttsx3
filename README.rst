@@ -23,19 +23,6 @@ How to install :
 
 
 
-Fixes for possible errors :
-*****************************
-
-* **No module named win32com.client**
-* **No module named win32**
-* **No module named win32api**
-
-::
-
-	pip install pypiwin32
-
-
-
 Usage :
 ************
 ::

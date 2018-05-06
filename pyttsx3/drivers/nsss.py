@@ -4,8 +4,10 @@ from AppKit import NSSpeechSynthesizer
 from PyObjCTools import AppHelper
 from ..voice import Voice
 
+
 def buildDriver(proxy):
     return NSSpeechDriver.alloc().initWithProxy(proxy)
+
 
 class NSSpeechDriver(NSObject):
     @objc.python_method
@@ -65,7 +67,7 @@ class NSSpeechDriver(NSObject):
     def getProperty(self, name):
         if name == 'voices':
             return [self._toVoice(NSSpeechSynthesizer.attributesForVoice_(v))
-                     for v in list(NSSpeechSynthesizer.availableVoices())]
+                    for v in list(NSSpeechSynthesizer.availableVoices())]
         elif name == 'voice':
             return self._tts.voice()
         elif name == 'rate':
@@ -91,6 +93,11 @@ class NSSpeechDriver(NSObject):
         else:
             raise KeyError('unknown property %s' % name)
 
+    @objc.python_method
+    def save_to_file(self, text, filename):
+        url = Foundation.NSURL.fileURLWithPath_(filename)
+        self._tts.startSpeakingString_toURL_(text, url)
+
     def speechSynthesizer_didFinishSpeaking_(self, tts, success):
         if not self._completed:
             success = False
@@ -101,4 +108,4 @@ class NSSpeechDriver(NSObject):
 
     def speechSynthesizer_willSpeakWord_ofString_(self, tts, rng, text):
         self._proxy.notify('started-word', location=rng.location,
-            length=rng.length)
+                           length=rng.length)

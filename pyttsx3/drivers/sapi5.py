@@ -6,7 +6,7 @@ import time
 import math
 import weakref
 from ..voice import Voice
-from . import toUtf8,fromUtf8
+from . import toUtf8, fromUtf8
 
 # common voices
 MSSAM = 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Speech\\Voices\\Tokens\\MSSam'
@@ -14,12 +14,14 @@ MSMARY = 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Speech\\Voices\\Tokens\\MSMar
 MSMIKE = 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Speech\\Voices\\Tokens\\MSMike'
 
 # coeffs for wpm conversion
-E_REG = {MSSAM : (137.89, 1.11),
-         MSMARY : (156.63, 1.11),
-         MSMIKE : (154.37, 1.11)}
+E_REG = {MSSAM: (137.89, 1.11),
+         MSMARY: (156.63, 1.11),
+         MSMIKE: (154.37, 1.11)}
+
 
 def buildDriver(proxy):
     return SAPI5Driver(proxy)
+
 
 class SAPI5Driver(object):
     def __init__(self, proxy):
@@ -28,7 +30,7 @@ class SAPI5Driver(object):
         # all events
         self._tts.EventInterests = 33790
         self._advise = win32com.client.WithEvents(self._tts,
-            SAPI5DriverEventSink)
+                                                  SAPI5DriverEventSink)
         self._advise.setDriver(weakref.proxy(self))
         #self._debug = comtypes.client.ShowEvents(self._tts)
         #self._advise = comtypes.client.GetEvents(self._tts, self)
@@ -56,13 +58,17 @@ class SAPI5Driver(object):
         self._stopping = True
         self._tts.Speak('', 3)
 
+    def save_to_file(self, text, filename):
+        raise NotImplementedError
+
     def _toVoice(self, attr):
         return Voice(attr.Id, attr.GetDescription())
 
     def _tokenFromId(self, id_):
         tokens = self._tts.GetVoices()
         for token in tokens:
-            if token.Id == id_: return token
+            if token.Id == id_:
+                return token
         raise ValueError('unknown voice id %s', id_)
 
     def getProperty(self, name):
@@ -73,7 +79,7 @@ class SAPI5Driver(object):
         elif name == 'rate':
             return self._rateWpm
         elif name == 'volume':
-            return self._tts.Volume/100.0
+            return self._tts.Volume / 100.0
         else:
             raise KeyError('unknown property %s' % name)
 
@@ -82,18 +88,18 @@ class SAPI5Driver(object):
             token = self._tokenFromId(value)
             self._tts.Voice = token
             a, b = E_REG.get(value, E_REG[MSMARY])
-            self._tts.Rate = int(math.log(self._rateWpm/a, b))
+            self._tts.Rate = int(math.log(self._rateWpm / a, b))
         elif name == 'rate':
             id_ = self._tts.Voice.Id
             a, b = E_REG.get(id_, E_REG[MSMARY])
             try:
-                self._tts.Rate = int(math.log(value/a, b))
+                self._tts.Rate = int(math.log(value / a, b))
             except TypeError as e:
                 raise ValueError(str(e))
             self._rateWpm = value
         elif name == 'volume':
             try:
-                self._tts.Volume = int(round(value*100, 2))
+                self._tts.Volume = int(round(value * 100, 2))
             except TypeError as e:
                 raise ValueError(str(e))
         else:
@@ -118,6 +124,7 @@ class SAPI5Driver(object):
             pythoncom.PumpWaitingMessages()
             yield
 
+
 class SAPI5DriverEventSink(object):
     def __init__(self):
         self._driver = None
@@ -126,7 +133,8 @@ class SAPI5DriverEventSink(object):
         self._driver = driver
 
     def OnWord(self, stream, pos, char, length):
-        self._driver._proxy.notify('started-word', location=char, length=length)
+        self._driver._proxy.notify(
+            'started-word', location=char, length=length)
 
     def OnEndStream(self, stream, pos):
         d = self._driver

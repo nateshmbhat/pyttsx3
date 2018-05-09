@@ -26,6 +26,7 @@ from . import driver
 import traceback
 import weakref
 
+
 class Engine(object):
     '''
     @ivar proxy: Proxy to a driver implementation
@@ -39,6 +40,7 @@ class Engine(object):
     @ivar _debug: Print exceptions or not
     @type _debug: bool
     '''
+
     def __init__(self, driverName=None, debug=False):
         '''
         Constructs a new TTS engine instance.
@@ -69,7 +71,8 @@ class Engine(object):
             try:
                 cb(**kwargs)
             except Exception:
-                if self._debug: traceback.print_exc()
+                if self._debug:
+                    traceback.print_exc()
 
     def connect(self, topic, cb):
         '''
@@ -90,7 +93,7 @@ class Engine(object):
         '''
         arr = self._connects.setdefault(topic, [])
         arr.append(cb)
-        return {'topic' : topic, 'cb' : cb}
+        return {'topic': topic, 'cb': cb}
 
     def disconnect(self, token):
         '''
@@ -125,6 +128,19 @@ class Engine(object):
         Stops the current utterance and clears the event queue.
         '''
         self.proxy.stop()
+
+    def save_to_file(self, text, filename, name=None):
+        '''
+        Adds an utterance to speak to the event queue.
+
+        @param text: Text to sepak
+        @type text: unicode
+        @param filename: the name of file to save.
+        @param name: Name to associate with this utterance. Included in
+            notifications about this utterance.
+        @type name: str
+        '''
+        self.proxy.save_to_file(text, filename, name)
 
     def isBusy(self):
         '''

@@ -24,11 +24,11 @@ SOFTWARE.
 '''
 
 
-
 import sys
 import traceback
 import weakref
 import importlib
+
 
 class DriverProxy(object):
     '''
@@ -50,6 +50,7 @@ class DriverProxy(object):
     @ivar _iterator: Driver iterator to invoke when in an external run loop
     @type _iterator: iterator
     '''
+
     def __init__(self, engine, driverName, debug):
         '''
         Constructor.
@@ -115,7 +116,8 @@ class DriverProxy(object):
                 cmd[0](*cmd[1])
             except Exception as e:
                 self.notify('error', exception=e)
-                if self._debug: traceback.print_exc()
+                if self._debug:
+                    traceback.print_exc()
 
     def notify(self, topic, **kwargs):
         '''
@@ -169,9 +171,21 @@ class DriverProxy(object):
                 mtd, args, name = self._queue[0]
             except IndexError:
                 break
-            if(mtd == self._engine.endLoop): break
+            if(mtd == self._engine.endLoop):
+                break
             self._queue.pop(0)
         self._driver.stop()
+
+    def save_to_file(self, text, filename, name):
+        '''
+        Called by the engine to push a say command onto the queue.
+
+        @param text: Text to speak
+        @type text: unicode
+        @param name: Name to associate with the utterance
+        @type name: str
+        '''
+        self._push(self._driver.save_to_file, (text, filename), name)
 
     def getProperty(self, name):
         '''

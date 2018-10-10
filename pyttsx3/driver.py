@@ -23,7 +23,6 @@ SOFTWARE.
 
 '''
 
-
 import sys
 import traceback
 import weakref

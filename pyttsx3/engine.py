@@ -1,34 +1,10 @@
-'''
-MIT License
-
-Copyright (c) 2017 nateshmbhat
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-'''
 from . import driver
 import traceback
 import weakref
 
 
 class Engine(object):
-    '''
+    """
     @ivar proxy: Proxy to a driver implementation
     @type proxy: L{DriverProxy}
     @ivar _connects: Array of subscriptions
@@ -39,10 +15,10 @@ class Engine(object):
     @type _driverLoop: bool
     @ivar _debug: Print exceptions or not
     @type _debug: bool
-    '''
+    """
 
-    def __init__(self, driverName=None, debug=False):
-        '''
+    def _ _init__(self, driverName=None, debug=False):
+        """
         Constructs a new TTS engine instance.
 
         @param driverName: Name of the platform specific driver to use. If
@@ -50,7 +26,7 @@ class Engine(object):
         @type: str
         @param debug: Debugging output enabled or not
         @type debug: bool
-        '''
+        """
         self.proxy = driver.DriverProxy(weakref.proxy(self), driverName, debug)
         # initialize other vars
         self._connects = {}
@@ -59,14 +35,14 @@ class Engine(object):
         self._debug = debug
 
     def _notify(self, topic, **kwargs):
-        '''
+        """
         Invokes callbacks for an event topic.
 
         @param topic: String event name
         @type topic: str
         @param kwargs: Values associated with the event
         @type kwargs: dict
-        '''
+        """
         for cb in self._connects.get(topic, []):
             try:
                 cb(**kwargs)
@@ -75,7 +51,7 @@ class Engine(object):
                     traceback.print_exc()
 
     def connect(self, topic, cb):
-        '''
+        """
         Registers a callback for an event topic. Valid topics and their
         associated values:
 
@@ -90,18 +66,18 @@ class Engine(object):
         @type cb: callable
         @return: Token to use to unregister
         @rtype: dict
-        '''
+        """
         arr = self._connects.setdefault(topic, [])
         arr.append(cb)
         return {'topic': topic, 'cb': cb}
 
     def disconnect(self, token):
-        '''
+        """
         Unregisters a callback for an event topic.
 
         @param token: Token of the callback to unregister
         @type token: dict
-        '''
+        """
         topic = token['topic']
         try:
             arr = self._connects[topic]
@@ -112,7 +88,7 @@ class Engine(object):
             del self._connects[topic]
 
     def say(self, text, name=None):
-        '''
+        """
         Adds an utterance to speak to the event queue.
 
         @param text: Text to sepak
@@ -120,13 +96,13 @@ class Engine(object):
         @param name: Name to associate with this utterance. Included in
             notifications about this utterance.
         @type name: str
-        '''
+        """
         self.proxy.say(text, name)
 
     def stop(self):
-        '''
+        """
         Stops the current utterance and clears the event queue.
-        '''
+        """
         self.proxy.stop()
 
     def save_to_file(self, text, filename, name=None):
@@ -143,14 +119,14 @@ class Engine(object):
         self.proxy.save_to_file(text, filename, name)
 
     def isBusy(self):
-        '''
+        """
         @return: True if an utterance is currently being spoken, false if not
         @rtype: bool
-        '''
+        """
         return self.proxy.isBusy()
 
     def getProperty(self, name):
-        '''
+        """
         Gets the current value of a property. Valid names and values include:
 
         voices: List of L{voice.Voice} objects supported by the driver
@@ -166,11 +142,11 @@ class Engine(object):
         @return: Value associated with the property
         @rtype: object
         @raise KeyError: When the property name is unknown
-        '''
+        """
         return self.proxy.getProperty(name)
 
     def setProperty(self, name, value):
-        '''
+        """
         Adds a property value to set to the event queue. Valid names and values
         include:
 
@@ -186,17 +162,17 @@ class Engine(object):
         @param: Value to set for the property
         @rtype: object
         @raise KeyError: When the property name is unknown
-        '''
+        """
         self.proxy.setProperty(name, value)
 
     def runAndWait(self):
-        '''
+        """
         Runs an event loop until all commands queued up until this method call
         complete. Blocks during the event loop and returns when the queue is
         cleared.
 
         @raise RuntimeError: When the loop is already running
-        '''
+        """
         if self._inLoop:
             raise RuntimeError('run loop already started')
         self._inLoop = True
@@ -204,7 +180,7 @@ class Engine(object):
         self.proxy.runAndWait()
 
     def startLoop(self, useDriverLoop=True):
-        '''
+        """
         Starts an event loop to process queued commands and callbacks.
 
         @param useDriverLoop: If True, uses the run loop provided by the driver
@@ -212,7 +188,7 @@ class Engine(object):
             run loop which will pump any events for the TTS engine properly.
         @type useDriverLoop: bool
         @raise RuntimeError: When the loop is already running
-        '''
+        """
         if self._inLoop:
             raise RuntimeError('run loop already started')
         self._inLoop = True
@@ -220,20 +196,20 @@ class Engine(object):
         self.proxy.startLoop(self._driverLoop)
 
     def endLoop(self):
-        '''
+        """
         Stops a running event loop.
 
         @raise RuntimeError: When the loop is not running
-        '''
+        """
         if not self._inLoop:
             raise RuntimeError('run loop not started')
         self.proxy.endLoop(self._driverLoop)
         self._inLoop = False
 
     def iterate(self):
-        '''
+        """
         Must be called regularly when using an external event loop.
-        '''
+        """
         if not self._inLoop:
             raise RuntimeError('run loop not started')
         elif self._driverLoop:

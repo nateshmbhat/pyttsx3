@@ -105,6 +105,19 @@ class Engine(object):
         """
         self.proxy.stop()
 
+    def save_to_file(self, text, filename, name=None):
+        '''
+        Adds an utterance to speak to the event queue.
+
+        @param text: Text to sepak
+        @type text: unicode
+        @param filename: the name of file to save.
+        @param name: Name to associate with this utterance. Included in
+            notifications about this utterance.
+        @type name: str
+        '''
+        self.proxy.save_to_file(text, filename, name)
+
     def isBusy(self):
         """
         @return: True if an utterance is currently being spoken, false if not

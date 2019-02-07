@@ -38,7 +38,7 @@ setup(
     url='https://github.com/nateshmbhat/pyttsx3',
     author_email='nateshmbhatofficial@gmail.com',
     #download_url = 'https://github.com/nateshmbhat/pyttsx3/archive/v2.6.tar.gz',
-    install_requires=install_requires
+    install_requires=install_requires,
     keywords=['pyttsx' , 'ivona','pyttsx for python3' , 'TTS for python3' , 'pyttsx3' ,'text to speech for python','tts','text to speech','speech','speech synthesis','offline text to speech','offline tts','gtts'],
     classifiers = [] ,
     extras_require=extras_require

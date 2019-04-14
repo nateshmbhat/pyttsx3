@@ -17,7 +17,7 @@ class Engine(object):
     @type _debug: bool
     """
 
-    def _ _init__(self, driverName=None, debug=False):
+    def __init__(self, driverName=None, debug=False):
         """
         Constructs a new TTS engine instance.
 

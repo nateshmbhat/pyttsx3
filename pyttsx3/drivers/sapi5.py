@@ -71,8 +71,8 @@ class SAPI5Driver(object):
         temp_stream = self._tts.AudioOutputStream
         self._tts.AudioOutputStream = stream
         self.say(text)
-        self._tts.AudioOutputStream = temp_stream
         time.sleep(1)
+        self._tts.AudioOutputStream = temp_stream
         stream.close()
 
     def _toVoice(self, attr):

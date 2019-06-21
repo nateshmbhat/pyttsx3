@@ -8,6 +8,7 @@ extras_require = {
     ],
     ':"win32" in sys_platform': [
         'pypiwin32',
+        'comtypes'
     ],
 }
 

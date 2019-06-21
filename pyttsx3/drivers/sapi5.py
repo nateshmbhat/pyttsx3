@@ -1,5 +1,4 @@
-
-import comtypes.client
+import comtypes.client  # Importing comtypes.client will make the gen subpackage
 try:
     from comtypes.gen import SpeechLib  # comtypes
 except ImportError:
@@ -8,7 +7,6 @@ except ImportError:
     stream = comtypes.client.CreateObject("SAPI.SpFileStream")
     from comtypes.gen import SpeechLib
 
-# import win32com.client
 import pythoncom
 import time
 import math
@@ -40,7 +38,7 @@ class SAPI5Driver(object):
         # self._advise = win32com.client.WithEvents(self._tts,
         #                                           SAPI5DriverEventSink)
         # self._advise.setDriver(weakref.proxy(self))
-        self._debug = comtypes.client.ShowEvents(self._tts)
+        # self._debug = comtypes.client.ShowEvents(self._tts)
         self._advise = comtypes.client.GetEvents(self._tts, self)
         self._proxy = proxy
         self._looping = False
@@ -74,6 +72,7 @@ class SAPI5Driver(object):
         self._tts.AudioOutputStream = stream
         self.say(text)
         self._tts.AudioOutputStream = temp_stream
+        time.sleep(1)
         stream.close()
 
     def _toVoice(self, attr):

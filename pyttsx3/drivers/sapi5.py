@@ -10,6 +10,7 @@ except ImportError:
 import pythoncom
 import time
 import math
+import os
 # import weakref
 from ..voice import Voice
 from . import toUtf8, fromUtf8
@@ -65,15 +66,16 @@ class SAPI5Driver(object):
         self._tts.Speak('', 3)
 
     def save_to_file(self, text, filename):
-        stream = comtypes.client.CreateObject('Sapi.SpFileStream')
+        cwd = os.getcwd()
+        stream = comtypes.client.CreateObject('SAPI.SPFileStream')
         stream.Open(filename, SpeechLib.SSFMCreateForWrite)
 
         temp_stream = self._tts.AudioOutputStream
         self._tts.AudioOutputStream = stream
-        self.say(text)
-        time.sleep(1)
+        self._tts.Speak(text)
         self._tts.AudioOutputStream = temp_stream
         stream.close()
+        os.chdir(cwd)
 
     def _toVoice(self, attr):
         return Voice(attr.Id, attr.GetDescription())

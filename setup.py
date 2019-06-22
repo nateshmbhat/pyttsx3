@@ -6,7 +6,7 @@ extras_require = {
     ':"darwin" in sys_platform': [
         'pyobjc>=2.4',
     ],
-    ':"win32" in sys_platform': [\
+    ':"win32" in sys_platform': [
         'comtypes'
     ],
 }

@@ -11,7 +11,6 @@ import pythoncom
 import time
 import math
 import os
-# import weakref
 from ..voice import Voice
 from . import toUtf8, fromUtf8
 
@@ -32,14 +31,9 @@ def buildDriver(proxy):
 
 class SAPI5Driver(object):
     def __init__(self, proxy):
-        # self._tts = win32com.client.Dispatch('SAPI.SPVoice')
         self._tts = comtypes.client.CreateObject('SAPI.SPVoice')
         # all events
         self._tts.EventInterests = 33790
-        # self._advise = win32com.client.WithEvents(self._tts,
-        #                                           SAPI5DriverEventSink)
-        # self._advise.setDriver(weakref.proxy(self))
-        # self._debug = comtypes.client.ShowEvents(self._tts)
         self._advise = comtypes.client.GetEvents(self._tts, self)
         self._proxy = proxy
         self._looping = False

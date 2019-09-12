@@ -1,5 +1,5 @@
 *****************************************************
-pyttsx3 (pyttsx for Python 3: offline TTS for Python)
+pyttsx3 (offline TTS for Python 3)
 *****************************************************
 
 ``pyttsx3`` is a text-to-speech conversion library in Python. Unlike alternative libraries, it works offline, and is compatible with both Python 2 and 3.

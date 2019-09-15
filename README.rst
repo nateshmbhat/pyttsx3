@@ -1,69 +1,75 @@
-*******************************************************
-pyttsx3 ( pyttsx for python3 : offline tts for python )
-*******************************************************
+*****************************************************
+pyttsx3 (offline TTS for Python 3)
+*****************************************************
 
-Pyttsx for python3 [ Offline text to speech for python3]
+``pyttsx3`` is a text-to-speech conversion library in Python. Unlike alternative libraries, it works offline, and is compatible with both Python 2 and 3.
 
-Pyttsx is a good text to speech conversion library in python but it was written only in python2 untill now !
-Even some fair amount of googling didn't help much to get a tts library compatible with Python3. 
-
-There is however , one library **gTTS** which works perfectly in python3 but it needs internet connection to work since it relies on google to get the audio data.But Pyttsx is completely offline and works seemlesly and has multiple tts-engine support.The codes in this repos are modified version of the pyttsx module of python 2.x and most of it is implemented from westonpace's repo. The purpose of creating this repo is to help those who want to have an offline tts lib for Python3 and don't want to port  it from python2 to python3 themselves. 
-
-
-
-**Note : pyttsx3 library now works for both python2 and python3 and is also cross-platform**
-
-
-
-How to install :
-********************
+Installation
+************
 ::
 
 	pip install pyttsx3
 
 
-
-Fixes for possible errors :
-*****************************
-
-* **No module named win32com.client**
-* **No module named win32**
-* **No module named win32api**
-
-::
-
-	pip install pypiwin32
-
+If you recieve errors such as ``No module named win32com.client``, ``No module named win32``, or ``No module named win32api``, you will need to additionally install ``pypiwin32``.
 
 
 Usage :
 ************
 ::
 
-	import pyttsx3;
-	engine = pyttsx3.init();
-	engine.say("I will speak this text");
-	engine.runAndWait() ; 
+	import pyttsx3
+	engine = pyttsx3.init()
+	engine.say("I will speak this text")
+	engine.runAndWait()
+	
+	
+**Changing Voice , Rate and Volume :**
+
+::
+
+	import pyttsx3
+	engine = pyttsx3.init() # object creation
+
+	""" RATE"""
+	rate = engine.getProperty('rate')   # getting details of current speaking rate
+	print (rate)                        #printing current voice rate
+	engine.setProperty('rate', 125)     # setting up new voice rate
 
 
-**Full documentation of the Library is available at**
-########################################################
+	"""VOLUME"""
+	volume = engine.getProperty('volume')   #getting to know current volume level (min=0 and max=1)
+	print (volume)                          #printing current volume level
+	engine.setProperty('volume',1.0)    # setting up volume level  between 0 and 1
+
+	"""VOICE"""
+	voices = engine.getProperty('voices')       #getting details of current voice
+	#engine.setProperty('voice', voices[0].id)  #changing index, changes voices. o for male
+	engine.setProperty('voice', voices[1].id)   #changing index, changes voices. 1 for female
+
+	engine.say("Hello World!")
+	engine.say('My current speaking rate is ' + str(rate))
+	engine.runAndWait()
+	engine.stop()
+
+
+**Full documentation of the Library**
+#####################################
 
 https://pyttsx3.readthedocs.io/en/latest/
 
 
-Included TTS engines :
-*************************
+Included TTS engines:
+*********************
 * sapi5
 * nsss
 * espeak
 
-**Feel free to wrap another text-to-speech engine for use with pyttsx3.**
+Feel free to wrap another text-to-speech engine for use with ``pyttsx3``.
 
+Project Links:
+**************
 
-Project Links :
-*********************
-
-* Python Package Index for downloads (https://pypi.python.org)
-* GitHub site for source , bugs, and Q&A (https://github.com/nateshmbhat/pyttsx3)
-* Read the Full documentation at (https://pyttsx3.readthedocs.org)
+* PyPI (https://pypi.python.org)
+* GitHub (https://github.com/nateshmbhat/pyttsx3)
+* Full Documentation (https://pyttsx3.readthedocs.org)

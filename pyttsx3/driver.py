@@ -1,34 +1,8 @@
-'''
-MIT License
-
-Copyright (c) 2017 nateshmbhat
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-'''
-
-
-
 import sys
 import traceback
 import weakref
 import importlib
+
 
 class DriverProxy(object):
     '''
@@ -50,6 +24,7 @@ class DriverProxy(object):
     @ivar _iterator: Driver iterator to invoke when in an external run loop
     @type _iterator: iterator
     '''
+
     def __init__(self, engine, driverName, debug):
         '''
         Constructor.
@@ -115,7 +90,8 @@ class DriverProxy(object):
                 cmd[0](*cmd[1])
             except Exception as e:
                 self.notify('error', exception=e)
-                if self._debug: traceback.print_exc()
+                if self._debug:
+                    traceback.print_exc()
 
     def notify(self, topic, **kwargs):
         '''
@@ -169,9 +145,21 @@ class DriverProxy(object):
                 mtd, args, name = self._queue[0]
             except IndexError:
                 break
-            if(mtd == self._engine.endLoop): break
+            if(mtd == self._engine.endLoop):
+                break
             self._queue.pop(0)
         self._driver.stop()
+
+    def save_to_file(self, text, filename, name):
+        '''
+        Called by the engine to push a say command onto the queue.
+
+        @param text: Text to speak
+        @type text: unicode
+        @param name: Name to associate with the utterance
+        @type name: str
+        '''
+        self._push(self._driver.save_to_file, (text, filename), name)
 
     def getProperty(self, name):
         '''

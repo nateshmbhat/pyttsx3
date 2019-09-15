@@ -8,9 +8,11 @@ from . import _espeak, toUtf8, fromUtf8
 def buildDriver(proxy):
     return EspeakDriver(proxy)
 
+
 class EspeakDriver(object):
     _moduleInitialized = False
     _defaultVoice = ''
+
     def __init__(self, proxy):
         if not EspeakDriver._moduleInitialized:
             # espeak cannot initialize more than once per process and has
@@ -36,7 +38,8 @@ class EspeakDriver(object):
     def say(self, text):
         self._proxy.setBusy(True)
         self._proxy.notify('started-utterance')
-        _espeak.Synth(toUtf8(text), flags=_espeak.ENDPAUSE | _espeak.CHARS_UTF8)
+        _espeak.Synth(toUtf8(text), flags=_espeak.ENDPAUSE |
+                      _espeak.CHARS_UTF8)
 
     def stop(self):
         if _espeak.IsPlaying():
@@ -62,13 +65,14 @@ class EspeakDriver(object):
         elif name == 'rate':
             return _espeak.GetParameter(_espeak.RATE)
         elif name == 'volume':
-            return _espeak.GetParameter(_espeak.VOLUME)/100.0
+            return _espeak.GetParameter(_espeak.VOLUME) / 100.0
         else:
             raise KeyError('unknown property %s' % name)
 
     def setProperty(self, name, value):
         if name == 'voice':
-            if value is None: return
+            if value is None:
+                return
             try:
                 utf8Value = toUtf8(value)
                 _espeak.SetVoiceByName(utf8Value)
@@ -81,7 +85,8 @@ class EspeakDriver(object):
                 raise ValueError(str(e))
         elif name == 'volume':
             try:
-                _espeak.SetParameter(_espeak.VOLUME, int(round(value*100, 2)), 0)
+                _espeak.SetParameter(
+                    _espeak.VOLUME, int(round(value * 100, 2)), 0)
             except TypeError as e:
                 raise ValueError(str(e))
         else:
@@ -104,6 +109,9 @@ class EspeakDriver(object):
                 self._proxy.notify('finished-utterance', completed=False)
                 self._proxy.setBusy(False)
             time.sleep(0.01)
+
+    def save_to_file(self, text, filename):
+        raise NotImplementedError
 
     def endLoop(self):
         self._looping = False
@@ -128,8 +136,8 @@ class EspeakDriver(object):
                 break
             if event.type == _espeak.EVENT_WORD:
                 self._proxy.notify('started-word',
-                    location=event.text_position-1,
-                    length=event.length)
+                                   location=event.text_position - 1,
+                                   length=event.length)
             elif event.type == _espeak.EVENT_MSG_TERMINATED:
                 self._proxy.notify('finished-utterance', completed=True)
                 self._proxy.setBusy(False)

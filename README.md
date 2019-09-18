@@ -22,6 +22,15 @@ engine = pyttsx3.init()
 engine.say("I will speak this text")
 engine.runAndWait()
 ```
+
+**Single line usage with speak function**
+
+```python3
+import pyttsx3
+engine = pyttsx3.init()
+engine.speak("I will speak this text")
+```
+
 	
 **Changing Voice , Rate and Volume :**
 

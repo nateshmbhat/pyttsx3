@@ -23,12 +23,11 @@ engine.say("I will speak this text")
 engine.runAndWait()
 ```
 
-**Single line usage with speak function**
+**Single line usage with speak function with default options**
 
 ```python3
 import pyttsx3
-engine = pyttsx3.init()
-engine.speak("I will speak this text")
+pyttsx3.speak("I will speak this text")
 ```
 
 	

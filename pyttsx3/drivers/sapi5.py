@@ -1,10 +1,16 @@
+import comtypes.client  # Importing comtypes.client will make the gen subpackage
+try:
+    from comtypes.gen import SpeechLib  # comtypes
+except ImportError:
+    # Generate the SpeechLib lib and any associated files
+    engine = comtypes.client.CreateObject("SAPI.SpVoice")
+    stream = comtypes.client.CreateObject("SAPI.SpFileStream")
+    from comtypes.gen import SpeechLib
 
-#import comtypes.client
-import win32com.client
 import pythoncom
 import time
 import math
-import weakref
+import os
 from ..voice import Voice
 from . import toUtf8, fromUtf8
 
@@ -25,15 +31,10 @@ def buildDriver(proxy):
 
 class SAPI5Driver(object):
     def __init__(self, proxy):
-        self._tts = win32com.client.Dispatch('SAPI.SPVoice')
-        #self._tts = comtypes.client.CreateObject('SAPI.SPVoice')
+        self._tts = comtypes.client.CreateObject('SAPI.SPVoice')
         # all events
         self._tts.EventInterests = 33790
-        self._advise = win32com.client.WithEvents(self._tts,
-                                                  SAPI5DriverEventSink)
-        self._advise.setDriver(weakref.proxy(self))
-        #self._debug = comtypes.client.ShowEvents(self._tts)
-        #self._advise = comtypes.client.GetEvents(self._tts, self)
+        self._advise = comtypes.client.GetEvents(self._tts, self)
         self._proxy = proxy
         self._looping = False
         self._speaking = False
@@ -59,7 +60,16 @@ class SAPI5Driver(object):
         self._tts.Speak('', 3)
 
     def save_to_file(self, text, filename):
-        raise NotImplementedError
+        cwd = os.getcwd()
+        stream = comtypes.client.CreateObject('SAPI.SPFileStream')
+        stream.Open(filename, SpeechLib.SSFMCreateForWrite)
+
+        temp_stream = self._tts.AudioOutputStream
+        self._tts.AudioOutputStream = stream
+        self._tts.Speak(text)
+        self._tts.AudioOutputStream = temp_stream
+        stream.close()
+        os.chdir(cwd)
 
     def _toVoice(self, attr):
         return Voice(attr.Id, attr.GetDescription())

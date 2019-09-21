@@ -7,7 +7,7 @@ extras_require = {
         'pyobjc>=2.4',
     ],
     ':"win32" in sys_platform': [
-        'pypiwin32',
+        'comtypes'
     ],
 }
 

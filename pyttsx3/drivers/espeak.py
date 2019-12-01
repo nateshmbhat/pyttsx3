@@ -188,7 +188,8 @@ class EspeakDriver(object):
                         stream.close()
 
                         p.terminate()
-                
+
+                self._data_buffer = b''
                 self._proxy.notify('finished-utterance', completed=True)
                 self._proxy.setBusy(False)
             i += 1

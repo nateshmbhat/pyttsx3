@@ -145,8 +145,8 @@ POS_CHARACTER = 1
 POS_WORD      = 2
 POS_SENTENCE  = 3
 
-def Synth(text, position=0, position_type=POS_CHARACTER, end_position=0, flags=0):
-    return cSynth(text, len(text)*10, position, position_type, end_position, flags, None, None)
+def Synth(text, position=0, position_type=POS_CHARACTER, end_position=0, flags=0, user_data=None):
+    return cSynth(text, len(text)*10, position, position_type, end_position, flags, None, user_data)
 
 cSynth = cfunc('espeak_Synth', dll, c_int,
               ('text', c_char_p, 1),

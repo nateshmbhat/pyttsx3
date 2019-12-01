@@ -9,17 +9,24 @@ extras_require = {
     ':"win32" in sys_platform': [
         'comtypes'
     ],
+    ':"linux" in sys_platform': [
+        'pydub'
+    ]
 }
 
-# Ubuntu: sudo apt install espeak
+# Ubuntu: sudo apt install espeak python3-pyaudio ffmpeg
 install_requires = []
 if platform.system() == 'Windows':
     install_requires += [
-        'pypiwin32'
+        'comtypes'
     ]
 elif platform.system() == 'Darwin':
     install_requires += [
         'pyobjc>=2.4'
+    ]
+elif platform.system() == 'Linux':
+    install_requires += [
+        'pydub'
     ]
 
 

@@ -154,10 +154,6 @@ class EspeakDriver(object):
                                    location=event.text_position - 1,
                                    length=event.length)
             elif event.type == _espeak.EVENT_MSG_TERMINATED:
-                # if event.user_data:
-                #     stream = self.decode_numeric(event.user_data)
-                # else:
-                #     # just say
                 stream = io.BytesIO()
 
                 with wave.open(stream, 'wb') as f:
@@ -174,7 +170,7 @@ class EspeakDriver(object):
                 else:
                     with wave.open(stream, 'rb') as f:
                         p = pyaudio.PyAudio()
-                        #open stream  
+                        # open stream  
                         stream = p.open(format = p.get_format_from_width(f.getsampwidth()),  
                                         channels = f.getnchannels(),  
                                         rate = f.getframerate(),  

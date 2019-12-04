@@ -8,9 +8,6 @@ extras_require = {
     ],
     ':"win32" in sys_platform': [
         'comtypes'
-    ],
-    ':"linux" in sys_platform': [
-        'pydub'
     ]
 }
 
@@ -23,10 +20,6 @@ if platform.system() == 'Windows':
 elif platform.system() == 'Darwin':
     install_requires += [
         'pyobjc>=2.4'
-    ]
-elif platform.system() == 'Linux':
-    install_requires += [
-        'pydub'
     ]
 
 

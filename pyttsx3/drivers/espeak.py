@@ -3,8 +3,8 @@ import time
 import ctypes
 import io
 import wave
-import pyaudio
-import pydub
+import os
+from tempfile import NamedTemporaryFile
 from ..voice import Voice
 from . import _espeak, toUtf8, fromUtf8
 
@@ -154,11 +154,7 @@ class EspeakDriver(object):
                                    location=event.text_position - 1,
                                    length=event.length)
             elif event.type == _espeak.EVENT_MSG_TERMINATED:
-                # if event.user_data:
-                #     stream = self.decode_numeric(event.user_data)
-                # else:
-                #     # just say
-                stream = io.BytesIO()
+                stream = NamedTemporaryFile()
 
                 with wave.open(stream, 'wb') as f:
                     f.setnchannels(1)
@@ -166,28 +162,10 @@ class EspeakDriver(object):
                     f.setframerate(22050.0)
                     f.writeframes(self._data_buffer)
 
-                stream.seek(0)
-
                 if event.user_data:
-                    sound = pydub.AudioSegment.from_wav(stream)
-                    sound.export(self.decode_numeric(event.user_data), format="mp3")
+                    os.system('ffmpeg -y -i {} {} -loglevel quiet'.format(stream.name, self.decode_numeric(event.user_data)))
                 else:
-                    with wave.open(stream, 'rb') as f:
-                        p = pyaudio.PyAudio()
-                        #open stream  
-                        stream = p.open(format = p.get_format_from_width(f.getsampwidth()),  
-                                        channels = f.getnchannels(),  
-                                        rate = f.getframerate(),  
-                                        output = True)
-                        data = f.readframes(1024)
-                        while len(data) > 0:  
-                            stream.write(data)  
-                            data = f.readframes(1024)  
-
-                        stream.stop_stream()
-                        stream.close()
-
-                        p.terminate()
+                    os.system('aplay {} -q'.format(stream.name))  # -q for quiet
 
                 self._data_buffer = b''
                 self._proxy.notify('finished-utterance', completed=True)

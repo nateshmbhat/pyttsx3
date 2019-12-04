@@ -11,7 +11,7 @@ extras_require = {
     ]
 }
 
-# Ubuntu: sudo apt install espeak python3-pyaudio ffmpeg
+# Ubuntu: sudo apt install espeak ffmpeg
 install_requires = []
 if platform.system() == 'Windows':
     install_requires += [

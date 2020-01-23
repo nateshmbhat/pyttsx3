@@ -1,6 +1,10 @@
 
 import time
 import ctypes
+import io
+import wave
+import os
+from tempfile import NamedTemporaryFile
 from ..voice import Voice
 from . import _espeak, toUtf8, fromUtf8
 
@@ -18,7 +22,7 @@ class EspeakDriver(object):
             # espeak cannot initialize more than once per process and has
             # issues when terminating from python (assert error on close)
             # so just keep it alive and init once
-            rate = _espeak.Initialize(_espeak.AUDIO_OUTPUT_PLAYBACK, 1000)
+            rate = _espeak.Initialize(_espeak.AUDIO_OUTPUT_RETRIEVAL, 1000)
             if rate == -1:
                 raise RuntimeError('could not initialize espeak')
             EspeakDriver._defaultVoice = 'default'
@@ -31,6 +35,15 @@ class EspeakDriver(object):
         self._proxy = proxy
         self._looping = True
         self._stopping = False
+        self._data_buffer = b''
+        self._numerise_buffer = []
+
+    def numerise(self, data):
+        self._numerise_buffer.append(data)
+        return ctypes.c_void_p(len(self._numerise_buffer))
+
+    def decode_numeric(self, data):
+        return self._numerise_buffer[int(data) - 1]
 
     def destroy(self):
         _espeak.SetSynthCallback(None)
@@ -111,7 +124,9 @@ class EspeakDriver(object):
             time.sleep(0.01)
 
     def save_to_file(self, text, filename):
-        raise NotImplementedError
+        code = self.numerise(filename)
+        _espeak.Synth(toUtf8(text), flags=_espeak.ENDPAUSE |
+                    _espeak.CHARS_UTF8, user_data=code)
 
     def endLoop(self):
         self._looping = False
@@ -139,7 +154,25 @@ class EspeakDriver(object):
                                    location=event.text_position - 1,
                                    length=event.length)
             elif event.type == _espeak.EVENT_MSG_TERMINATED:
+                stream = NamedTemporaryFile()
+
+                with wave.open(stream, 'wb') as f:
+                    f.setnchannels(1)
+                    f.setsampwidth(2)
+                    f.setframerate(22050.0)
+                    f.writeframes(self._data_buffer)
+
+                if event.user_data:
+                    os.system('ffmpeg -y -i {} {} -loglevel quiet'.format(stream.name, self.decode_numeric(event.user_data)))
+                else:
+                    os.system('aplay {} -q'.format(stream.name))  # -q for quiet
+
+                self._data_buffer = b''
                 self._proxy.notify('finished-utterance', completed=True)
                 self._proxy.setBusy(False)
             i += 1
+        
+        if numsamples > 0:
+            self._data_buffer += ctypes.string_at(wav, numsamples *
+                                                ctypes.sizeof(ctypes.c_short))
         return 0

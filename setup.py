@@ -8,14 +8,14 @@ extras_require = {
     ],
     ':"win32" in sys_platform': [
         'comtypes'
-    ],
+    ]
 }
 
-# Ubuntu: sudo apt install espeak
+# Ubuntu: sudo apt install espeak ffmpeg
 install_requires = []
 if platform.system() == 'Windows':
     install_requires += [
-        'pypiwin32'
+        'comtypes'
     ]
 elif platform.system() == 'Darwin':
     install_requires += [

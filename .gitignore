@@ -103,4 +103,4 @@ docs/make.bat
 docs/make.bat
 
 # vscode
-.vscode/
+.vscode/.DS_Store

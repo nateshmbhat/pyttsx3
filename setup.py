@@ -12,16 +12,6 @@ extras_require = {
 }
 
 # Ubuntu: sudo apt install espeak ffmpeg
-install_requires = []
-if platform.system() == 'Windows':
-    install_requires += [
-        'comtypes'
-    ]
-elif platform.system() == 'Darwin':
-    install_requires += [
-        'pyobjc>=2.4'
-    ]
-
 
 with open('README.rst', 'r') as f:
     long_description = f.read()
@@ -37,7 +27,6 @@ setup(
     author='Natesh M Bhat',
     url='https://github.com/nateshmbhat/pyttsx3',
     author_email='nateshmbhatofficial@gmail.com',
-    install_requires=install_requires ,
     keywords=['pyttsx' , 'ivona','pyttsx for python3' , 'TTS for python3' , 'pyttsx3' ,'text to speech for python','tts','text to speech','speech','speech synthesis','offline text to speech','offline tts','gtts'],
     classifiers = [
           'Intended Audience :: End Users/Desktop',

@@ -117,7 +117,25 @@ class Engine(object):
         @type name: str
         '''
         self.proxy.save_to_file(text, filename, name)
+        
+    def to_memory(self, text, olist, name=None):
+        '''
+        Adds an utterance to speak to the event queue.
 
+        @param text: Text to sepak
+        @type text: unicode
+        @param name: Name to associate with this utterance. Included in
+            notifications about this utterance.
+        @param ostream: The opened output stream        
+        
+            >>> import pyttsx3
+            >>> engine = pyttsx3.init()
+            >>> ret = []
+            >>> engine.to_memory("hello", ret)
+
+        '''
+        self.proxy.to_memory(text,olist, name)
+        
     def isBusy(self):
         """
         @return: True if an utterance is currently being spoken, false if not

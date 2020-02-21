@@ -72,7 +72,16 @@ class SAPI5Driver(object):
         self._tts.AudioOutputStream = temp_stream
         stream.close()
         os.chdir(cwd)
-
+        
+    def to_memory(self, text, olist):
+        stream = comtypes.client.CreateObject('SAPI.SpMemoryStream')
+        temp_stream = self._tts.AudioOutputStream
+        self._tts.AudioOutputStream = stream
+        self._tts.Speak(fromUtf8(toUtf8(text)))
+        self._tts.AudioOutputStream = temp_stream
+        olist.append(stream.GetData())
+        stream.close()
+        
     def _toVoice(self, attr):
         return Voice(attr.Id, attr.GetDescription())
 

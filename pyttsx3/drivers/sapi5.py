@@ -12,6 +12,7 @@ import time
 import math
 import os
 import weakref
+from ctypes import c_int16
 from ..voice import Voice
 from . import toUtf8, fromUtf8
 
@@ -79,7 +80,8 @@ class SAPI5Driver(object):
         self._tts.AudioOutputStream = stream
         self._tts.Speak(fromUtf8(toUtf8(text)))
         self._tts.AudioOutputStream = temp_stream
-        olist.append(stream.GetData())
+        data = stream.GetData()        
+        olist.append([c_int16((data[i])|data[i+1]<<8).value for i in range(0,len(data),2)])
         stream.close()
         
     def _toVoice(self, attr):

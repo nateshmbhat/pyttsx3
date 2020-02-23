@@ -21,3 +21,12 @@ engine.say("Hello World!")
 engine.say('My current speaking rate is ' + str(rate))
 engine.runAndWait()
 engine.stop()
+
+
+"""To memory """
+# warning, only implemented for windows
+audio_array = []
+engine.to_memory("Hello!", audio_array)
+engine.to_memory("Hello again!", audio_array)
+engine.runAndWait()
+print(len(audio_array))

@@ -2,25 +2,11 @@ import platform
 from setuptools import setup
 
 
-extras_require = {
-    ':"darwin" in sys_platform': [
-        'pyobjc>=2.4',
-    ],
-    ':"win32" in sys_platform': [
-        'comtypes'
-    ]
-}
-
 # Ubuntu: sudo apt install espeak ffmpeg
-install_requires = []
-if platform.system() == 'Windows':
-    install_requires += [
-        'comtypes'
-    ]
-elif platform.system() == 'Darwin':
-    install_requires += [
-        'pyobjc>=2.4'
-    ]
+install_requires = [
+    'comtypes; platform_system == "Windows"',
+    'pyobjc>=2.4; platform_system == "Darwin"'
+]
 
 
 with open('README.rst', 'r') as f:
@@ -53,5 +39,4 @@ setup(
           'Programming Language :: Python :: 3.6',
           'Programming Language :: Python :: 3.7'
     ],
-    extras_require=extras_require
 )

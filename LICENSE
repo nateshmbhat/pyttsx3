@@ -633,6 +633,7 @@ the "copyright" line and a pointer to where the full notice is found.
 
     pyttsx3 , Offline Text to Speech library with multi-engine support.
     Copyright (C) 2018  nateshmbhat
+    This project uses pyttsx project's code which is authored by Peter Parente
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

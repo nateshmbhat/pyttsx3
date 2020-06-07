@@ -206,6 +206,19 @@ Speaking text
    engine.say('The quick brown fox jumped over the lazy dog.')
    engine.runAndWait()
 
+
+Saving voice to a file
+######################
+
+.. sourcecode:: python
+
+   import pyttsx3
+   engine = pyttsx3.init()
+   engine.save_to_file('Hello World' , 'test.mp3')
+   engine.runAndWait()
+
+
+
 Listening for events
 ####################
 

@@ -5,16 +5,26 @@
 
 `pyttsx3` is a text-to-speech conversion library in Python. Unlike alternative libraries, **it works offline**.
 
-### Installation :
+## Installation :
 
 
 	pip install pyttsx3
 
+> If you get installation errors , make sure you first upgrade your wheel version using :  
+`pip install --upgrade wheel`
 
-If you recieve errors such as `No module named win32com.client`, `No module named win32`, or `No module named win32api`, you will need to additionally install `pypiwin32`.
+### Linux installation requirements : 
+
++ If you are on a linux system and if the voice output is not working , then  : 
+
+	Install espeak , ffmpeg and libespeak1 as shown below: 
+
+	```
+	sudo apt update && sudo apt install espeak ffmpeg libespeak1
+	```
 
 
-### Usage :
+## Usage :
 
 ```python3
 import pyttsx3
@@ -66,7 +76,10 @@ engine.runAndWait()
 
 ```
 
-#### **Full documentation of the Library**
+
+
+
+### **Full documentation of the Library**
 
 https://pyttsx3.readthedocs.io/en/latest/
 

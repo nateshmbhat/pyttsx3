@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=".github/logo.svg?sanitize=true" width="250px">
+  <img src=".github/logo.svg?sanitize=true" width="230px" height="230px">
 </p>
 <h2 align="center">Offline Text To Speech (TTS) converter for Python3 </h2>
 

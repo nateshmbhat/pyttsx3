@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=".github/logo.svg?sanitize=true" width="230px" height="230px">
+  <img src=".github/logo.svg?sanitize=true" width="200px" height="200px">
 </p>
 <h2 align="center">Offline Text To Speech (TTS) converter for Python3 </h2>
 
@@ -8,6 +8,8 @@
 
 
 `pyttsx3` is a text-to-speech conversion library in Python. Unlike alternative libraries, **it works offline**.
+
+<a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/nateshmbhat"><img src="https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg" alt="Buy me a coffee 😇"><span style="margin-left:5px;font-size:19px !important;">Buy me a coffee 😇</span></a>
 
 ## Installation :
 
@@ -26,6 +28,16 @@
 	```
 	sudo apt update && sudo apt install espeak ffmpeg libespeak1
 	```
+
+
+## Features : 
+
+- ✨Fully **OFFLINE** text to speech conversion
+- 🎈 Choose among different voices installed in your system
+- 🎛 Control speed/rate of speech
+- 🎚 Tweak Volume
+- 📀 Save the speech audio as a file
+- ❤️ Simple, powerful, & intuitive API
 
 
 ## Usage :

@@ -97,7 +97,10 @@ class Engine(object):
             notifications about this utterance.
         @type name: str
         """
-        self.proxy.say(text, name)
+        if text == None:
+            return "Argument value can't be none or empty"
+        else:
+            self.proxy.say(text, name)
 
     def stop(self):
         """

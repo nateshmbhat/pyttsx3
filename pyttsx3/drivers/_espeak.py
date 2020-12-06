@@ -16,7 +16,7 @@ def cfunc(name, dll, result, *args):
     return CFUNCTYPE(result, *atypes)((name, dll), tuple(aflags))
 
 try:
-   dll = cdll.LoadLibrary('libespeak-ng.so')
+   dll = cdll.LoadLibrary('libespeak-ng.so.1')
 except:
    dll = cdll.LoadLibrary('libespeak.so.1')
 

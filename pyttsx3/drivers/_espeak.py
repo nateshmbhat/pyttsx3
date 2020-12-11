@@ -15,7 +15,13 @@ def cfunc(name, dll, result, *args):
         aflags.append((arg[2], arg[0]) + arg[3:])
     return CFUNCTYPE(result, *atypes)((name, dll), tuple(aflags))
 
-dll = cdll.LoadLibrary('libespeak.so.1')
+try:
+    try:
+        dll = cdll.LoadLibrary('/usr/local/lib/libespeak-ng.so.1')
+    except:
+        dll = cdll.LoadLibrary('libespeak-ng.so.1')
+except:
+   dll = cdll.LoadLibrary('libespeak.so.1')
 
 # constants and such from speak_lib.h
 

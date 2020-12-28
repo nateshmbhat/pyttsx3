@@ -5,7 +5,6 @@ from ctypes import cdll, c_int, c_char_p, c_wchar_p, POINTER, c_short, c_uint, c
 from ctypes import CFUNCTYPE, Structure, Union, c_wchar, c_ubyte, c_ulong, byref
 import time
 
-
 def cfunc(name, dll, result, *args):
     '''build and apply a ctypes prototype complete with parameter flags'''
     atypes = []
@@ -17,11 +16,17 @@ def cfunc(name, dll, result, *args):
 
 try:
     try:
-        dll = cdll.LoadLibrary('/usr/local/lib/libespeak-ng.so.1')
+        try:
+            dll = cdll.LoadLibrary('/usr/local/lib/libespeak-ng.so.1')
+        except:
+            dll = cdll.LoadLibrary('libespeak-ng.so.1')
     except:
-        dll = cdll.LoadLibrary('libespeak-ng.so.1')
-except:
-   dll = cdll.LoadLibrary('libespeak.so.1')
+       dll = cdll.LoadLibrary('libespeak.so.1')
+except Exception as exp:
+    print("Exception: " + str(exp) + "\n")
+    print("This means you probably do not have eSpeak or eSpeak-ng installed!")
+    import sys
+    sys.exit()
 
 # constants and such from speak_lib.h
 

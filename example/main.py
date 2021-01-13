@@ -1,5 +1,5 @@
 import pyttsx3
-engine = pyttsx3.init() # object creation
+engine = pyttsx3.init(engine='espeak') # object creation
 
 """ RATE"""
 rate = engine.getProperty('rate')   # getting details of current speaking rate
@@ -16,6 +16,11 @@ engine.setProperty('volume',1.0)    # setting up volume level  between 0 and 1
 voices = engine.getProperty('voices')       #getting details of current voice
 #engine.setProperty('voice', voices[0].id)  #changing index, changes voices. o for male
 engine.setProperty('voice', voices[1].id)   #changing index, changes voices. 1 for female
+
+"""PITCH"""
+pitch = engine.getProperty('pitch')   #Get current pitch value
+print(pitch)                          #Print current pitch value
+engine.setProperty('pitch', 75)       #Set the pitch (default 50) to 75 out of 100
 
 engine.say("Hello World!")
 engine.say('My current speaking rate is ' + str(rate))

@@ -79,6 +79,8 @@ class EspeakDriver(object):
             return _espeak.GetParameter(_espeak.RATE)
         elif name == 'volume':
             return _espeak.GetParameter(_espeak.VOLUME) / 100.0
+        elif name == 'pitch':
+            return _espeak.GetParameter(_espeak.PITCH)
         else:
             raise KeyError('unknown property %s' % name)
 
@@ -100,6 +102,13 @@ class EspeakDriver(object):
             try:
                 _espeak.SetParameter(
                     _espeak.VOLUME, int(round(value * 100, 2)), 0)
+            except TypeError as e:
+                raise ValueError(str(e))
+        elif name == 'pitch':
+            try:
+                _espeak.SetParameter(
+                    _espeak.PITCH, int(value), 0
+                )
             except TypeError as e:
                 raise ValueError(str(e))
         else:

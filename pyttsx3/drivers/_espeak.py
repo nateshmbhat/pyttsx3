@@ -14,14 +14,46 @@ def cfunc(name, dll, result, *args):
         aflags.append((arg[2], arg[0]) + arg[3:])
     return CFUNCTYPE(result, *atypes)((name, dll), tuple(aflags))
 
+dll = None
+
+def load_linux_ep():
+   global dll
+   try: dll = cdll.LoadLibrary('libespeak.so.1')
+   except Exception as e: return False
+   else: return True
+
+def load_linux_epng():
+   global dll
+   try: dll = cdll.LoadLibrary('libespeak-ng.so.1')
+   except Exception as e: return False
+   else: return True
+
+def load_linux_epng2():
+   global dll
+   try: dll = cdll.LoadLibrary('/usr/local/lib/libespeak-ng.so.1')
+   except Exception as e: return False
+   else: return True
+
+def load_windows_epng1():
+   global dll
+   try: dll = cdll.LoadLibrary('libespeak-ng.dll')
+   except Exception as e: return False
+   else: return True
+
+def load_windows_epng2():
+   global dll
+   try: dll = cdll.LoadLibrary('C:\\Program Files\\eSpeak NG\\libespeak-ng.dll')
+   except Exception as e: return False
+   else: return True
+
+def load_windows_epng3():
+   global dll
+   try: dll = cdll.LoadLibrary('C:\\Program Files (x86)\\eSpeak NG\\libespeak-ng.dll')
+   except Exception as e: return False
+   else: return True
+
 try:
-    try:
-        try:
-            dll = cdll.LoadLibrary('/usr/local/lib/libespeak-ng.so.1')
-        except:
-            dll = cdll.LoadLibrary('libespeak-ng.so.1')
-    except:
-       dll = cdll.LoadLibrary('libespeak.so.1')
+   load_linux_ep() or load_linux_epng() or load_linux_epng2() or load_windows_epng1() or load_windows_epng2() or load_windows_epng3()
 except Exception as exp:
     print("Exception: " + str(exp) + "\n")
     print("This means you probably do not have eSpeak or eSpeak-ng installed!")

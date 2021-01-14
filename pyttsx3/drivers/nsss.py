@@ -74,6 +74,8 @@ class NSSpeechDriver(NSObject):
             return self._tts.rate()
         elif name == 'volume':
             return self._tts.volume()
+        elif name == "pitch":
+            print("Pitch adjustment not supported when using NSSS")
         else:
             raise KeyError('unknown property %s' % name)
 
@@ -90,6 +92,8 @@ class NSSpeechDriver(NSObject):
             self._tts.setRate_(value)
         elif name == 'volume':
             self._tts.setVolume_(value)
+        elif name == 'pitch':
+            print("Pitch adjustment not supported when using NSSS")
         else:
             raise KeyError('unknown property %s' % name)
 

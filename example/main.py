@@ -1,5 +1,5 @@
 import pyttsx3
-engine = pyttsx3.init(engine='espeak') # object creation
+engine = pyttsx3.init() # object creation
 
 """ RATE"""
 rate = engine.getProperty('rate')   # getting details of current speaking rate

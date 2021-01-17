@@ -92,6 +92,8 @@ class SAPI5Driver(object):
             return self._rateWpm
         elif name == 'volume':
             return self._tts.Volume / 100.0
+        elif name == 'pitch':
+            print("Pitch adjustment not supported when using SAPI5")
         else:
             raise KeyError('unknown property %s' % name)
 
@@ -114,6 +116,8 @@ class SAPI5Driver(object):
                 self._tts.Volume = int(round(value * 100, 2))
             except TypeError as e:
                 raise ValueError(str(e))
+        elif name == 'pitch':
+            print("Pitch adjustment not supported when using SAPI5")
         else:
             raise KeyError('unknown property %s' % name)
 

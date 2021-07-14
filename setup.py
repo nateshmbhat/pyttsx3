@@ -35,7 +35,7 @@ setup(
           'Operating System :: MacOS :: MacOS X',
           'Operating System :: Microsoft :: Windows',
           'Operating System :: POSIX',
-          'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+          'License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)',
           'Programming Language :: Python :: 3',
           'Programming Language :: Python :: 3.5',
           'Programming Language :: Python :: 3.6',

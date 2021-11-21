@@ -61,7 +61,7 @@ The Engine interface
 
       .. describe:: finished-utterance
 
-         Fired when the engine finishes speaking an utterance. The associated callback must have the folowing signature.
+         Fired when the engine finishes speaking an utterance. The associated callback must have the following signature.
 
          .. function:: onFinishUtterance(name : string, completed : bool) -> None
 

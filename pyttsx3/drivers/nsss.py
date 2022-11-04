@@ -55,12 +55,8 @@ class NSSpeechDriver(NSObject):
 
     @objc.python_method
     def _toVoice(self, attr):
-        try:
-            lang = attr['VoiceLocaleIdentifier']
-        except KeyError:
-            lang = attr['VoiceLanguage']
         return Voice(attr.get('VoiceIdentifier'), attr.get('VoiceName'),
-                     [lang], attr.get('VoiceGender'),
+                     [attr.get('VoiceLocaleIdentifier', attr.get('VoiceLanguage'))], attr.get('VoiceGender'),
                      attr.get('VoiceAge'))
 
     @objc.python_method

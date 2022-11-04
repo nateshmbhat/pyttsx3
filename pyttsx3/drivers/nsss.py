@@ -1,7 +1,7 @@
-
-from Foundation import *
 from AppKit import NSSpeechSynthesizer
+from Foundation import *
 from PyObjCTools import AppHelper
+
 from ..voice import Voice
 
 
@@ -59,9 +59,9 @@ class NSSpeechDriver(NSObject):
             lang = attr['VoiceLocaleIdentifier']
         except KeyError:
             lang = attr['VoiceLanguage']
-        return Voice(attr['VoiceIdentifier'], attr['VoiceName'],
-                     [lang], attr['VoiceGender'],
-                     attr['VoiceAge'])
+        return Voice(attr.get('VoiceIdentifier'), attr.get('VoiceName'),
+                     [lang], attr.get('VoiceGender'),
+                     attr.get('VoiceAge'))
 
     @objc.python_method
     def getProperty(self, name):

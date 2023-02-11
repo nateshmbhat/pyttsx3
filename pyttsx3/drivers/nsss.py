@@ -60,8 +60,7 @@ class NSSpeechDriver(NSObject):
         except KeyError:
             lang = attr['VoiceLanguage']
         return Voice(attr['VoiceIdentifier'], attr['VoiceName'],
-                     [lang], attr['VoiceGender'],
-                     attr['VoiceAge'])
+                     [lang], attr['VoiceGender'])
 
     @objc.python_method
     def getProperty(self, name):

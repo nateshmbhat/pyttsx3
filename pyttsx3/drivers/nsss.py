@@ -101,6 +101,7 @@ class NSSpeechDriver(NSObject):
     def save_to_file(self, text, filename):
         url = Foundation.NSURL.fileURLWithPath_(filename)
         self._tts.startSpeakingString_toURL_(text, url)
+        from time import sleep; sleep(0.5) # FIXME: this is a workaround to make save_to_file working in MacOS Ventura.
 
     def speechSynthesizer_didFinishSpeaking_(self, tts, success):
         if not self._completed:

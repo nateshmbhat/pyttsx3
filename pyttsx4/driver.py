@@ -46,7 +46,7 @@ class DriverProxy(object):
             else:
                 driverName = 'espeak'
         # import driver module
-        name = 'pyttsx3.drivers.%s' % driverName
+        name = 'pyttsx4.drivers.%s' % driverName
         self._module = importlib.import_module(name)
         # build driver instance
         self._driver = self._module.buildDriver(weakref.proxy(self))
@@ -90,6 +90,7 @@ class DriverProxy(object):
                 cmd[0](*cmd[1])
             except Exception as e:
                 self.notify('error', exception=e)
+                print('ERROR',e)
                 if self._debug:
                     traceback.print_exc()
 

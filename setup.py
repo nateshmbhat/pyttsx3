@@ -16,15 +16,15 @@ with open('README.rst', 'r') as f:
 
 
 setup(
-    name='pyttsx3',
-    packages=['pyttsx3', 'pyttsx3.drivers'],
-    version='2.91',
+    name='pyttsx4',
+    packages=['pyttsx4', 'pyttsx4.drivers'],
+    version='3.0.1',
    description='Text to Speech (TTS) library for Python 3. Works without internet connection or delay. Supports multiple TTS engines, including Sapi5, nsss, and espeak.',
     long_description=long_description,
     summary='Offline Text to Speech library with multi-engine support',
     author='Natesh M Bhat',
-    url='https://github.com/nateshmbhat/pyttsx3',
-    author_email='nateshmbhatofficial@gmail.com',
+    url='https://github.com/Jiangshan00001/pyttsx4',
+    author_email='710806594@qq.com',
     install_requires=install_requires ,
     keywords=['pyttsx' , 'ivona','pyttsx for python3' , 'TTS for python3' , 'pyttsx3' ,'text to speech for python','tts','text to speech','speech','speech synthesis','offline text to speech','offline tts','gtts'],
     classifiers = [
@@ -39,6 +39,10 @@ setup(
           'Programming Language :: Python :: 3',
           'Programming Language :: Python :: 3.5',
           'Programming Language :: Python :: 3.6',
-          'Programming Language :: Python :: 3.7'
-    ],
+          'Programming Language :: Python :: 3.7',
+          'Programming Language :: Python :: 3.8',
+          'Programming Language :: Python :: 3.9',
+          'Programming Language :: Python :: 3.10',
+          'Programming Language :: Python :: 3.11',
+          ],
 )

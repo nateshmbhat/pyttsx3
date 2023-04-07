@@ -105,3 +105,5 @@ docs/make.bat
 
 # vscode
 .vscode/
+.idea/*
+pyttsx4_test.py

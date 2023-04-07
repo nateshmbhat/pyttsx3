@@ -7,6 +7,7 @@ except ImportError:
     stream = comtypes.client.CreateObject("SAPI.SpFileStream")
     from comtypes.gen import SpeechLib
 
+from io import BytesIO
 import pythoncom
 import time
 import math
@@ -63,6 +64,10 @@ class SAPI5Driver(object):
         self._tts.Speak('', 3)
 
     def save_to_file(self, text, filename):
+        if isinstance(filename, BytesIO):
+            self.to_memory(text, filename)
+            return
+
         cwd = os.getcwd()
         stream = comtypes.client.CreateObject('SAPI.SPFileStream')
         stream.Open(filename, SpeechLib.SSFMCreateForWrite)
@@ -72,6 +77,16 @@ class SAPI5Driver(object):
         self._tts.AudioOutputStream = temp_stream
         stream.close()
         os.chdir(cwd)
+
+    def to_memory(self, text, olist):
+        stream = comtypes.client.CreateObject('SAPI.SpMemoryStream')
+        temp_stream = self._tts.AudioOutputStream
+        self._tts.AudioOutputStream = stream
+        self._tts.Speak(fromUtf8(toUtf8(text)))
+        self._tts.AudioOutputStream = temp_stream
+        data = stream.GetData()
+        olist.write(bytes(data))
+        stream.close()
 
     def _toVoice(self, attr):
         return Voice(attr.Id, attr.GetDescription())

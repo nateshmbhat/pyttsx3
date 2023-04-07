@@ -90,7 +90,7 @@ class DriverProxy(object):
                 cmd[0](*cmd[1])
             except Exception as e:
                 self.notify('error', exception=e)
-                print('ERROR',e)
+                print('ERROR:pyttsx4-driver: _pump ',e)
                 if self._debug:
                     traceback.print_exc()
 
@@ -189,6 +189,14 @@ class DriverProxy(object):
         Called by the engine to start an event loop, process all commands in
         the queue at the start of the loop, and then exit the loop.
         '''
+        # actually there are no setBusy(True) in the old code and it works.
+        # the error ocurrs when i added an sapi save_to_memory function.
+        # after that, when the result is saved to memory, the busy is not set to True, so next runAndWait will
+        # DEAD wait.
+        # I don't know why it don't work for memory.
+        # but here add setBusy(True) seem ok for the issue.
+        # here first setBusy(True), and push the endLoop event, and setBusy(False) in startLoop，
+        self.setBusy(True)
         self._push(self._engine.endLoop, tuple())
         self._driver.startLoop()
 

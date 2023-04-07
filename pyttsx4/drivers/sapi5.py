@@ -86,7 +86,7 @@ class SAPI5Driver(object):
         self._tts.AudioOutputStream = temp_stream
         data = stream.GetData()
         olist.write(bytes(data))
-        stream.close()
+        del stream
 
     def _toVoice(self, attr):
         return Voice(attr.Id, attr.GetDescription())
@@ -122,6 +122,11 @@ class SAPI5Driver(object):
             id_ = self._tts.Voice.Id
             a, b = E_REG.get(id_, E_REG[MSMARY])
             try:
+                rate = int(math.log(value / a, b))
+                if rate<-10:
+                    rate = -10
+                if rate>10:
+                    rate = 10
                 self._tts.Rate = int(math.log(value / a, b))
             except TypeError as e:
                 raise ValueError(str(e))
@@ -137,8 +142,8 @@ class SAPI5Driver(object):
             raise KeyError('unknown property %s' % name)
 
     def startLoop(self):
-        first = True
         self._looping = True
+        first = True
         while self._looping:
             if first:
                 self._proxy.setBusy(False)

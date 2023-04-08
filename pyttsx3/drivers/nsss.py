@@ -3,6 +3,7 @@ from Foundation import *
 from AppKit import NSSpeechSynthesizer
 from PyObjCTools import AppHelper
 from ..voice import Voice
+import os
 
 
 def buildDriver(proxy):
@@ -100,7 +101,11 @@ class NSSpeechDriver(NSObject):
     @objc.python_method
     def save_to_file(self, text, filename):
         url = Foundation.NSURL.fileURLWithPath_(filename)
-        self._tts.startSpeakingString_toURL_(text, url)
+        pr = os.fork()
+        if pr == 0:
+            self._tts.startSpeakingString_toURL_(text, url)
+        else:
+            os.wait()
 
     def speechSynthesizer_didFinishSpeaking_(self, tts, success):
         if not self._completed:

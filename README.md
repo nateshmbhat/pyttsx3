@@ -19,6 +19,29 @@ engine.runAndWait()
 3. fix for sapi save_to_file when it run on machine without outputsream device.
 
 
+#TBD:
+add support for TTS.
+
+
+
+# how to use:
+
+install:
+```
+pip install pyttsx4
+```
+
+use:
+
+```
+import pyttsx4
+engine = pyttsx4.init()
+```
+
+the  other usage is the same as the pyttsx3
+
+
+
 ----------------------
 
 

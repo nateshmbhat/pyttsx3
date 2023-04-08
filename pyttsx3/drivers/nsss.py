@@ -102,7 +102,7 @@ class NSSpeechDriver(NSObject):
         import time
 
         self._tts.startSpeakingString_toURL_(text, url)
-        time.sleep(len(text) * 0.01)
+        time.sleep(max(1, len(text) * 0.01))
 
     def speechSynthesizer_didFinishSpeaking_(self, tts, success):
         if not self._completed:

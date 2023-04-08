@@ -2,7 +2,7 @@
 from Foundation import *
 from AppKit import NSSpeechSynthesizer
 from PyObjCTools import AppHelper
-from ..voice import Voice
+from pyttsx3.voice import Voice
 
 
 def buildDriver(proxy):

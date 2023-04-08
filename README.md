@@ -16,7 +16,7 @@ engine.runAndWait()
 2. fix VoiceAge key error
 
 
-
+3. fix for sapi save_to_file when it run on machine without outputsream device.
 
 
 ----------------------

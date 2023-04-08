@@ -71,10 +71,25 @@ class SAPI5Driver(object):
         cwd = os.getcwd()
         stream = comtypes.client.CreateObject('SAPI.SPFileStream')
         stream.Open(filename, SpeechLib.SSFMCreateForWrite)
-        temp_stream = self._tts.AudioOutputStream
+
+        # in case there is no outputstream, the call to AudioOutputStream will fail
+        is_stream_stored = False
+        try:
+            temp_stream = self._tts.AudioOutputStream
+            is_stream_stored=True
+        except Exception as e:
+            #no audio output stream
+            pass
         self._tts.AudioOutputStream = stream
         self._tts.Speak(fromUtf8(toUtf8(text)))
-        self._tts.AudioOutputStream = temp_stream
+        if is_stream_stored:
+            self._tts.AudioOutputStream = temp_stream
+        else:
+            try:
+                self._tts.AudioOutputStream = None
+            except Exception as e:
+                print('set None no no-output stream machine:', e)
+                pass
         stream.close()
         os.chdir(cwd)
 

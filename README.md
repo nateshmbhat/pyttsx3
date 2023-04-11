@@ -18,6 +18,16 @@ engine.runAndWait()
 
 3. fix for sapi save_to_file when it run on machine without outputsream device.
 
+4. add memory support for espeak(not tested).
+
+NOTE:
+if save_to_file with BytesIO, there is no wav header in the BytesIO.
+the format of the bytes data is that 2-bytes = one sample.
+if you want to add a header, the format of the data is:
+1-channel. 2-bytes of sample width.  22050-framerate.
+
+how to add a wav header in memory:https://github.com/Jiangshan00001/pyttsx4/issues/2
+
 
 #TBD:
 add support for TTS.

@@ -98,6 +98,11 @@ class NSSpeechDriver(NSObject):
     def save_to_file(self, text, filename):
         url = Foundation.NSURL.fileURLWithPath_(filename)
         self._tts.startSpeakingString_toURL_(text, url)
+        import time
+        time.sleep(0.1)
+        # needed so script doesn't end w/o talking
+        while self._tts.isSpeaking():
+            time.sleep(0.1)
 
     def speechSynthesizer_didFinishSpeaking_(self, tts, success):
         if not self._completed:

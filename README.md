@@ -4,7 +4,8 @@ only because the repo pyttsx3 does not update for years and some new feature i w
 
 the changelog:
 
-1. add memory support for sapi. 
+1. add memory support for sapi5
+2. add memory support for espeak(espeak is not tested). 
    eg: 
    
 ```
@@ -13,16 +14,21 @@ engine.save_to_file('i am Hello World', b)
 engine.runAndWait()
 ```
 
-2. fix VoiceAge key error
+3. fix VoiceAge key error
 
 
-3. fix for sapi save_to_file when it run on machine without outputsream device.
+4. fix for sapi save_to_file when it run on machine without outputsream device.
 
-4. add memory support for espeak(not tested).
+5. fix  save_to_file does not work on mac os ventura error.
+
+
+
 
 NOTE:
+
 if save_to_file with BytesIO, there is no wav header in the BytesIO.
 the format of the bytes data is that 2-bytes = one sample.
+
 if you want to add a header, the format of the data is:
 1-channel. 2-bytes of sample width.  22050-framerate.
 

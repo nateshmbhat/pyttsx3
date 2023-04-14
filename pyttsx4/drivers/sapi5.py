@@ -49,6 +49,7 @@ class SAPI5Driver(object):
 
         #-10=>+10
         self.pitch= 0
+        self.pitch_str=''
 
     def destroy(self):
         self._tts.EventInterests = 0
@@ -57,7 +58,7 @@ class SAPI5Driver(object):
         self._proxy.setBusy(True)
         self._proxy.notify('started-utterance')
         self._speaking = True
-        self._tts.Speak(fromUtf8(toUtf8(text)))
+        self._tts.Speak(self.pitch_str+fromUtf8(toUtf8(text)))
 
     def stop(self):
         if not self._speaking:
@@ -84,7 +85,7 @@ class SAPI5Driver(object):
             #no audio output stream
             pass
         self._tts.AudioOutputStream = stream
-        self._tts.Speak(fromUtf8(toUtf8(text)))
+        self._tts.Speak(self.pitch_str+fromUtf8(toUtf8(text)))
         if is_stream_stored:
             self._tts.AudioOutputStream = temp_stream
         else:
@@ -100,7 +101,7 @@ class SAPI5Driver(object):
         stream = comtypes.client.CreateObject('SAPI.SpMemoryStream')
         temp_stream = self._tts.AudioOutputStream
         self._tts.AudioOutputStream = stream
-        self._tts.Speak(fromUtf8(toUtf8(text)))
+        self._tts.Speak(self.pitch_str+fromUtf8(toUtf8(text)))
         self._tts.AudioOutputStream = temp_stream
         data = stream.GetData()
         olist.write(bytes(data))
@@ -158,8 +159,7 @@ class SAPI5Driver(object):
         elif name == 'pitch':
             #-10 ->10
             self.pitch = value
-            self._tts.Speak('<pitch absmiddle="'+str(value)+'"/>')
-            print("Pitch adjustment is not tested when using SAPI5")
+            self.pitch_str = '<pitch absmiddle="'+str(value)+'"/>'
         else:
             raise KeyError('unknown property %s' % name)
 

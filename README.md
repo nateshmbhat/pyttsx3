@@ -1,5 +1,8 @@
 
-[![Downloads](https://static.pepy.tech/personalized-badge/pyttsx4?period=total&units=international_system&left_color=black&right_color=green&left_text=Downloads)](https://pepy.tech/project/pyttsx4)
+
+[![Downloads](https://static.pepy.tech/personalized-badge/pyttsx4?period=total&units=international_system&left_color=black&right_color=green&left_text=downloads)](https://pepy.tech/project/pyttsx4)
+[![Downloads](https://static.pepy.tech/personalized-badge/pyttsx4?period=month&units=international_system&left_color=black&right_color=green&left_text=downloads/month)](https://pepy.tech/project/pyttsx4)
+
 
 
 

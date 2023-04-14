@@ -1,4 +1,9 @@
-the code is all from pyttsx3.
+
+[![Downloads](https://static.pepy.tech/personalized-badge/pyttsx4?period=total&units=international_system&left_color=black&right_color=green&left_text=Downloads)](https://pepy.tech/project/pyttsx4)
+
+
+
+the code is mostly from pyttsx3.
 
 only because the repo pyttsx3 does not update for years and some new feature i want is not here, i cloned this repo.
 
@@ -20,8 +25,6 @@ engine.runAndWait()
 4. fix for sapi save_to_file when it run on machine without outputsream device.
 
 5. fix  save_to_file does not work on mac os ventura error.
-
-
 
 
 NOTE:

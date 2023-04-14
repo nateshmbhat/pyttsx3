@@ -47,6 +47,9 @@ class SAPI5Driver(object):
         self._rateWpm = 200
         self.setProperty('voice', self.getProperty('voice'))
 
+        #-10=>+10
+        self.pitch= 0
+
     def destroy(self):
         self._tts.EventInterests = 0
 
@@ -123,7 +126,8 @@ class SAPI5Driver(object):
         elif name == 'volume':
             return self._tts.Volume / 100.0
         elif name == 'pitch':
-            print("Pitch adjustment not supported when using SAPI5")
+            return self.pitch
+            #print("Pitch adjustment not supported when using SAPI5")
         else:
             raise KeyError('unknown property %s' % name)
 
@@ -152,7 +156,10 @@ class SAPI5Driver(object):
             except TypeError as e:
                 raise ValueError(str(e))
         elif name == 'pitch':
-            print("Pitch adjustment not supported when using SAPI5")
+            #-10 ->10
+            self.pitch = value
+            self._tts.Speak('<pitch absmiddle="'+str(value)+'"/>')
+            print("Pitch adjustment is not tested when using SAPI5")
         else:
             raise KeyError('unknown property %s' % name)
 

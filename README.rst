@@ -28,7 +28,7 @@ engine.runAndWait()
 
 5. fix  save_to_file does not work on mac os ventura error. --3.0.6
 
-6. add pitch support for sapi5(not tested yet). --3.0.7
+6. add pitch support for sapi5(not tested yet). --3.0.8
 
 
 

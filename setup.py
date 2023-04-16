@@ -7,7 +7,8 @@ install_requires = [
     'comtypes; platform_system == "Windows"',
     'pypiwin32; platform_system == "Windows"',
     'pywin32; platform_system == "Windows"',
-    'pyobjc>=2.4; platform_system == "Darwin"'
+    'pyobjc>=2.4; platform_system == "Darwin"',
+    'six;'
 ]
 
 

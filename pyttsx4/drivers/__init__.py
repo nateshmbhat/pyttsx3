@@ -2,7 +2,7 @@
 '''
 Utility functions to help with Python 2/3 compatibility
 '''
-from .. import six
+import six
 
 def toUtf8(value):
     '''

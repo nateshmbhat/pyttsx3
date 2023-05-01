@@ -2,6 +2,7 @@
 from Foundation import *
 from AppKit import NSSpeechSynthesizer
 from PyObjCTools import AppHelper
+from objc import super
 from ..voice import Voice
 
 

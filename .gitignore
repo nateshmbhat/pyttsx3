@@ -107,3 +107,4 @@ docs/make.bat
 .vscode/
 .idea/*
 pyttsx4_test.py
+old1/*

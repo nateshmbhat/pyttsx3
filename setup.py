@@ -8,20 +8,21 @@ install_requires = [
     'pypiwin32; platform_system == "Windows"',
     'pywin32; platform_system == "Windows"',
     'pyobjc>=2.4; platform_system == "Darwin"',
-    'six;'
+    'six'
 ]
 
 
-with open('README.rst', 'r') as f:
+with open('README.md', 'r') as f:
     long_description = f.read()
 
 
 setup(
     name='pyttsx4',
     packages=['pyttsx4', 'pyttsx4.drivers'],
-    version='3.0.8',
+    version='3.0.10',
    description='Text to Speech (TTS) library for Python 3. Works without internet connection or delay. Supports multiple TTS engines, including Sapi5, nsss, and espeak.',
     long_description=long_description,
+    long_description_content_type='text/markdown',
     summary='Offline Text to Speech library with multi-engine support',
     author='Natesh M Bhat',
     url='https://github.com/Jiangshan00001/pyttsx4',

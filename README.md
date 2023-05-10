@@ -31,6 +31,9 @@ engine.runAndWait()
 
 6. add pitch support for sapi5(not tested yet). --3.0.8
 
+7. fix nsss engine: Import super from objc to fix AttributeError by @matt-oakes.
+
+
 NOTE:
 
 if save_to_file with BytesIO, there is no wav header in the BytesIO.

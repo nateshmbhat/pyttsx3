@@ -9,10 +9,13 @@ import os
 
 
 def test_save_to_file():
+    print('test_save_to_file start')
     engine = pyttsx4.init()
     ############
     file_path = os.path.dirname(__file__)+'/test.wav'
     engine.save_to_file('Hello World', file_path)
+    engine.runAndWait()
+    print('test_save_to_file finish.file saved to:', file_path)
 
 
 def test_say():

@@ -119,5 +119,6 @@ def test_3():
     engine.save_to_file('Hello World', 'test.mp3')
     engine.runAndWait()
 
-    if __name__ == '__main__':
-        test_save_to_file()
+
+if __name__ == '__main__':
+    test_save_to_file()

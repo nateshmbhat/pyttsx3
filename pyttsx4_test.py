@@ -11,7 +11,8 @@ import os
 def test_save_to_file():
     engine = pyttsx4.init()
     ############
-    engine.save_to_file('Hello World', 'test.wav')
+    file_path = os.path.dirname(__file__)+'/test.wav'
+    engine.save_to_file('Hello World', file_path)
 
 
 def test_say():

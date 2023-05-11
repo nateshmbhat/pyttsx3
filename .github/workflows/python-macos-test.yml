@@ -30,7 +30,11 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with flake8
       run: |
-        python pyttsx4_test.py
+        ls .
+        echo "start"
+        python ./pyttsx4_test.py
+        echo "finish"
+        ls .
     - name: Archive production artifacts
       uses: actions/upload-artifact@v3
       with:

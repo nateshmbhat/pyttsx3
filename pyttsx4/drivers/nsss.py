@@ -1,9 +1,9 @@
 #coding:utf-8
-from objc import super
 from Foundation import *
 from AppKit import NSSpeechSynthesizer
 from PyObjCTools import AppHelper
 from ..voice import Voice
+from objc import super
 
 
 def buildDriver(proxy):

@@ -32,7 +32,7 @@ jobs:
       run: |
         ls .
         echo "start"
-        python ./pyttsx4_test.py
+        python -X faulthandler  ./pyttsx4_test.py
         echo "finish"
         ls .
     - name: Archive production artifacts

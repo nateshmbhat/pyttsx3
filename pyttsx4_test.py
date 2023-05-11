@@ -8,7 +8,13 @@ import pyttsx4
 import os
 
 
-def test_1():
+def test_save_to_file():
+    engine = pyttsx4.init()
+    ############
+    engine.save_to_file('Hello World', 'test.wav')
+
+
+def test_say():
     # engine = pyttsx4.init('coqui_ai_tts') # object creation
     engine = pyttsx4.init()
 
@@ -110,4 +116,4 @@ def test_3():
     engine.runAndWait()
 
     if __name__ == '__main__':
-        test_1()
+        test_save_to_file()

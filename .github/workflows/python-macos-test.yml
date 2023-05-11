@@ -31,4 +31,8 @@ jobs:
     - name: Lint with flake8
       run: |
         python pyttsx4_test.py
-
+    - name: Archive production artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: save_to_file
+        path: .

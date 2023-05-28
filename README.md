@@ -54,9 +54,7 @@ engine.runAndWait()
 
 demo output:
 
-<audio id="audio" controls="" preload="none">
-<source id="wav" src="docs/test2.wav">
-</audio>
+<audio  src="docs/test2.wav"></audio>
 
 
 

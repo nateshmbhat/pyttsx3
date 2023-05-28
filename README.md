@@ -4,8 +4,6 @@
 [![Downloads](https://static.pepy.tech/personalized-badge/pyttsx4?period=month&units=international_system&left_color=black&right_color=green&left_text=downloads/month)](https://pepy.tech/project/pyttsx4)
 
 
-
-
 the code is mostly from pyttsx3.
 
 only because the repo pyttsx3 does not update for years and some new feature i want is not here, i cloned this repo.
@@ -33,6 +31,30 @@ engine.runAndWait()
 
 7. fix nsss engine: Import super from objc to fix AttributeError by @matt-oakes.
 
+8. add tts support:
+   deep-learning text to voice backend:
+
+just say:
+```
+engine = pyttsx4.init('coqui_ai_tts')
+engine.say('this is an english text to voice test.')
+engine.runAndWait()
+```
+
+cloning someones voice:
+
+```
+engine = pyttsx4.init('coqui_ai_tts')
+engine.setProperty('speaker_wav', './someones_voice.wav')
+
+engine.say('this is an english text to voice test.')
+engine.runAndWait()
+
+```
+
+
+
+
 
 NOTE:
 
@@ -43,11 +65,6 @@ if you want to add a header, the format of the data is:
 1-channel. 2-bytes of sample width.  22050-framerate.
 
 how to add a wav header in memory:https://github.com/Jiangshan00001/pyttsx4/issues/2
-
-
-#TBD:
-add support for TTS.
-
 
 
 # how to use:

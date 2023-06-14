@@ -1,6 +1,8 @@
 six
-TTS
-pyaudio
+
+# if use ai tts
+#TTS
+#pyaudio
 
 # see setup.py
 # pyttsx3 only requires `espeak` driver/library which is system-dependent

@@ -168,4 +168,6 @@ def test_qtts_to_file2():
     engine.runAndWait()
 
 if __name__ == '__main__':
+    test_save_to_file()
+    test_qtts_to_file()
     test_qtts_to_file2()

@@ -1,4 +1,5 @@
 six
+TTS
 
 # see setup.py
 # pyttsx3 only requires `espeak` driver/library which is system-dependent

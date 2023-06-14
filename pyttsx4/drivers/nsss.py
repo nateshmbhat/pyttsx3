@@ -97,6 +97,8 @@ class NSSpeechDriver(NSObject):
 
     @objc.python_method
     def save_to_file(self, text, filename):
+        self._proxy.setBusy(True)
+        self._completed = True
         url = Foundation.NSURL.fileURLWithPath_(filename)
         self._tts.startSpeakingString_toURL_(text, url)
         import time

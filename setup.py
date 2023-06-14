@@ -19,7 +19,7 @@ with open('README.md', 'r') as f:
 setup(
     name='pyttsx4',
     packages=['pyttsx4', 'pyttsx4.drivers'],
-    version='3.0.11',
+    version='3.0.13',
    description='Text to Speech (TTS) library for Python 3. Works without internet connection or delay. Supports multiple TTS engines, including Sapi5, nsss, and espeak.',
     long_description=long_description,
     long_description_content_type='text/markdown',

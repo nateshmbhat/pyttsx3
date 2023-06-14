@@ -120,5 +120,52 @@ def test_3():
     engine.runAndWait()
 
 
+def test_qtts():
+    engine = pyttsx4.init('coqui_ai_tts')
+    engine.say('Hello World.')
+    engine.runAndWait()
+
+    engine.say('this is an english text to voice test.')
+    engine.runAndWait()
+
+def test_qtts2():
+    engine = pyttsx4.init('coqui_ai_tts')
+    engine.setProperty('speaker_wav', './ide-guide.wav')
+    engine.say('Hello World.')
+    engine.runAndWait()
+
+    engine.say('this is an english text to voice test.')
+    engine.runAndWait()
+
+def test_qtts3():
+    engine = pyttsx4.init('coqui_ai_tts')
+    vs = engine.getProperty('voices')
+    voice_chinese='tts_models/zh-CN/baker/tacotron2-DDC-GST'
+    engine.setProperty('voice', voice_chinese)
+
+    # engine.say('this is an english text to voice test.')
+    # engine.runAndWait()
+    engine.setProperty('speaker_wav', './ide-guide.wav')
+
+    engine.say('这是一个中文说明 .')
+    engine.runAndWait()
+
+def test_qtts_to_file():
+    engine = pyttsx4.init('coqui_ai_tts')
+    engine.save_to_file('Hello World.', 'test1.wav')
+    engine.runAndWait()
+
+    engine.save_to_file('this is an english text to voice test.', 'test2.wav')
+    engine.runAndWait()
+
+def test_qtts_to_file2():
+    engine = pyttsx4.init('coqui_ai_tts')
+    engine.save_to_file('what a crazy man.', 'what_crazy_man.wav')
+    engine.runAndWait()
+    engine.save_to_file('this is an apple.', 'this_is_an_apple.wav')
+    engine.runAndWait()
+    engine.save_to_file('what a lazy dog.', 'what_a_lazy_dog.wav')
+    engine.runAndWait()
+
 if __name__ == '__main__':
-    test_save_to_file()
+    test_qtts_to_file2()

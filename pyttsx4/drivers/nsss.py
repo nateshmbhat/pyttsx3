@@ -48,6 +48,14 @@ class NSSpeechDriver(NSObject):
         self._completed = True
         self._proxy.notify('started-utterance')
         self._tts.startSpeakingString_(text)
+        # add this delay and call to didFinishSpeaking_ to prevent unfinished dead locks
+        import time
+        time.sleep(0.1)
+        # needed so script doesn't end w/o talking
+        while self._tts.isSpeaking():
+            time.sleep(0.1)
+        self.speechSynthesizer_didFinishSpeaking_(self._tts, True)
+
 
     def stop(self):
         if self._proxy.isBusy():

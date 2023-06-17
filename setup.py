@@ -19,7 +19,7 @@ with open('README.md', 'r') as f:
 setup(
     name='pyttsx4',
     packages=['pyttsx4', 'pyttsx4.drivers'],
-    version='3.0.13',
+    version='3.0.14',
    description='Text to Speech (TTS) library for Python 3. Works without internet connection or delay. Supports multiple TTS engines, including Sapi5, nsss, and espeak.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -28,7 +28,7 @@ setup(
     url='https://github.com/Jiangshan00001/pyttsx4',
     author_email='710806594@qq.com',
     install_requires=install_requires ,
-    keywords=['pyttsx' , 'ivona','pyttsx for python3' , 'TTS for python3' , 'pyttsx3' ,'text to speech for python','tts','text to speech','speech','speech synthesis','offline text to speech','offline tts','gtts'],
+    keywords=['pyttsx' , 'ivona','pyttsx for python3' , 'TTS for python3' , 'pyttsx4' ,'text to speech for python','tts','text to speech','speech','speech synthesis','offline text to speech','offline tts','gtts'],
     classifiers = [
           'Intended Audience :: End Users/Desktop',
           'Intended Audience :: Developers',

@@ -158,6 +158,9 @@ def test_qtts_to_file():
     engine.save_to_file('this is an english text to voice test.', 'test2.wav')
     engine.runAndWait()
 
+
+
+
 def test_qtts_to_file2():
     engine = pyttsx4.init('coqui_ai_tts')
     engine.save_to_file('what a crazy man.', 'what_crazy_man.wav')
@@ -167,7 +170,22 @@ def test_qtts_to_file2():
     engine.save_to_file('what a lazy dog.', 'what_a_lazy_dog.wav')
     engine.runAndWait()
 
+
+def test1_tts():
+    engine = pyttsx4.init('coqui_ai_tts')
+    engine.setProperty('speaker_wav', './docs/i_have_a_dream_10s.wav')
+
+    engine.save_to_file('this is an english text to voice test, listen it carefully and tell who i am.', 'test_mtk.wav')
+    engine.runAndWait()
+
+    engine.setProperty('speaker_wav', './docs/the_ballot_or_the_bullet_15s.wav')
+
+    engine.save_to_file('this is an english text to voice test, listen it carefully and tell who i am.','test_mx.wav')
+    engine.runAndWait()
+
+
 if __name__ == '__main__':
     test_save_to_file()
+    #test1_tts()
     #test_qtts_to_file()
     #test_qtts_to_file2()

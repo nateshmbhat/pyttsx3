@@ -52,9 +52,14 @@ class NSSpeechDriver(NSObject):
         # add this delay and call to didFinishSpeaking_ to prevent unfinished dead locks
         import time
         time.sleep(0.1)
+        cnt = 0
         # needed so script doesn't end w/o talking
         while self._tts.isSpeaking():
             time.sleep(0.1)
+            cnt+=1
+            if cnt>100:
+                print('debug:nsss:say start more than 10seconds. stucked?',cnt)
+                break
         #self.speechSynthesizer_didFinishSpeaking_(self._tts, True)
         print('debug:nsss:say end', time.time())
 

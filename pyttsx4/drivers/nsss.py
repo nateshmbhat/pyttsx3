@@ -47,6 +47,7 @@ class NSSpeechDriver(NSObject):
         #self._proxy.setBusy(True)
         #self._completed = True
         #self._proxy.notify('started-utterance')
+        print('debug:nsss:say start', time.time())
         self._tts.startSpeakingString_(text)
         # add this delay and call to didFinishSpeaking_ to prevent unfinished dead locks
         import time
@@ -55,6 +56,7 @@ class NSSpeechDriver(NSObject):
         while self._tts.isSpeaking():
             time.sleep(0.1)
         #self.speechSynthesizer_didFinishSpeaking_(self._tts, True)
+        print('debug:nsss:say end', time.time())
 
 
     def stop(self):

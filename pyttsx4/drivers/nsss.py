@@ -62,6 +62,7 @@ class NSSpeechDriver(NSObject):
             #    break
         #self.speechSynthesizer_didFinishSpeaking_(self._tts, True)
         #print('debug:nsss:say end', time.time())
+        self._proxy.setBusy(False)
 
 
     def stop(self):

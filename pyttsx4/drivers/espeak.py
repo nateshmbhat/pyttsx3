@@ -135,6 +135,8 @@ class EspeakDriver(object):
             time.sleep(0.01)
 
     def save_to_file(self, text, filename):
+        self._proxy.setBusy(True)
+        self._proxy.notify('started-utterance')  
         self.to_filename = filename
         if isinstance(filename, io.BytesIO):
             code = None

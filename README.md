@@ -1,97 +1,192 @@
-<p align="center">
-  <img src=".github/logo.svg?sanitize=true" width="200px" height="200px">
-</p>
-<h2 align="center">Offline Text To Speech (TTS) converter for Python </h2>
 
 
-[![Downloads](https://pepy.tech/badge/pyttsx3)](https://pepy.tech/project/pyttsx3) ![Downloads](https://pepy.tech/badge/pyttsx3/week)  [![](https://img.shields.io/github/languages/code-size/nateshmbhat/pyttsx3.svg?style=plastic)](https://github.com/nateshmbhat/pyttsx3)  [![](https://img.shields.io/github/license/nateshmbhat/pyttsx3?style=plastic)](https://github.com/nateshmbhat/pyttsx3) [![](https://img.shields.io/pypi/v/pyttsx3.svg?style=plastic)](https://pypi.org/project/pyttsx3/) [![](https://img.shields.io/github/languages/top/nateshmbhat/pyttsx3.svg?style=plastic)](https://github.com/nateshmbhat/pyttsx3) [![](https://img.shields.io/badge/author-nateshmbhat-green.svg)](https://github.com/nateshmbhat)
+[![Downloads](https://static.pepy.tech/personalized-badge/pyttsx4?period=total&units=international_system&left_color=black&right_color=green&left_text=downloads)](https://pepy.tech/project/pyttsx4)
+[![Downloads](https://static.pepy.tech/personalized-badge/pyttsx4?period=month&units=international_system&left_color=black&right_color=green&left_text=downloads/month)](https://pepy.tech/project/pyttsx4)
 
 
-`pyttsx3` is a text-to-speech conversion library in Python. Unlike alternative libraries, **it works offline**.
+the code is mostly from pyttsx3.
 
-<a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/nateshmbhat"><img src="https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg" alt="Buy me a coffee 😇"><span style="margin-left:5px;font-size:19px !important;">Buy me a coffee 😇</span></a>
+only because the repo pyttsx3 does not update for years and some new feature i want is not here, i cloned this repo.
 
-## Installation :
+feature:
 
+# supported engines:
 
-	pip install pyttsx3
-
-> If you get installation errors , make sure you first upgrade your wheel version using :  
-`pip install --upgrade wheel`
-
-### Linux installation requirements : 
-
-+ If you are on a linux system and if the voice output is not working , then  : 
-
-	Install espeak , ffmpeg and libespeak1 as shown below: 
-
-	```
-	sudo apt update && sudo apt install espeak ffmpeg libespeak1
-	```
-
-
-## Features : 
-
-- ✨Fully **OFFLINE** text to speech conversion
-- 🎈 Choose among different voices installed in your system
-- 🎛 Control speed/rate of speech
-- 🎚 Tweak Volume
-- 📀 Save the speech audio as a file
-- ❤️ Simple, powerful, & intuitive API
-
-
-## Usage :
-
-```python3
-import pyttsx3
-engine = pyttsx3.init()
-engine.say("I will speak this text")
-engine.runAndWait()
+```
+1 nsss
+2 sapi5
+3 espeak
+4 coqui_ai_tts
 ```
 
-**Single line usage with speak function with default options**
+# basic features:
 
-```python3
-import pyttsx3
-pyttsx3.speak("I will speak this text")
+1 say
 ```
-
-	
-**Changing Voice , Rate and Volume :**
-
-```python3
-import pyttsx3
-engine = pyttsx3.init() # object creation
-
-""" RATE"""
-rate = engine.getProperty('rate')   # getting details of current speaking rate
-print (rate)                        #printing current voice rate
-engine.setProperty('rate', 125)     # setting up new voice rate
-
-
-"""VOLUME"""
-volume = engine.getProperty('volume')   #getting to know current volume level (min=0 and max=1)
-print (volume)                          #printing current volume level
-engine.setProperty('volume',1.0)    # setting up volume level  between 0 and 1
-
-"""VOICE"""
-voices = engine.getProperty('voices')       #getting details of current voice
-#engine.setProperty('voice', voices[0].id)  #changing index, changes voices. o for male
-engine.setProperty('voice', voices[1].id)   #changing index, changes voices. 1 for female
-
-engine.say("Hello World!")
-engine.say('My current speaking rate is ' + str(rate))
+engine = pyttsx4.init()
+engine.say('this is an english text to voice test.')
 engine.runAndWait()
-engine.stop()
+```
+2 save to file
 
+```
+import pyttsx4
 
-"""Saving Voice to a file"""
-# On linux make sure that 'espeak' and 'ffmpeg' are installed
-engine.save_to_file('Hello World', 'test.mp3')
+engine = pyttsx4.init()
+engine.save_to_file('i am Hello World, i am a programmer. i think life is short.', 'test1.wav')
 engine.runAndWait()
 
 ```
 
+
+# extra features:
+
+1 memory support for sapi5, nsss, espeak.
+NOTE: the memory is just raw adc data, wav header has to be added if you want to save to wav file.
+
+```
+import pyttsx4
+from io import BytesIO
+from pydub import AudioSegment
+from pydub.playback import play
+import os
+import sys
+
+engine = pyttsx4.init()
+b = BytesIO()
+engine.save_to_file('i am Hello World', b)
+engine.runAndWait()
+#the bs is raw data of the audio.
+bs=b.getvalue()
+# add an wav file format header
+b=bytes(b'RIFF')+ (len(bs)+38).to_bytes(4, byteorder='little')+b'WAVEfmt\x20\x12\x00\x00' \
+                                                               b'\x00\x01\x00\x01\x00' \
+                                                               b'\x22\x56\x00\x00\x44\xac\x00\x00' +\
+    b'\x02\x00\x10\x00\x00\x00data' +(len(bs)).to_bytes(4, byteorder='little')+bs
+# changed to BytesIO
+b=BytesIO(b)
+audio = AudioSegment.from_file(b, format="wav")
+play(audio)
+
+sys.exit(0)
+```
+
+
+2 cloning voice 
+```
+# only coqui_ai_tts engine support cloning voice.
+engine = pyttsx4.init('coqui_ai_tts')
+engine.setProperty('speaker_wav', './docs/i_have_a_dream_10s.wav')
+
+engine.say('this is an english text to voice test, listen it carefully and tell who i am.')
+engine.runAndWait()
+
+
+```
+
+voice clone test1:
+
+![speaker_wav_test_1](./docs/i_have_a_dream_10s.wav)
+![the output1](./docs/test_mtk.wav)
+
+
+voice clone test2:
+
+![speaker_wav_test_2](./docs/the_ballot_or_the_bullet_15s.wav)
+![the output2](./docs/test_mx.wav)
+
+
+
+----------------
+
+
+
+
+
+
+
+the changelog:
+
+1. add memory support for sapi5
+2. add memory support for espeak(espeak is not tested). 
+   eg: 
+   
+```
+b = BytesIO()
+engine.save_to_file('i am Hello World', b)
+engine.runAndWait()
+```
+
+3. fix VoiceAge key error
+
+
+4. fix for sapi save_to_file when it run on machine without outputsream device.
+
+5. fix  save_to_file does not work on mac os ventura error. --3.0.6
+
+6. add pitch support for sapi5(not tested yet). --3.0.8
+
+7. fix nsss engine: Import super from objc to fix AttributeError by @matt-oakes.
+
+8. add tts support:
+   deep-learning text to voice backend:
+
+just say:
+```
+engine = pyttsx4.init('coqui_ai_tts')
+engine.say('this is an english text to voice test.')
+engine.runAndWait()
+```
+
+cloning someones voice:
+
+```
+engine = pyttsx4.init('coqui_ai_tts')
+engine.setProperty('speaker_wav', './someones_voice.wav')
+
+engine.say('this is an english text to voice test.')
+engine.runAndWait()
+
+```
+
+demo output:
+
+![test2](./docs/test2.wav)
+
+
+
+
+
+NOTE:
+
+if save_to_file with BytesIO, there is no wav header in the BytesIO.
+the format of the bytes data is that 2-bytes = one sample.
+
+if you want to add a header, the format of the data is:
+1-channel. 2-bytes of sample width.  22050-framerate.
+
+how to add a wav header in memory:https://github.com/Jiangshan00001/pyttsx4/issues/2
+
+
+# how to use:
+
+install:
+```
+pip install pyttsx4
+```
+
+use:
+
+```
+import pyttsx4
+engine = pyttsx4.init()
+```
+
+the  other usage is the same as the pyttsx3
+
+
+
+----------------------
 
 
 
@@ -106,10 +201,12 @@ https://pyttsx3.readthedocs.io/en/latest/
 * nsss
 * espeak
 
-Feel free to wrap another text-to-speech engine for use with ``pyttsx3``.
+Feel free to wrap another text-to-speech engine for use with ``pyttsx4``.
 
 ### Project Links :
 
 * PyPI (https://pypi.python.org)
-* GitHub (https://github.com/nateshmbhat/pyttsx3)
+* GitHub (https://github.com/Jiangshan00001/pyttsx4)
 * Full Documentation (https://pyttsx3.readthedocs.org)
+
+

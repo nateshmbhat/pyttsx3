@@ -7,6 +7,7 @@ except ImportError:
     stream = comtypes.client.CreateObject("SAPI.SpFileStream")
     from comtypes.gen import SpeechLib
 
+from io import BytesIO
 import pythoncom
 import time
 import math
@@ -46,6 +47,10 @@ class SAPI5Driver(object):
         self._rateWpm = 200
         self.setProperty('voice', self.getProperty('voice'))
 
+        #-10=>+10
+        self.pitch= 0
+        self.pitch_str=''
+
     def destroy(self):
         self._tts.EventInterests = 0
 
@@ -53,7 +58,7 @@ class SAPI5Driver(object):
         self._proxy.setBusy(True)
         self._proxy.notify('started-utterance')
         self._speaking = True
-        self._tts.Speak(fromUtf8(toUtf8(text)))
+        self._tts.Speak(self.pitch_str+fromUtf8(toUtf8(text)))
 
     def stop(self):
         if not self._speaking:
@@ -63,15 +68,44 @@ class SAPI5Driver(object):
         self._tts.Speak('', 3)
 
     def save_to_file(self, text, filename):
+        if isinstance(filename, BytesIO):
+            self.to_memory(text, filename)
+            return
+
         cwd = os.getcwd()
         stream = comtypes.client.CreateObject('SAPI.SPFileStream')
         stream.Open(filename, SpeechLib.SSFMCreateForWrite)
-        temp_stream = self._tts.AudioOutputStream
+
+        # in case there is no outputstream, the call to AudioOutputStream will fail
+        is_stream_stored = False
+        try:
+            temp_stream = self._tts.AudioOutputStream
+            is_stream_stored=True
+        except Exception as e:
+            #no audio output stream
+            pass
         self._tts.AudioOutputStream = stream
-        self._tts.Speak(fromUtf8(toUtf8(text)))
-        self._tts.AudioOutputStream = temp_stream
+        self._tts.Speak(self.pitch_str+fromUtf8(toUtf8(text)))
+        if is_stream_stored:
+            self._tts.AudioOutputStream = temp_stream
+        else:
+            try:
+                self._tts.AudioOutputStream = None
+            except Exception as e:
+                print('set None no no-output stream machine:', e)
+                pass
         stream.close()
         os.chdir(cwd)
+
+    def to_memory(self, text, olist):
+        stream = comtypes.client.CreateObject('SAPI.SpMemoryStream')
+        temp_stream = self._tts.AudioOutputStream
+        self._tts.AudioOutputStream = stream
+        self._tts.Speak(self.pitch_str+fromUtf8(toUtf8(text)))
+        self._tts.AudioOutputStream = temp_stream
+        data = stream.GetData()
+        olist.write(bytes(data))
+        del stream
 
     def _toVoice(self, attr):
         return Voice(attr.Id, attr.GetDescription())
@@ -93,7 +127,8 @@ class SAPI5Driver(object):
         elif name == 'volume':
             return self._tts.Volume / 100.0
         elif name == 'pitch':
-            print("Pitch adjustment not supported when using SAPI5")
+            return self.pitch
+            #print("Pitch adjustment not supported when using SAPI5")
         else:
             raise KeyError('unknown property %s' % name)
 
@@ -107,6 +142,11 @@ class SAPI5Driver(object):
             id_ = self._tts.Voice.Id
             a, b = E_REG.get(id_, E_REG[MSMARY])
             try:
+                rate = int(math.log(value / a, b))
+                if rate<-10:
+                    rate = -10
+                if rate>10:
+                    rate = 10
                 self._tts.Rate = int(math.log(value / a, b))
             except TypeError as e:
                 raise ValueError(str(e))
@@ -117,13 +157,15 @@ class SAPI5Driver(object):
             except TypeError as e:
                 raise ValueError(str(e))
         elif name == 'pitch':
-            print("Pitch adjustment not supported when using SAPI5")
+            #-10 ->10
+            self.pitch = value
+            self.pitch_str = '<pitch absmiddle="'+str(value)+'"/>'
         else:
             raise KeyError('unknown property %s' % name)
 
     def startLoop(self):
-        first = True
         self._looping = True
+        first = True
         while self._looping:
             if first:
                 self._proxy.setBusy(False)

@@ -1,8 +1,9 @@
-
+#coding:utf-8
 from Foundation import *
 from AppKit import NSSpeechSynthesizer
 from PyObjCTools import AppHelper
 from ..voice import Voice
+from objc import super
 
 
 def buildDriver(proxy):
@@ -43,10 +44,26 @@ class NSSpeechDriver(NSObject):
 
     @objc.python_method
     def say(self, text):
-        self._proxy.setBusy(True)
-        self._completed = True
-        self._proxy.notify('started-utterance')
+        import time
+        #self._proxy.setBusy(True)
+        #self._completed = True
+        #self._proxy.notify('started-utterance')
+        #print('debug:nsss:say start', time.time())
         self._tts.startSpeakingString_(text)
+        # add this delay and call to didFinishSpeaking_ to prevent unfinished dead locks
+        time.sleep(0.1)
+        cnt = 0
+        # needed so script doesn't end w/o talking
+        while self._tts.isSpeaking():
+            time.sleep(0.1)
+            cnt+=1
+            #if cnt>100:
+            #    print('debug:nsss:say start more than 10seconds. stucked?',cnt)
+            #    break
+        #self.speechSynthesizer_didFinishSpeaking_(self._tts, True)
+        #print('debug:nsss:say end', time.time())
+        self._proxy.setBusy(False)
+
 
     def stop(self):
         if self._proxy.isBusy():
@@ -55,13 +72,10 @@ class NSSpeechDriver(NSObject):
 
     @objc.python_method
     def _toVoice(self, attr):
-        try:
-            lang = attr['VoiceLocaleIdentifier']
-        except KeyError:
-            lang = attr['VoiceLanguage']
-        return Voice(attr['VoiceIdentifier'], attr['VoiceName'],
-                     [lang], attr['VoiceGender'],
-                     attr['VoiceAge'])
+
+        return Voice(attr.get('VoiceIdentifier'), attr.get('VoiceName'),
+                     [attr.get('VoiceLanguage')], attr.get('VoiceGender'),
+                     attr.get('VoiceAge'))
 
     @objc.python_method
     def getProperty(self, name):
@@ -101,6 +115,11 @@ class NSSpeechDriver(NSObject):
     def save_to_file(self, text, filename):
         url = Foundation.NSURL.fileURLWithPath_(filename)
         self._tts.startSpeakingString_toURL_(text, url)
+        import time
+        time.sleep(0.1)
+        # needed so script doesn't end w/o talking
+        while self._tts.isSpeaking():
+            time.sleep(0.1)
 
     def speechSynthesizer_didFinishSpeaking_(self, tts, success):
         if not self._completed:

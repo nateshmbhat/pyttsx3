@@ -60,6 +60,13 @@ except Exception as exp:
     import sys
     sys.exit()
 
+# check if dll is loaded sucessfully
+if dll is None:
+      print("Could not load libespeak-ng.so.1 or libespeak.so.1")
+      print('to install espeak on linux, run: \nsudo apt-get install -y espeak-ng ffmpeg alsa-utils')
+      import sys
+      sys.exit()
+
 # constants and such from speak_lib.h
 
 EVENT_LIST_TERMINATED = 0

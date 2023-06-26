@@ -37,6 +37,7 @@ class EspeakDriver(object):
         self._stopping = False
         self._data_buffer = b''
         self._numerise_buffer = []
+        self.to_filename = None
 
     def numerise(self, data):
         self._numerise_buffer.append(data)
@@ -49,6 +50,7 @@ class EspeakDriver(object):
         _espeak.SetSynthCallback(None)
 
     def say(self, text):
+        self.to_filename=None
         self._proxy.setBusy(True)
         self._proxy.notify('started-utterance')
         _espeak.Synth(toUtf8(text), flags=_espeak.ENDPAUSE |
@@ -133,7 +135,13 @@ class EspeakDriver(object):
             time.sleep(0.01)
 
     def save_to_file(self, text, filename):
-        code = self.numerise(filename)
+        self._proxy.setBusy(True)
+        self._proxy.notify('started-utterance')  
+        self.to_filename = filename
+        if isinstance(filename, io.BytesIO):
+            code = None
+        else:
+            code = self.numerise(self.to_filename)
         _espeak.Synth(toUtf8(text), flags=_espeak.ENDPAUSE |
                     _espeak.CHARS_UTF8, user_data=code)
 
@@ -163,17 +171,24 @@ class EspeakDriver(object):
                                    location=event.text_position - 1,
                                    length=event.length)
             elif event.type == _espeak.EVENT_MSG_TERMINATED:
-                stream = NamedTemporaryFile()
 
-                with wave.open(stream, 'wb') as f:
-                    f.setnchannels(1)
-                    f.setsampwidth(2)
-                    f.setframerate(22050.0)
-                    f.writeframes(self._data_buffer)
-
-                if event.user_data:
+                if isinstance(self.to_filename,io.BytesIO):
+                    self.to_filename.write(self._data_buffer)
+                elif event.user_data:
+                    stream = NamedTemporaryFile()
+                    with wave.open(stream, 'wb') as f:
+                        f.setnchannels(1)
+                        f.setsampwidth(2)
+                        f.setframerate(22050.0)
+                        f.writeframes(self._data_buffer)
                     os.system('ffmpeg -y -i {} {} -loglevel quiet'.format(stream.name, self.decode_numeric(event.user_data)))
                 else:
+                    stream = NamedTemporaryFile()
+                    with wave.open(stream, 'wb') as f:
+                        f.setnchannels(1)
+                        f.setsampwidth(2)
+                        f.setframerate(22050.0)
+                        f.writeframes(self._data_buffer)
                     os.system('aplay {} -q'.format(stream.name))  # -q for quiet
 
                 self._data_buffer = b''

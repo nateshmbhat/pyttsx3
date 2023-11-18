@@ -53,14 +53,14 @@ class SAPI5Driver(object):
         self._proxy.setBusy(True)
         self._proxy.notify('started-utterance')
         self._speaking = True
-        self._tts.Speak(fromUtf8(toUtf8(text)))
+        self._tts.Speak(fromUtf8(toUtf8(text)), 1)
 
     def stop(self):
         if not self._speaking:
             return
         self._proxy.setBusy(True)
         self._stopping = True
-        self._tts.Speak('', 3)
+        self._tts.Skip('Sentence', 3000)
 
     def save_to_file(self, text, filename):
         cwd = os.getcwd()
@@ -150,7 +150,11 @@ class SAPI5DriverEventSink(object):
 
     def _ISpeechVoiceEvents_StartStream(self, char, length):
         self._driver._proxy.notify(
-            'started-word', location=char, length=length)
+            'started-utterance', location=char, length=length)
+
+    def _ISpeechVoiceEvents_Word(self, stream_number, stream_position, char_pos, length):
+        self._driver._proxy.notify(
+            'started-word', location=stream_position, length=length)
 
     def _ISpeechVoiceEvents_EndStream(self, stream, pos):
         d = self._driver

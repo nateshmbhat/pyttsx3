@@ -82,8 +82,11 @@ class SAPI5Driver(object):
         for token in tokens:
             if token.Id == id_ or token.Id == id2_:
                 return token
-        return tokens[0] # return any voice if not found
-        #raise ValueError('unknown voice id %s', id_)
+
+        if len(tokens) > 0:
+            return tokens[0] # return any voice if not found
+        else:
+            raise ValueError('unknown voice id %s', id_)
 
     def getProperty(self, name):
         if name == 'voices':

@@ -4,6 +4,7 @@
 name: Build and upload Python Package
 
 on:
+  workflow_dispatch:
   release:
     types: [created]
 

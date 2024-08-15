@@ -11,6 +11,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
 
     steps:
     - uses: actions/checkout@v2
@@ -32,15 +34,5 @@ jobs:
       run: |
         python setup.py check
         python setup.py sdist bdist_wheel
-    - name: Publish to pypi
-      uses: pypa/gh-action-pypi-publish@v1.9.0
-      with:
-        # PyPI user
-        user: ${{ secrets.PYPI_USERNAME }}
-        password: ${{ secrets.PYPI_PASSWORD }}
-        # Check metadata before uploading
-        verify-metadata: true
-        # Show verbose output.
-        verbose: true
-        # Show hash values of files to be uploaded
-        print-hash: true
+    - name: Publish package distributions to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1

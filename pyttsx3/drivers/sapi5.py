@@ -78,10 +78,15 @@ class SAPI5Driver(object):
 
     def _tokenFromId(self, id_):
         tokens = self._tts.GetVoices()
+        id2_ = id_.replace("Speech_OneCore", "Speech") # https://stackoverflow.com/questions/65660897/pyttsx3-unknown-voice-id
         for token in tokens:
-            if token.Id == id_:
+            if token.Id == id_ or token.Id == id2_:
                 return token
-        raise ValueError('unknown voice id %s', id_)
+
+        if len(tokens) > 0:
+            return tokens[0] # return any voice if not found
+        else:
+            raise ValueError('unknown voice id %s and no alternative voices found', id_)
 
     def getProperty(self, name):
         if name == 'voices':

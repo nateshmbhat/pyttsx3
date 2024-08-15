@@ -3,7 +3,6 @@ from Foundation import *
 from AppKit import NSSpeechSynthesizer
 from PyObjCTools import AppHelper
 from PyObjCTools.AppHelper import PyObjCAppHelperRunLoopStopper
-
 from ..voice import Voice
 
 class RunLoopStopper(PyObjCAppHelperRunLoopStopper):
@@ -88,8 +87,7 @@ class NSSpeechDriver(NSObject):
         except KeyError:
             lang = attr['VoiceLanguage']
         return Voice(attr['VoiceIdentifier'], attr['VoiceName'],
-                     [lang], attr['VoiceGender'],
-                     attr['VoiceAge'])
+                     [lang], attr['VoiceGender'])
 
     @objc.python_method
     def getProperty(self, name):
@@ -128,7 +126,10 @@ class NSSpeechDriver(NSObject):
     @objc.python_method
     def save_to_file(self, text, filename):
         url = Foundation.NSURL.fileURLWithPath_(filename)
+        import time
+
         self._tts.startSpeakingString_toURL_(text, url)
+        time.sleep(max(1, len(text) * 0.01))
 
     def speechSynthesizer_didFinishSpeaking_(self, tts, success):
         if not self._completed:

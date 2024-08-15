@@ -19,16 +19,6 @@
 > If you get installation errors , make sure you first upgrade your wheel version using :  
 `pip install --upgrade wheel`
 
-### Linux installation requirements : 
-
-+ If you are on a linux system and if the voice output is not working , then  : 
-
-	Install espeak , ffmpeg and libespeak1 as shown below: 
-
-	```
-	sudo apt update && sudo apt install espeak ffmpeg libespeak1
-	```
-
 
 ## Features : 
 
@@ -39,6 +29,18 @@
 - 📀 Save the speech audio as a file
 - ❤️ Simple, powerful, & intuitive API
 
+
+### Linux installation requirements : 
+
++ If you are on a linux system and if the voice output is not working , then  : 
+
+	Install espeak , ffmpeg and libespeak1 as shown below: 
+
+	```
+	sudo apt update && sudo apt install espeak ffmpeg libespeak1
+	```
+ ### For Mac, If you face error related to "pyobjc" :
+ 	Install 9.0.1 version of pyobjc : `pip install pyobjc==9.0.1`
 
 ## Usage :
 

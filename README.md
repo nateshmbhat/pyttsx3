@@ -40,7 +40,7 @@
 	sudo apt update && sudo apt install espeak ffmpeg libespeak1
 	```
  ### For Mac, If you face error related to "pyobjc" :
- 	Install 9.0.1 version of pyobjc : `pip install pyobjc==9.0.1`
+ Install 9.0.1 version of pyobjc : `pip install pyobjc==9.0.1`
 
 ## Usage :
 

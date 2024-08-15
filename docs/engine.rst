@@ -1,7 +1,7 @@
 .. module:: pyttsx3
    :synopsis: The root pyttsx3 package defining the engine factory function
 
-Using py3-tts
+Using pyttsx3
 -------------
 
 An application invokes the :func:`pyttsx3.init` factory function to get a reference to a :class:`pyttsx3.Engine` instance. During construction, the engine initializes a :class:`pyttsx3.driver.DriverProxy` object responsible for loading a speech engine driver implementation from the :mod:`pyttsx3.drivers` module. After construction, an application uses the engine object to register and unregister event callbacks; produce and stop speech; get and set speech engine properties; and start and stop event loops.

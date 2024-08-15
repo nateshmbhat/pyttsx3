@@ -30,7 +30,7 @@
 - ❤️ Simple, powerful, & intuitive API
 
 
-### Linux installation requirements : 
+#### Linux installation requirements : 
 
 + If you are on a linux system and if the voice output is not working , then  : 
 
@@ -39,14 +39,16 @@
 	```
 	sudo apt update && sudo apt install espeak ffmpeg libespeak1
 	```
- ### For Mac, If you face error related to "pyobjc" :
- Install 9.0.1 version of pyobjc : `pip install pyobjc==9.0.1`
 
 ## Usage :
 
 ```python3
 import pyttsx3
 engine = pyttsx3.init()
+
+# For Mac, If you face error related to "pyobjc" when running the `init()` method :
+# Install 9.0.1 version of pyobjc : "pip install pyobjc==9.0.1"
+
 engine.say("I will speak this text")
 engine.runAndWait()
 ```

@@ -25,11 +25,22 @@ jobs:
     - name: Clean previous builds
       run: |
         rm -rf dist
-    - name: Build and publish
+    - name: Build package
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
         python setup.py check
         python setup.py sdist bdist_wheel
-        twine upload dist/*
+    - name: Publish to pypi
+      uses: pypa/gh-action-pypi-publish@v1.9.0
+      with:
+        # PyPI user
+        user: ${{ secrets.PYPI_USERNAME }}
+        password: ${{ secrets.PYPI_PASSWORD }}
+        # Check metadata before uploading
+        verify-metadata: true
+        # Show verbose output.
+        verbose: true
+        # Show hash values of files to be uploaded
+        print-hash: true

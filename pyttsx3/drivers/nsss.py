@@ -2,8 +2,22 @@
 from Foundation import *
 from AppKit import NSSpeechSynthesizer
 from PyObjCTools import AppHelper
-from pyttsx3.voice import Voice
+from PyObjCTools.AppHelper import PyObjCAppHelperRunLoopStopper
+from ..voice import Voice
 
+class RunLoopStopper(PyObjCAppHelperRunLoopStopper):
+
+    def init(self):
+        self = super(RunLoopStopper, self).init()
+        self.shouldStop = False
+        return self
+
+    def stop(self):
+        self.shouldStop = True
+        # this should go away when/if runEventLoop uses
+        # runLoop iteration
+        # if NSApp() is not None:
+        #     NSApp().terminate_(self)
 
 def buildDriver(proxy):
     return NSSpeechDriver.alloc().initWithProxy(proxy)
@@ -32,7 +46,20 @@ class NSSpeechDriver(NSObject):
     def startLoop(self):
         NSTimer.scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_(
             0.0, self, 'onPumpFirst:', None, False)
-        AppHelper.runConsoleEventLoop()
+        runLoop = NSRunLoop.currentRunLoop()
+        stopper = RunLoopStopper.alloc().init()
+        PyObjCAppHelperRunLoopStopper.addRunLoopStopper_toRunLoop_(stopper, runLoop)
+        try:
+
+            while stopper.shouldRun():
+                nextfire = runLoop.limitDateForMode_(NSDefaultRunLoopMode)
+                if not stopper.shouldRun():
+                    break
+                if not runLoop.runMode_beforeDate_(NSDefaultRunLoopMode, nextfire):
+                    stopper.stop()
+
+        finally:
+            PyObjCAppHelperRunLoopStopper.removeRunLoopStopperFromRunLoop_(runLoop)
 
     def endLoop(self):
         AppHelper.stopEventLoop()

@@ -11,7 +11,19 @@ Installation
 	pip install pyttsx3
 
 
-If you recieve errors such as ``No module named win32com.client``, ``No module named win32``, or ``No module named win32api``, you will need to additionally install ``pypiwin32``.
+> If you get installation errors , make sure you first upgrade your wheel version using :  
+`pip install --upgrade wheel`
+
+**Linux installation requirements :**
+#####################################
+
++ If you are on a linux system and if the voice output is not working , then  : 
+
+Install espeak , ffmpeg and libespeak1 as shown below: 
+
+::
+
+	sudo apt update && sudo apt install espeak ffmpeg libespeak1
 
 
 Usage :
@@ -51,6 +63,11 @@ Usage :
 	engine.say('My current speaking rate is ' + str(rate))
 	engine.runAndWait()
 	engine.stop()
+
+	"""Saving Voice to a file"""
+	# On linux make sure that 'espeak' and 'ffmpeg' are installed
+	engine.save_to_file('Hello World', 'test.mp3')
+	engine.runAndWait()
 
 
 **Full documentation of the Library**

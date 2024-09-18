@@ -5,9 +5,8 @@ build:
 	pip3 install wheel --user
 	python3 setup.py bdist_wheel
 upload:
-	pip3 install twine --user
-	python3 -m twine upload dist/*.whl --verbose
-
+	pip3 install twine
+	python3 -m twine upload dist/*.whl
 deploy:
 	make clean
 	make build

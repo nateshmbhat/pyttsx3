@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+.DS_Store
 
 # C extensions
 *.so
@@ -103,4 +104,5 @@ docs/make.bat
 docs/make.bat
 
 # vscode
-.vscode/.DS_Store
+.vscode/
+

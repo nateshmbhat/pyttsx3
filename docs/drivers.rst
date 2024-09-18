@@ -23,7 +23,7 @@ All drivers must implement the following factory function and driver interface.
 
 .. class:: DriverDelegate
    
-   .. note:: The :class:`DriverDelegate` class is not actually declared in :mod:`pyttsx3.drivers` and cannot server as a base class. It is only here for the purpose of documenting the interface all drivers must implement.
+   .. note:: The :class:`DriverDelegate` class is not actually declared in :mod:`pyttsx3.drivers` and cannot serve as a base class. It is only here for the purpose of documenting the interface all drivers must implement.
 
    .. method:: __init__(proxy : pyttsx3.drivers.DriverProxy, *args, **kwargs) -> None
 

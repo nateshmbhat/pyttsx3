@@ -1,20 +1,24 @@
+# noinspection PyUnresolvedReferences
 import comtypes.client  # Importing comtypes.client will make the gen subpackage
+
 try:
     from comtypes.gen import SpeechLib  # comtypes
 except ImportError:
     # Generate the SpeechLib lib and any associated files
     engine = comtypes.client.CreateObject("SAPI.SpVoice")
     stream = comtypes.client.CreateObject("SAPI.SpFileStream")
+    # noinspection PyUnresolvedReferences
     from comtypes.gen import SpeechLib
 
-import pythoncom
-import time
+# noinspection PyUnresolvedReferences
 import math
 import os
+import time
 import weakref
 from ctypes import c_int16
+import pythoncom
 from ..voice import Voice
-from . import toUtf8, fromUtf8
+from . import fromUtf8, toUtf8
 
 # common voices
 MSSAM = 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Speech\\Voices\\Tokens\\MSSam'
@@ -27,10 +31,12 @@ E_REG = {MSSAM: (137.89, 1.11),
          MSMIKE: (154.37, 1.11)}
 
 
+# noinspection PyPep8Naming
 def buildDriver(proxy):
     return SAPI5Driver(proxy)
 
 
+# noinspection PyPep8Naming,PyShadowingNames
 class SAPI5Driver(object):
     def __init__(self, proxy):
         self._tts = comtypes.client.CreateObject('SAPI.SPVoice')
@@ -83,8 +89,10 @@ class SAPI5Driver(object):
         data = stream.GetData()        
         olist.append([c_int16((data[i])|data[i+1]<<8).value for i in range(0,len(data),2)])
         stream.close()
-        
-    def _toVoice(self, attr):
+       
+
+    @staticmethod
+    def _toVoice(attr):
         return Voice(attr.Id, attr.GetDescription())
 
     def _tokenFromId(self, id_):
@@ -103,6 +111,8 @@ class SAPI5Driver(object):
             return self._rateWpm
         elif name == 'volume':
             return self._tts.Volume / 100.0
+        elif name == 'pitch':
+            print("Pitch adjustment not supported when using SAPI5")
         else:
             raise KeyError('unknown property %s' % name)
 
@@ -125,6 +135,8 @@ class SAPI5Driver(object):
                 self._tts.Volume = int(round(value * 100, 2))
             except TypeError as e:
                 raise ValueError(str(e))
+        elif name == 'pitch':
+            print("Pitch adjustment not supported when using SAPI5")
         else:
             raise KeyError('unknown property %s' % name)
 
@@ -148,6 +160,7 @@ class SAPI5Driver(object):
             yield
 
 
+# noinspection PyPep8Naming,PyProtectedMember,PyUnusedLocal,PyShadowingNames
 class SAPI5DriverEventSink(object):
     def __init__(self):
         self._driver = None

@@ -165,7 +165,7 @@ class DriverProxy(object):
         '''
         Called by the engine to push a say command onto the queue.
 
-        @param text: Text to sepak
+        @param text: Text to speak
         @type text: unicode
         @param name: Name to associate with this utterance. Included in
             notifications about this utterance.

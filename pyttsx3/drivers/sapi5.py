@@ -1,19 +1,25 @@
+# noinspection PyUnresolvedReferences
 import comtypes.client  # Importing comtypes.client will make the gen subpackage
+
 try:
     from comtypes.gen import SpeechLib  # comtypes
 except ImportError:
     # Generate the SpeechLib lib and any associated files
     engine = comtypes.client.CreateObject("SAPI.SpVoice")
     stream = comtypes.client.CreateObject("SAPI.SpFileStream")
+    # noinspection PyUnresolvedReferences
     from comtypes.gen import SpeechLib
 
-import pythoncom
-import time
+# noinspection PyUnresolvedReferences
 import math
 import os
+import time
 import weakref
+
+import pythoncom
+
 from ..voice import Voice
-from . import toUtf8, fromUtf8
+from . import fromUtf8, toUtf8
 
 # common voices
 MSSAM = 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Speech\\Voices\\Tokens\\MSSam'
@@ -26,10 +32,12 @@ E_REG = {MSSAM: (137.89, 1.11),
          MSMIKE: (154.37, 1.11)}
 
 
+# noinspection PyPep8Naming
 def buildDriver(proxy):
     return SAPI5Driver(proxy)
 
 
+# noinspection PyPep8Naming,PyShadowingNames
 class SAPI5Driver(object):
     def __init__(self, proxy):
         self._tts = comtypes.client.CreateObject('SAPI.SPVoice')
@@ -73,20 +81,16 @@ class SAPI5Driver(object):
         stream.close()
         os.chdir(cwd)
 
-    def _toVoice(self, attr):
+    @staticmethod
+    def _toVoice(attr):
         return Voice(attr.Id, attr.GetDescription())
 
     def _tokenFromId(self, id_):
         tokens = self._tts.GetVoices()
-        id2_ = id_.replace("Speech_OneCore", "Speech") # https://stackoverflow.com/questions/65660897/pyttsx3-unknown-voice-id
         for token in tokens:
-            if token.Id == id_ or token.Id == id2_:
+            if token.Id == id_:
                 return token
-
-        if len(tokens) > 0:
-            return tokens[0] # return any voice if not found
-        else:
-            raise ValueError('unknown voice id %s and no alternative voices found', id_)
+        raise ValueError('unknown voice id %s', id_)
 
     def getProperty(self, name):
         if name == 'voices':
@@ -146,6 +150,7 @@ class SAPI5Driver(object):
             yield
 
 
+# noinspection PyPep8Naming,PyProtectedMember,PyUnusedLocal,PyShadowingNames
 class SAPI5DriverEventSink(object):
     def __init__(self):
         self._driver = None

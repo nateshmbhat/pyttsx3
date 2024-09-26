@@ -37,6 +37,7 @@ class NSSpeechDriver(NSObject):
         self._proxy = None
         self._tts = None
         self._completed = False
+        self._current_text = ''
 
     @objc.python_method
     def initWithProxy(self, proxy):
@@ -91,6 +92,7 @@ class NSSpeechDriver(NSObject):
         self._proxy.setBusy(True)
         self._completed = True
         self._proxy.notify('started-utterance')
+        self._current_text = text
         self._tts.startSpeakingString_(text)
 
     def stop(self):
@@ -154,5 +156,10 @@ class NSSpeechDriver(NSObject):
         self._proxy.setBusy(False)
 
     def speechSynthesizer_willSpeakWord_ofString_(self, tts, rng, text):
-        self._proxy.notify('started-word', location=rng.location,
+        if self._current_text:
+            current_word = self._current_text[rng.location:rng.location + rng.length]
+        else:
+            current_word = "Unknown"
+
+        self._proxy.notify('started-word', name=current_word, location=rng.location,
                            length=rng.length)

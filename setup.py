@@ -18,7 +18,7 @@ with open('README.rst', 'r') as f:
 setup(
     name='pyttsx3',
     packages=['pyttsx3', 'pyttsx3.drivers'],
-    version='2.97',
+    version='2.98',
     description='Text to Speech (TTS) library for Python 3. Works without internet connection or delay. Supports multiple TTS engines, including Sapi5, nsss, and espeak.',
     long_description=long_description,
     summary='Offline Text to Speech library with multi-engine support',

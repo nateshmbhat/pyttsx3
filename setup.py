@@ -3,12 +3,14 @@ from setuptools import setup
 
 
 # Ubuntu: sudo apt install espeak ffmpeg
+
 install_requires = [
     'comtypes; platform_system == "Windows"',
     'pypiwin32; platform_system == "Windows"',
     'pywin32; platform_system == "Windows"',
     'pyobjc>=2.4; platform_system == "Darwin"'
 ]
+
 
 
 with open('README.rst', 'r') as f:

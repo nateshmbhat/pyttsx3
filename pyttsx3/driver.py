@@ -57,6 +57,7 @@ class DriverProxy(object):
         self._name = None
         self._iterator = None
         self._debug = debug
+        self._current_text = ''
 
     def __del__(self):
         try:
@@ -102,7 +103,8 @@ class DriverProxy(object):
         @param kwargs: Arbitrary keyword arguments
         @type kwargs: dict
         '''
-        kwargs['name'] = self._name
+        if 'name' not in kwargs or kwargs['name'] is None:  # Avoid overwriting
+            kwargs['name'] = self._name
         self._engine._notify(topic, **kwargs)
 
     def setBusy(self, busy):
@@ -132,6 +134,7 @@ class DriverProxy(object):
         @param name: Name to associate with the utterance
         @type name: str
         '''
+        self._current_text = text
         self._push(self._driver.say, (text,), name)
 
     def stop(self):

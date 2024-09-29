@@ -3,6 +3,7 @@ import objc
 from AppKit import NSSpeechSynthesizer
 from Foundation import *
 from PyObjCTools import AppHelper
+
 # noinspection PyProtectedMember
 from PyObjCTools.AppHelper import PyObjCAppHelperRunLoopStopper
 
@@ -37,7 +38,7 @@ class NSSpeechDriver(NSObject):
         self._proxy = None
         self._tts = None
         self._completed = False
-        self._current_text = ''
+        self._current_text = ""
 
     @objc.python_method
     def initWithProxy(self, proxy):
@@ -64,14 +65,16 @@ class NSSpeechDriver(NSObject):
     def startLoop(self):
         # https://github.com/ronaldoussoren/pyobjc/blob/mater/pyobjc-framework-Cocoa/Lib/PyObjCTools/AppHelper.py#L243C25-L243C25  # noqa
         NSTimer.scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_(
-            0.0, self, 'onPumpFirst:', None, False
+            0.0, self, "onPumpFirst:", None, False
         )
         runLoop = NSRunLoop.currentRunLoop()
         stopper = RunLoopStopper.alloc().init()
         PyObjCAppHelperRunLoopStopper.addRunLoopStopper_toRunLoop_(stopper, runLoop)
         while stopper.shouldRun():
             nextfire = runLoop.limitDateForMode_(NSDefaultRunLoopMode)
-            soon = NSDate.dateWithTimeIntervalSinceNow_(0)  # maxTimeout in runConsoleEventLoop
+            soon = NSDate.dateWithTimeIntervalSinceNow_(
+                0
+            )  # maxTimeout in runConsoleEventLoop
             if nextfire is not None:
                 nextfire = soon.earlierDate_(nextfire)
             if not runLoop.runMode_beforeDate_(NSDefaultRunLoopMode, nextfire):
@@ -91,7 +94,7 @@ class NSSpeechDriver(NSObject):
     def say(self, text):
         self._proxy.setBusy(True)
         self._completed = True
-        self._proxy.notify('started-utterance')
+        self._proxy.notify("started-utterance")
         self._current_text = text
         self._tts.startSpeakingString_(text)
 
@@ -102,48 +105,55 @@ class NSSpeechDriver(NSObject):
 
     @objc.python_method
     def _toVoice(self, attr):
-        return Voice(attr.get('VoiceIdentifier'), attr.get('VoiceName'),
-                     [attr.get('VoiceLocaleIdentifier', attr.get('VoiceLanguage'))], attr.get('VoiceGender'),
-                     attr.get('VoiceAge'))
+        return Voice(
+            attr.get("VoiceIdentifier"),
+            attr.get("VoiceName"),
+            [attr.get("VoiceLocaleIdentifier", attr.get("VoiceLanguage"))],
+            attr.get("VoiceGender"),
+            attr.get("VoiceAge"),
+        )
 
     @objc.python_method
     def getProperty(self, name):
-        if name == 'voices':
-            return [self._toVoice(NSSpeechSynthesizer.attributesForVoice_(v))
-                    for v in list(NSSpeechSynthesizer.availableVoices())]
-        elif name == 'voice':
+        if name == "voices":
+            return [
+                self._toVoice(NSSpeechSynthesizer.attributesForVoice_(v))
+                for v in list(NSSpeechSynthesizer.availableVoices())
+            ]
+        elif name == "voice":
             return self._tts.voice()
-        elif name == 'rate':
+        elif name == "rate":
             return self._tts.rate()
-        elif name == 'volume':
+        elif name == "volume":
             return self._tts.volume()
         elif name == "pitch":
             print("Pitch adjustment not supported when using NSSS")
         else:
-            raise KeyError('unknown property %s' % name)
+            raise KeyError("unknown property %s" % name)
 
     @objc.python_method
     def setProperty(self, name, value):
-        if name == 'voice':
+        if name == "voice":
             # vol/rate gets reset, so store and restore it
             vol = self._tts.volume()
             rate = self._tts.rate()
             self._tts.setVoice_(value)
             self._tts.setRate_(rate)
             self._tts.setVolume_(vol)
-        elif name == 'rate':
+        elif name == "rate":
             self._tts.setRate_(value)
-        elif name == 'volume':
+        elif name == "volume":
             self._tts.setVolume_(value)
-        elif name == 'pitch':
+        elif name == "pitch":
             print("Pitch adjustment not supported when using NSSS")
         else:
-            raise KeyError('unknown property %s' % name)
+            raise KeyError("unknown property %s" % name)
 
     @objc.python_method
     def save_to_file(self, text, filename):
         self._proxy.setBusy(True)
         self._completed = True
+        self._current_text = text
         url = Foundation.NSURL.fileURLWithPath_(filename)
         self._tts.startSpeakingString_toURL_(text, url)
 
@@ -152,14 +162,15 @@ class NSSpeechDriver(NSObject):
             success = False
         else:
             success = True
-        self._proxy.notify('finished-utterance', completed=success)
+        self._proxy.notify("finished-utterance", completed=success)
         self._proxy.setBusy(False)
 
     def speechSynthesizer_willSpeakWord_ofString_(self, tts, rng, text):
         if self._current_text:
-            current_word = self._current_text[rng.location:rng.location + rng.length]
+            current_word = self._current_text[rng.location : rng.location + rng.length]
         else:
             current_word = "Unknown"
 
-        self._proxy.notify('started-word', name=current_word, location=rng.location,
-                           length=rng.length)
+        self._proxy.notify(
+            "started-word", name=current_word, location=rng.location, length=rng.length
+        )

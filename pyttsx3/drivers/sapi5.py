@@ -153,6 +153,31 @@ class SAPI5Driver(object):
         while 1:
             pythoncom.PumpWaitingMessages()
             yield
+    
+    def to_bytestream(self, text, byte_stream):
+        """
+        Capture the spoken text as a byte stream in SAPI5.
+    
+        :param text: The text to speak
+        :param byte_stream: The BytesIO object to store the byte stream
+        """
+        # Set up the memory stream
+        stream = comtypes.client.CreateObject('SAPI.SpMemoryStream')
+        stream.Format.Type = SpeechLib.SAFT16kHz16BitMono  # Set appropriate format
+        temp_stream = self._tts.AudioOutputStream
+        
+        # Set the TTS output to the memory stream
+        self._tts.AudioOutputStream = stream
+        self._current_text = text  # Set the current text for word events
+        self._tts.Speak(fromUtf8(toUtf8(text)))
+        
+        # Capture the audio data from the memory stream
+        data = stream.GetData()
+        byte_stream.write(bytes(data))  # Write the byte data to the provided byte_stream
+        
+        # Restore the original output stream
+        self._tts.AudioOutputStream = temp_stream
+        stream.Close()
 
 
 # noinspection PyPep8Naming,PyProtectedMember,PyUnusedLocal,PyShadowingNames
@@ -185,3 +210,4 @@ class SAPI5DriverEventSink(object):
 
         self._driver._proxy.notify(
             'started-word', name=current_word, location=char, length=length)
+

@@ -36,7 +36,7 @@ class EspeakDriver(object):
         self._looping = False
         self._stopping = False
         self._speaking = False
-        self._text_to_say = None
+        self._current_text = None
         self._data_buffer = b''
         self._numerise_buffer = []
 
@@ -138,7 +138,6 @@ class EspeakDriver(object):
             self._proxy.notify('error', exception=e)
             raise
 
-
     def _onSynth(self, wav, numsamples, events):
         i = 0
         while True:
@@ -146,49 +145,55 @@ class EspeakDriver(object):
             if event.type == _espeak.EVENT_LIST_TERMINATED:
                 break
             if event.type == _espeak.EVENT_WORD:
-                
-                if self._text_to_say:
-                    start_index = event.text_position-1
+                if self._current_text:
+                    start_index = event.text_position - 1
                     end_index = start_index + event.length
-                    word = self._text_to_say[start_index:end_index]
+                    word = self._current_text[start_index:end_index]
                 else:
                     word = "Unknown"
-
+    
                 self._proxy.notify('started-word', name=word, location=event.text_position, length=event.length)
-
+    
             elif event.type == _espeak.EVENT_END:
-                stream = NamedTemporaryFile(delete=False, suffix='.wav')
+                if hasattr(self, '_byte_stream'):
+                    # If using the byte stream method, stop speaking
+                    self._speaking = False
+                else:
+                    # File-based playback and processing
+                    stream = NamedTemporaryFile(delete=False, suffix='.wav')
     
-                try:
-                    with wave.open(stream, 'wb') as f:
-                        f.setnchannels(1)
-                        f.setsampwidth(2)
-                        f.setframerate(22050.0)
-                        f.writeframes(self._data_buffer)
-                    self._data_buffer = b''
-    
-                    if event.user_data:
-                        os.system(f'ffmpeg -y -i {stream.name} {self.decode_numeric(event.user_data)} -loglevel quiet')
-                    else:
-                        if platform.system() == 'Darwin':  # macOS
-                            try:
-                                result = subprocess.run(['afplay', stream.name], check=True, capture_output=True, text=True)
-                            except subprocess.CalledProcessError as e:
-                                raise RuntimeError(f"[EspeakDriver._onSynth] Mac afplay failed with error: {e}")
-                        elif platform.system() == 'Linux':
-                            os.system(f'aplay {stream.name} -q')
-                        elif platform.system() == 'Windows':
-                            winsound.PlaySound(stream.name, winsound.SND_FILENAME)  # Blocking playback
-    
-                except Exception as e:
-                    raise RuntimeError(f"Error during playback: {e}")
-    
-                finally:
                     try:
-                        stream.close()  # Ensure the file is closed
-                        os.remove(stream.name)
+                        with wave.open(stream, 'wb') as f:
+                            f.setnchannels(1)
+                            f.setsampwidth(2)
+                            f.setframerate(22050.0)
+                            f.writeframes(self._data_buffer)
+                        self._data_buffer = b''
+    
+                        if event.user_data:
+                            # Use ffmpeg to convert the file if user_data exists
+                            os.system(f'ffmpeg -y -i {stream.name} {self.decode_numeric(event.user_data)} -loglevel quiet')
+                        else:
+                            # Platform-specific playback
+                            if platform.system() == 'Darwin':  # macOS
+                                try:
+                                    subprocess.run(['afplay', stream.name], check=True, capture_output=True, text=True)
+                                except subprocess.CalledProcessError as e:
+                                    raise RuntimeError(f"[EspeakDriver._onSynth] Mac afplay failed with error: {e}")
+                            elif platform.system() == 'Linux':
+                                os.system(f'aplay {stream.name} -q')
+                            elif platform.system() == 'Windows':
+                                winsound.PlaySound(stream.name, winsound.SND_FILENAME)  # Blocking playback
+    
                     except Exception as e:
-                        raise RuntimeError(f"Error deleting temporary WAV file: {e}")
+                        raise RuntimeError(f"Error during playback: {e}")
+    
+                    finally:
+                        try:
+                            stream.close()  # Ensure the file is closed
+                            os.remove(stream.name)
+                        except Exception as e:
+                            raise RuntimeError(f"Error deleting temporary WAV file: {e}")
     
                 self._proxy.notify('finished-utterance', completed=True)
                 self._proxy.setBusy(False)
@@ -198,7 +203,9 @@ class EspeakDriver(object):
             i += 1
     
         if numsamples > 0:
+            # Append the audio data (PCM samples) to the buffer for both methods
             self._data_buffer += ctypes.string_at(wav, numsamples * ctypes.sizeof(ctypes.c_short))
+    
         return 0
 
     
@@ -214,8 +221,8 @@ class EspeakDriver(object):
             if first:
                 self._proxy.setBusy(False)
                 first = False
-                if self._text_to_say:
-                    self._start_synthesis(self._text_to_say)
+                if self._current_text:
+                    self._start_synthesis(self._current_text)
             self.iterate()
             time.sleep(0.01)
     
@@ -230,4 +237,35 @@ class EspeakDriver(object):
             self.endLoop()
 
     def say(self, text):
-        self._text_to_say = text
+        self._current_text = text
+    
+    def to_bytestream(self, text, byte_stream):
+        """
+        Capture the spoken text as a byte stream using espeak.
+    
+        :param text: The text to speak
+        :param byte_stream: The BytesIO object to store the byte stream
+        """
+        self._byte_stream = byte_stream
+        self._data_buffer = b''  # Clear the data buffer before starting
+        self._proxy.setBusy(True)
+        self._proxy.notify('started-utterance')
+        self._speaking = True
+    
+        # Store the text to be spoken
+        self._current_text = text
+    
+        # Set up the synthesis process and capture audio data in real-time
+        try:
+            _espeak.Synth(toUtf8(text), flags=_espeak.ENDPAUSE | _espeak.CHARS_UTF8)
+            self.startLoop()
+        except Exception as e:
+            self._proxy.setBusy(False)
+            self._proxy.notify('error', exception=e)
+            raise
+        finally:        
+            # Write the captured data buffer to the provided BytesIO object
+            byte_stream.write(self._data_buffer)
+            del self._byte_stream
+            self._proxy.notify('finished-utterance', completed=True)
+            self._proxy.setBusy(False)

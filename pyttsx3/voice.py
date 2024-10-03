@@ -4,10 +4,9 @@ class Voice(object):
     def __init__(self, id, name=None, languages:List[str]=None, gender=None, age=None):
         self.id = id
         self.name = name
-        self.languages = languages if languages else None
+        self.languages = languages if languages else []
         self.gender = gender
         self.age = age
-        self.languages.append("hello")
 
     def __str__(self):
         return """<Voice id=%(id)s

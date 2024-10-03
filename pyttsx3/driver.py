@@ -164,7 +164,7 @@ class DriverProxy(object):
         '''
         self._push(self._driver.save_to_file, (text, filename), name)
 
-    def getProperty(self, name):
+    def getProperty(self, name:str):
         '''
         Called by the engine to get a driver property value.
 

@@ -224,3 +224,13 @@ class DriverProxy(object):
             next(self._iterator)
         except StopIteration:
             pass
+            
+    def bytestream(self, text, byte_stream, name=None):
+        """
+        Capture the spoken text as a byte stream instead of playing it aloud.
+        
+        :param text: The text to speak
+        :param byte_stream: The BytesIO object to store the byte stream
+        :param name: An optional name for the utterance
+        """
+        self._push(self._driver.to_bytestream, (text, byte_stream), name)

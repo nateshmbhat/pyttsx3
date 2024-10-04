@@ -1,5 +1,7 @@
 # noinspection PyUnresolvedReferences
 import objc
+import AVFoundation
+from io import BytesIO
 from AppKit import NSSpeechSynthesizer
 from Foundation import *
 from PyObjCTools import AppHelper
@@ -38,6 +40,10 @@ class NSSpeechDriver(NSObject):
         self._tts = None
         self._completed = False
         self._current_text = ''
+        self._audio_engine = AVAudioEngine.alloc().init()
+        self._audio_format = AVAudioFormat.alloc().initStandardFormatWithSampleRate_channels_(44100, 1)
+        self._buffer = BytesIO()
+
 
     @objc.python_method
     def initWithProxy(self, proxy):
@@ -163,3 +169,44 @@ class NSSpeechDriver(NSObject):
 
         self._proxy.notify('started-word', name=current_word, location=rng.location,
                            length=rng.length)
+
+    def to_bytestream(self, text, byte_stream):
+        """
+        Capture the spoken text as a byte stream using NSSpeechSynthesizer and AVAudioEngine.
+    
+        :param text: The text to speak
+        :param byte_stream: The BytesIO object to store the byte stream
+        """
+        self._tts.setDelegate_(self)
+    
+        # Set up AVAudioEngine
+        main_mixer = self._audio_engine.mainMixerNode()
+        bus = 0
+    
+        # Define the buffer format
+        format = self._audio_engine.outputNode().inputFormatForBus_(bus)
+    
+        def capture_handler(buffer, when):
+            """Capture audio data as bytes in real-time."""
+            # Get the audio buffer and extract its data
+            audio_data = buffer.audioBufferList().mBuffers[0].mData
+            audio_data_bytes = objc.objc_object_as_bytes(audio_data, buffer.frameLength)
+            byte_stream.write(audio_data_bytes)
+    
+        # Tap the main mixer node to capture audio
+        main_mixer.installTapOnBus_bufferSize_format_block_(bus, 1024, format, capture_handler)
+    
+        # Start the audio engine
+        self._audio_engine.prepare()
+        self._audio_engine.startAndReturnError_(None)
+    
+        # Start speaking the text
+        self._tts.startSpeakingString_(text)
+    
+        # Wait for speech to finish
+        while self._tts.isSpeaking():
+            pass
+    
+        # Stop the audio engine
+        self._audio_engine.stop()
+        main_mixer.removeTapOnBus_(bus)

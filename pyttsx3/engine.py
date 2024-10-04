@@ -218,3 +218,13 @@ class Engine(object):
         elif self._driverLoop:
             raise RuntimeError('iterate not valid in driver run loop')
         self.proxy.iterate()
+    
+    def bytestream(self, text, byte_stream, name=None):
+        """
+        Capture the spoken text as a byte stream instead of playing it aloud.
+    
+        :param text: The text to speak
+        :param byte_stream: The BytesIO object to store the byte stream
+        :param name: An optional name for the utterance
+        """
+        self.proxy.bytestream(text, byte_stream, name)

@@ -2,7 +2,7 @@ clean:
 	rm -rf dist/
 	rm -rf build/
 build:
-	pip3 install wheel
+	pip3 install wheel --user
 	python3 setup.py bdist_wheel
 upload:
 	pip3 install twine

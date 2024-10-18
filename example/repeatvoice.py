@@ -8,7 +8,7 @@ def text_to_speech(text):
     eng= pyttsx3.init()
     #Engine created 
     eng.say(text)
-    #Runs for small duration of time ohterwise we may not be able to hear
+    #Runs for small duration of time otherwise we may not be able to hear
     eng.runAndWait()
 
     

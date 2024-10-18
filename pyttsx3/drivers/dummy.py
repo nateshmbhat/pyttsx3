@@ -75,7 +75,7 @@ class DummyDriver(object):
         '''
         Stops a previously started run loop.
 
-        @precondition: A previous call to L{startLoop} suceeded and there was
+        @precondition: A previous call to L{startLoop} succeeded and there was
             no intervening call to L{endLoop}.
         '''
         self._looping = False
@@ -134,7 +134,7 @@ class DummyDriver(object):
 
     def getProperty(self, name):
         '''
-        Gets a property value of the speech engine. The suppoted properties
+        Gets a property value of the speech engine. The supported properties
         and their values are:
 
         voices: List of L{voice.Voice} objects supported by the driver

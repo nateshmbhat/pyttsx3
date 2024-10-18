@@ -8,8 +8,8 @@ from tempfile import NamedTemporaryFile
 if platform.system() == 'Windows':
     import winsound
 
+from . import _espeak
 from ..voice import Voice
-from . import _espeak, fromUtf8, toUtf8
 
 
 # noinspection PyPep8Naming
@@ -66,7 +66,7 @@ class EspeakDriver(object):
         if name == 'voices':
             voices = []
             for v in _espeak.ListVoices(None):
-                kwargs = {'id': fromUtf8(v.name), 'name': fromUtf8(v.name)}
+                kwargs = {'id': v.name.decode('utf-8'), 'name': v.name.decode('utf-8')}
                 if v.languages:
                     try:
                         language_code_bytes = v.languages[1:]
@@ -81,7 +81,7 @@ class EspeakDriver(object):
             return voices
         elif name == 'voice':
             voice = _espeak.GetCurrentVoice()
-            return fromUtf8(voice.contents.name)
+            return voice.contents.name.decode('utf-8')
         elif name == 'rate':
             return _espeak.GetParameter(_espeak.RATE)
         elif name == 'volume':
@@ -97,7 +97,7 @@ class EspeakDriver(object):
             if value is None:
                 return
             try:
-                utf8Value = toUtf8(value)
+                utf8Value = str(value).encode('utf-8')
                 _espeak.SetVoiceByName(utf8Value)
             except ctypes.ArgumentError as e:
                 raise ValueError(str(e))
@@ -124,7 +124,7 @@ class EspeakDriver(object):
 
     def save_to_file(self, text, filename):
         code = self.numerise(filename)
-        _espeak.Synth(toUtf8(text), flags=_espeak.ENDPAUSE | _espeak.CHARS_UTF8, user_data=code)
+        _espeak.Synth(str(text).encode('utf-8'), flags=_espeak.ENDPAUSE | _espeak.CHARS_UTF8, user_data=code)
 
     def _start_synthesis(self, text):
         self._proxy.setBusy(True)
@@ -132,7 +132,7 @@ class EspeakDriver(object):
         self._speaking = True
         self._data_buffer = b''  # Ensure buffer is cleared before starting
         try:
-            _espeak.Synth(toUtf8(text), flags=_espeak.ENDPAUSE | _espeak.CHARS_UTF8)
+            _espeak.Synth(str(text).encode('utf-8'), flags=_espeak.ENDPAUSE | _espeak.CHARS_UTF8)
         except Exception as e:
             self._proxy.setBusy(False)
             self._proxy.notify('error', exception=e)

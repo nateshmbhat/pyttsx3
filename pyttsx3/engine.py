@@ -34,6 +34,14 @@ class Engine(object):
         self._driverLoop = True
         self._debug = debug
 
+    def __enter__(self):
+        """Support for the 'with' context manager statement."""
+        return self
+
+    def __exit__(self, *_args):
+        """Support for the 'with' context manager statement."""
+        self.stop()
+
     def _notify(self, topic, **kwargs):
         """
         Invokes callbacks for an event topic.

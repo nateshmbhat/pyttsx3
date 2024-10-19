@@ -35,7 +35,12 @@ class Engine(object):
         self._debug = debug
 
     def __enter__(self):
-        """Support for the 'with' context manager statement."""
+        """Support for the 'with' context manager statement.
+        
+        >>> from pyttsx3.engine import Engine
+        >>> with Engine(driverName="nsss", debug=True) as text_to_speech:
+        ...     text_to_speech.say("Hello World")
+        """
         self.init()
         return self
 

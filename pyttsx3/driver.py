@@ -37,17 +37,12 @@ class DriverProxy(object):
         @param debug: Debugging output enabled or not
         @type debug: bool
         '''
-        if driverName is None:
-            # pick default driver for common platforms
-            if sys.platform == 'darwin':
-                driverName = 'nsss'
-            elif sys.platform == 'win32':
-                driverName = 'sapi5'
-            else:
-                driverName = 'espeak'
+        driverName = driverName or {
+            'darwin': 'nsss',
+            'win32': 'sapi5',
+        }.get(sys.platform, 'espeak')
         # import driver module
-        name = 'pyttsx3.drivers.%s' % driverName
-        self._module = importlib.import_module(name)
+        self._module = importlib.import_module(f'pyttsx3.drivers.{driverName}')
         # build driver instance
         self._driver = self._module.buildDriver(weakref.proxy(self))
         # initialize refs

@@ -36,6 +36,7 @@ class Engine(object):
 
     def __enter__(self):
         """Support for the 'with' context manager statement."""
+        self.init()
         return self
 
     def __exit__(self, *_args):

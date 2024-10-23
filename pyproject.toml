@@ -1,0 +1,54 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+
+requires = [ "setuptools>=61.2" ]
+
+[project]
+name = "pyttsx3"
+version = "2.98"
+description = "Text to Speech (TTS) library for Python 3. Works without internet connection or delay. Supports multiple TTS engines, including Sapi5, nsss, and espeak."
+readme = "README.md"
+keywords = [
+  "gtts",
+  "ivona",
+  "offline text to speech",
+  "offline tts",
+  "pyttsx",
+  "pyttsx for python3",
+  "pyttsx3",
+  "speech",
+  "speech synthesis",
+  "text to speech",
+  "text to speech for python",
+  "tts",
+  "TTS for python3",
+]
+authors = [ { name = "Natesh M Bhat", email = "nateshmbhatofficial@gmail.com" } ]
+classifiers = [
+  "Intended Audience :: Developers",
+  "Intended Audience :: End Users/Desktop",
+  "Intended Audience :: Information Technology",
+  "Intended Audience :: System Administrators",
+  "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
+  "Operating System :: MacOS :: MacOS X",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+  "comtypes; platform_system=='Windows'",
+  "pyobjc>=2.4; platform_system=='Darwin'",
+  "pypiwin32; platform_system=='Windows'",
+  "pywin32; platform_system=='Windows'",
+]
+
+urls = { Homepage = "https://github.com/nateshmbhat/pyttsx3" }
+
+[tool.setuptools]
+packages = [ "pyttsx3", "pyttsx3.drivers" ]
+include-package-data = false

@@ -53,7 +53,7 @@ The Engine interface
 
       .. describe:: started-word
 
-         Fired when the engine begins speaking a word. The associated callback must have the folowing signature.
+         Fired when the engine begins speaking a word. The associated callback must have the following signature.
 
          .. function:: onStartWord(name : string, location : integer, length : integer)
 
@@ -61,7 +61,7 @@ The Engine interface
 
       .. describe:: finished-utterance
 
-         Fired when the engine finishes speaking an utterance. The associated callback must have the folowing signature.
+         Fired when the engine finishes speaking an utterance. The associated callback must have the following signature.
 
          .. function:: onFinishUtterance(name : string, completed : bool) -> None
 
@@ -70,7 +70,7 @@ The Engine interface
 
       .. describe:: error
 
-         Fired when the engine encounters an error. The associated callback must have the folowing signature.
+         Fired when the engine encounters an error. The associated callback must have the following signature.
 
          .. function:: onError(name : string, exception : Exception) -> None
 

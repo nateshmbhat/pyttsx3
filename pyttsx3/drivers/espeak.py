@@ -170,6 +170,12 @@ class EspeakDriver(object):
                 )
 
             elif event.type == _espeak.EVENT_END:
+                if numsamples > 0:
+                    self._data_buffer += ctypes.string_at(
+                        wav, numsamples * ctypes.sizeof(ctypes.c_short)
+                    )
+                self._speaking = False
+
                 if self._save_file:
                     try:
                         with wave.open(self._save_file, "wb") as f:

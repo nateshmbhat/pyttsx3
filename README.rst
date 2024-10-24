@@ -19,11 +19,11 @@ Installation
 
 + If you are on a linux system and if the voice output is not working , then  : 
 
-Install espeak , ffmpeg and libespeak1 as shown below: 
+Install espeak and libespeak1 as shown below: 
 
 ::
 
-	sudo apt update && sudo apt install espeak ffmpeg libespeak1
+	sudo apt update && sudo apt install espeak libespeak1
 
 
 Usage :
@@ -65,7 +65,7 @@ Usage :
 	engine.stop()
 
 	"""Saving Voice to a file"""
-	# On linux make sure that 'espeak' and 'ffmpeg' are installed
+	# On linux make sure that 'espeak' are installed
 	engine.save_to_file('Hello World', 'test.mp3')
 	engine.runAndWait()
 

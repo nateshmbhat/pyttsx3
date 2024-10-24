@@ -17,7 +17,7 @@ def toUtf8(value):
 def fromUtf8(value):
     '''
     Takes in a byte array encoded as utf-8 and returns a text (unicode) type.  In
-    2.X we expect a str type and return a unicde type.  In 3.X we expect a bytes
+    2.X we expect a str type and return a unicode type.  In 3.X we expect a bytes
     type and return a str type.
     '''
     return value.decode('utf-8')

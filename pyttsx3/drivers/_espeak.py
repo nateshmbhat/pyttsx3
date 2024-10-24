@@ -133,7 +133,7 @@ int SynthCallback(short *wav, int numsamples, espeak_EVENT *events);
       sometimes be zero (which does NOT indicate end of synthesis).
 
    events: an array of espeak_EVENT items which indicate word and sentence events, and
-      also the occurance if <mark> and <audio> elements within the text.
+      also the occurrence if <mark> and <audio> elements within the text.
 
 
    Callback returns: 0=continue synthesis,  1=abort synthesis."""

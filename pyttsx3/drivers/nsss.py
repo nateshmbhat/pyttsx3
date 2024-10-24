@@ -63,7 +63,7 @@ class NSSpeechDriver(NSObject):
         self._proxy.setBusy(False)
 
     def startLoop(self):
-        # https://github.com/ronaldoussoren/pyobjc/blob/mater/pyobjc-framework-Cocoa/Lib/PyObjCTools/AppHelper.py#L243C25-L243C25  # noqa
+        # https://github.com/ronaldoussoren/pyobjc/blob/master/pyobjc-framework-Cocoa/Lib/PyObjCTools/AppHelper.py#L243C25-L243C25  # noqa
         NSTimer.scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_(
             0.0, self, "onPumpFirst:", None, False
         )

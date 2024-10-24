@@ -40,6 +40,7 @@ class EspeakDriver(object):
         self._text_to_say = None
         self._data_buffer = b""
         self._numerise_buffer = []
+        self._save_file = None
 
         _espeak.SetSynthCallback(self._onSynth)
         self.setProperty("voice", EspeakDriver._defaultVoice)
@@ -123,6 +124,11 @@ class EspeakDriver(object):
             raise KeyError("unknown property %s" % name)
 
     def save_to_file(self, text, filename):
+        """
+        Save the synthesized speech to the specified filename.
+        """
+        self._save_file = filename
+        self._text_to_say = text
         code = self.numerise(filename)
         _espeak.Synth(
             toUtf8(text), flags=_espeak.ENDPAUSE | _espeak.CHARS_UTF8, user_data=code
@@ -141,20 +147,21 @@ class EspeakDriver(object):
             raise
 
     def _onSynth(self, wav, numsamples, events):
+        if not self._speaking:
+            return 0
+
         i = 0
         while True:
             event = events[i]
             if event.type == _espeak.EVENT_LIST_TERMINATED:
                 break
             if event.type == _espeak.EVENT_WORD:
-
                 if self._text_to_say:
                     start_index = event.text_position - 1
                     end_index = start_index + event.length
                     word = self._text_to_say[start_index:end_index]
                 else:
                     word = "Unknown"
-
                 self._proxy.notify(
                     "started-word",
                     name=word,
@@ -163,49 +170,55 @@ class EspeakDriver(object):
                 )
 
             elif event.type == _espeak.EVENT_END:
-                stream = NamedTemporaryFile(delete=False, suffix=".wav")
-
-                try:
-                    with wave.open(stream, "wb") as f:
-                        f.setnchannels(1)
-                        f.setsampwidth(2)
-                        f.setframerate(22050.0)
-                        f.writeframes(self._data_buffer)
-                    self._data_buffer = b""
-
-                    if platform.system() == "Darwin":  # macOS
-                        try:
-                            result = subprocess.run(
-                                ["afplay", stream.name],
-                                check=True,
-                                capture_output=True,
-                                text=True,
-                            )
-                        except subprocess.CalledProcessError as e:
-                            raise RuntimeError(
-                                f"[EspeakDriver._onSynth] Mac afplay failed with error: {e}"
-                            )
-                    elif platform.system() == "Linux":
-                        os.system(f"aplay {stream.name} -q")
-                    elif platform.system() == "Windows":
-                        winsound.PlaySound(
-                            stream.name, winsound.SND_FILENAME
-                        )  # Blocking playback
-
-                except Exception as e:
-                    raise RuntimeError(f"Error during playback: {e}")
-
-                finally:
+                if self._save_file:
                     try:
-                        stream.close()  # Ensure the file is closed
-                        os.remove(stream.name)
+                        with wave.open(self._save_file, "wb") as f:
+                            f.setnchannels(1)  # Mono
+                            f.setsampwidth(2)  # 16-bit samples
+                            f.setframerate(22050)  # 22,050 Hz sample rate
+                            f.writeframes(self._data_buffer)
+                        print(f"Audio saved to {self._save_file}")
                     except Exception as e:
-                        raise RuntimeError(f"Error deleting temporary WAV file: {e}")
+                        raise RuntimeError(f"Error saving WAV file: {e}")
+                else:
+                    try:
+                        with NamedTemporaryFile(
+                            suffix=".wav", delete=False
+                        ) as temp_wav:
+                            with wave.open(temp_wav, "wb") as f:
+                                f.setnchannels(1)  # Mono
+                                f.setsampwidth(2)  # 16-bit samples
+                                f.setframerate(22050)  # 22,050 Hz sample rate
+                                f.writeframes(self._data_buffer)
 
+                            temp_wav_name = temp_wav.name
+                            temp_wav.flush()
+
+                        # Playback functionality (for say method)
+                        if platform.system() == "Darwin":  # macOS
+                            result = subprocess.run(
+                                ["afplay", temp_wav_name], check=True
+                            )
+                            print(f"afplay result: {result}")
+
+                        elif platform.system() == "Linux":
+                            os.system(f"aplay {temp_wav_name} -q")
+
+                        elif platform.system() == "Windows":
+                            winsound.PlaySound(temp_wav_name, winsound.SND_FILENAME)
+
+                        # Remove the file after playback
+                        os.remove(temp_wav_name)
+
+                    except Exception as e:
+                        print(f"Playback error: {e}")
+
+                self._data_buffer = b""
+                self._speaking = False  # Prevent double processing
                 self._proxy.notify("finished-utterance", completed=True)
                 self._proxy.setBusy(False)
-                self.endLoop()  # End the loop here
-                break  # Exit the loop after handling the termination event
+                self.endLoop()
+                break
 
             i += 1
 
@@ -213,6 +226,7 @@ class EspeakDriver(object):
             self._data_buffer += ctypes.string_at(
                 wav, numsamples * ctypes.sizeof(ctypes.c_short)
             )
+
         return 0
 
     def endLoop(self):

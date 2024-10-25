@@ -1,0 +1,88 @@
+# This workflows will upload a Python Package using Twine when a release is created.
+# https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  release:
+    types: [created]  # Only publish on tagged releases
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.9', '3.11', '3.13']
+      max-parallel: 9
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10  # Save resources while our pytests are hanging
+    steps:
+      - if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -q -q
+          sudo apt-get install --yes espeak espeak-ng ffmpeg libespeak1
+          espeak --version
+          espeak-ng --version
+          ffmpeg --version || true
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install pytest pytest-timeout
+          pip install --editable .
+
+      - name: Run tests
+        run: pytest
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [test]  # This ensures tests pass before build
+    permissions:
+      id-token: write 
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install build twine
+
+      - name: Clean previous builds
+        run: |
+          rm -rf dist
+
+      - name: Build package
+        run: |
+          python -m build
+          python -m twine check --strict dist/*
+
+  deploy:
+    needs: [build]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' && github.event.action == 'created'  # Only on release creation
+    
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_PASSWORD }}

@@ -28,7 +28,7 @@ class EspeakDriver(object):
             # espeak cannot initialize more than once per process and has
             # issues when terminating from python (assert error on close)
             # so just keep it alive and init once
-            rate = _espeak.Initialize(_espeak.AUDIO_OUTPUT_RETRIEVAL, 1000)
+            rate = _espeak.Initialize(_espeak.AUDIO_OUTPUT_SYNCH_PLAYBACK, 1000)
             if rate == -1:
                 raise RuntimeError("could not initialize espeak")
             EspeakDriver._defaultVoice = "default"
@@ -134,7 +134,7 @@ class EspeakDriver(object):
         self._text_to_say = text
         code = self.numerise(filename)
         _espeak.Synth(
-            toUtf8(text), flags=_espeak.ENDPAUSE | _espeak.CHARS_UTF8, user_data=code
+            toUtf8(text), flags=_espeak.ENDPAUSE | _espeak.CHARS_AUTO, user_data=code
         )
 
     def _start_synthesis(self, text):

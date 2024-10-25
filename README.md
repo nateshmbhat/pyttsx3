@@ -114,6 +114,6 @@ Feel free to wrap another text-to-speech engine for use with ``pyttsx3``.
 
 ### Project Links :
 
-* PyPI (https://pypi.python.org)
+* PyPI (https://pypi.org/project/pyttsx3/)
 * GitHub (https://github.com/nateshmbhat/pyttsx3)
 * Full Documentation (https://pyttsx3.readthedocs.org)

@@ -163,6 +163,23 @@ class DriverProxy(object):
         @type name: str
         '''
         self._push(self._driver.save_to_file, (text, filename), name)
+        
+    def to_memory(self, text, olist, name):
+        '''
+        Called by the engine to push a say command onto the queue.
+
+        @param text: Text to speak
+        @type text: unicode
+        @param name: Name to associate with this utterance. Included in
+            notifications about this utterance.
+        @param ostream: The opened output stream
+        
+            >>> import pyttsx3
+            >>> engine = pyttsx3.init()
+            >>> ret = []
+            >>> engine.to_memory("hello", ret)
+        '''
+        self._push(self._driver.to_memory, (text, olist), name)
 
     def getProperty(self, name):
         '''

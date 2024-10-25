@@ -14,6 +14,7 @@ engine.setProperty('volume',1.0)    # setting up volume level  between 0 and 1
 
 """VOICE"""
 voices = engine.getProperty('voices')       #getting details of current voice
+
 #engine.setProperty('voice', voices[0].id)  #changing index, changes voices. 0 for male
 engine.setProperty('voice', voices[1].id)   #changing index, changes voices. 1 for female
 
@@ -28,7 +29,19 @@ engine.runAndWait()
 engine.stop()
 
 
-"""Saving Voice to a file"""
-# On linux make sure that 'espeak' and 'ffmpeg' are installed
-engine.save_to_file('Hello World', 'test.mp3')
-engine.runAndWait()
+
+"""To memory """
+if sys.platform == 'win32':
+    # Windows-specific code
+    audio_array = []
+    engine.to_memory("Hello!", audio_array)
+    engine.to_memory("Hello again!", audio_array)
+    engine.runAndWait()
+    print(len(audio_array))
+elif sys.platform == 'linux':
+    # Linux-specific code
+    engine.save_to_file('Hello World', 'test.mp3')
+    engine.runAndWait()
+else:
+    print("Unsupported platform")
+

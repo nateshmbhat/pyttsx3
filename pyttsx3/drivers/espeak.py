@@ -28,7 +28,7 @@ class EspeakDriver(object):
             # espeak cannot initialize more than once per process and has
             # issues when terminating from python (assert error on close)
             # so just keep it alive and init once
-            rate = _espeak.Initialize(_espeak.AUDIO_OUTPUT_SYNCH_PLAYBACK, 1000)
+            rate = _espeak.Initialize(_espeak.AUDIO_OUTPUT_RETRIEVAL, 1000)
             if rate == -1:
                 raise RuntimeError("could not initialize espeak")
             EspeakDriver._defaultVoice = "default"
@@ -132,10 +132,6 @@ class EspeakDriver(object):
         """
         self._save_file = filename
         self._text_to_say = text
-        code = self.numerise(filename)
-        _espeak.Synth(
-            toUtf8(text), flags=_espeak.ENDPAUSE | _espeak.CHARS_AUTO, user_data=code
-        )
 
     def _start_synthesis(self, text):
         self._proxy.setBusy(True)
@@ -153,12 +149,13 @@ class EspeakDriver(object):
         if not self._speaking:
             return 0
 
+        # Process each event in the current callback
         i = 0
         while True:
             event = events[i]
             if event.type == _espeak.EVENT_LIST_TERMINATED:
                 break
-            if event.type == _espeak.EVENT_WORD:
+            elif event.type == _espeak.EVENT_WORD:
                 if self._text_to_say:
                     start_index = event.text_position - 1
                     end_index = start_index + event.length
@@ -172,13 +169,8 @@ class EspeakDriver(object):
                     length=event.length,
                 )
 
-            elif event.type == _espeak.EVENT_END:
-                if numsamples > 0:
-                    self._data_buffer += ctypes.string_at(
-                        wav, numsamples * ctypes.sizeof(ctypes.c_short)
-                    )
-                self._speaking = False
-
+            elif event.type == _espeak.EVENT_MSG_TERMINATED:
+                # Final event indicating synthesis completion
                 if self._save_file:
                     try:
                         with wave.open(self._save_file, "wb") as f:
@@ -205,25 +197,20 @@ class EspeakDriver(object):
 
                         # Playback functionality (for say method)
                         if platform.system() == "Darwin":  # macOS
-                            result = subprocess.run(
-                                ["afplay", temp_wav_name], check=True
-                            )
-                            print(f"afplay result: {result}")
-
+                            subprocess.run(["afplay", temp_wav_name], check=True)
                         elif platform.system() == "Linux":
                             os.system(f"aplay {temp_wav_name} -q")
-
                         elif platform.system() == "Windows":
                             winsound.PlaySound(temp_wav_name, winsound.SND_FILENAME)
 
                         # Remove the file after playback
                         os.remove(temp_wav_name)
-
                     except Exception as e:
                         print(f"Playback error: {e}")
 
+                # Clear the buffer and mark as finished
                 self._data_buffer = b""
-                self._speaking = False  # Prevent double processing
+                self._speaking = False
                 self._proxy.notify("finished-utterance", completed=True)
                 self._proxy.setBusy(False)
                 self.endLoop()
@@ -231,6 +218,7 @@ class EspeakDriver(object):
 
             i += 1
 
+        # Accumulate audio data if available
         if numsamples > 0:
             self._data_buffer += ctypes.string_at(
                 wav, numsamples * ctypes.sizeof(ctypes.c_short)

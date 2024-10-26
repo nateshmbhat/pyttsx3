@@ -80,6 +80,7 @@ Included TTS engines:
 *********************
 * sapi5
 * nsss
+* avsynth
 * espeak
 
 Feel free to wrap another text-to-speech engine for use with ``pyttsx3``.

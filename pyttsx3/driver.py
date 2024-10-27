@@ -73,10 +73,6 @@ class DriverProxy(object):
         @param name: Name associated with the command
         @type name: str
         """
-        """
-        print(
-            f"[DEBUG] Adding command to queue: {mtd.__name__}, args: {args}, name: {name}"
-        )
         self._queue.append((mtd, args, name))
         self._pump()
 
@@ -86,10 +82,6 @@ class DriverProxy(object):
         Attempts to process the next command in the queue if one exists and the
         driver is not currently busy.
         """
-        """
-        print(
-            f"[DEBUG] Pump called. Queue length: {len(self._queue)}, Busy status: {self._busy}"
-        )
         while (not self._busy) and len(self._queue):
             cmd = self._queue.pop(0)
             self._name = cmd[2]

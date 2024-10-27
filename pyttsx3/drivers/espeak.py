@@ -10,7 +10,7 @@ if platform.system() == "Windows":
     import winsound
 
 from ..voice import Voice
-from . import _espeak, fromUtf8, toUtf8
+from . import _espeak
 
 
 # noinspection PyPep8Naming
@@ -70,8 +70,7 @@ class EspeakDriver(object):
             for v in _espeak.ListVoices(None):
                 print(v)
                 if v.gender == 0:
-                    print("found one")
-                kwargs = {"id": fromUtf8(v.name), "name": fromUtf8(v.name)}
+                kwargs = {"id": v.name.decode('utf-8'), "name": v.name.decode('utf-8')}
                 if v.languages:
                     try:
                         language_code_bytes = v.languages[1:]
@@ -88,7 +87,7 @@ class EspeakDriver(object):
             return voices
         elif name == "voice":
             voice = _espeak.GetCurrentVoice()
-            return fromUtf8(voice.contents.name)
+            return voice.contents.name.decode('utf-8')
         elif name == "rate":
             return _espeak.GetParameter(_espeak.RATE)
         elif name == "volume":

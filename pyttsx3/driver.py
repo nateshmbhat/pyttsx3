@@ -38,7 +38,7 @@ class DriverProxy(object):
         @type debug: bool
         """
         driverName = driverName or {
-            "darwin": "nsss",
+            "darwin": "avsynth",
             "win32": "sapi5",
         }.get(sys.platform, "espeak")
         # import driver module

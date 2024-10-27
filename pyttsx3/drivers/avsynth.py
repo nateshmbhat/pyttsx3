@@ -43,7 +43,6 @@ class AVSpeechDriver(NSObject):
         self._proxy.setBusy(False)
 
     def startLoop(self):
-        print("[DEBUG] startLoop initiated")
         self._should_stop_loop = False
         NSTimer.scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_(
             0.0, self, "processQueue:", None, True
@@ -53,31 +52,25 @@ class AVSpeechDriver(NSObject):
     @objc.signature(b"v@:@")
     def processQueue_(self, _):
         if self._should_stop_loop:
-            print("[DEBUG] Stopping loop as requested.")
             AppHelper.stopEventLoop()
             return
 
         if self._tts.isSpeaking():
-            print("[DEBUG] Currently speaking, awaiting completion.")
             return  # Wait until speaking is finished
 
         if self._queue:
             command, args = self._queue.pop(0)
-            print(f"[DEBUG] Processing command: {command.__name__} with args: {args}")
             command(*args)
             self._proxy.setBusy(True)
         else:
-            print("[DEBUG] Queue is empty, stopping loop.")
             self.endLoop()
 
     def endLoop(self):
-        print("[DEBUG] endLoop called, setting loop stop flag.")
         self._should_stop_loop = True
         AppHelper.stopEventLoop()
 
     @objc.python_method
     def say(self, text):
-        print(f"[DEBUG] say() called with: {text}")
         self._queue.append((self._tts.startSpeakingString_, (text,)))
         self.startLoop()
 
@@ -87,13 +80,11 @@ class AVSpeechDriver(NSObject):
 
     @objc.python_method
     def save_to_file(self, text, filename):
-        print(f"[DEBUG] save_to_file() called with: {text}, {filename}")
         url = NSURL.fileURLWithPath_(filename)
         self._queue.append((self._tts.startSpeakingString_toURL_, (text, url)))
         self.startLoop()
 
     def speechSynthesizer_didFinishSpeaking_(self, tts, success):
-        print(f"[DEBUG] Finished speaking with success: {success}")
         self._proxy.notify("finished-utterance", completed=success)
         self._proxy.setBusy(False)
         # Check the queue after finishing each command

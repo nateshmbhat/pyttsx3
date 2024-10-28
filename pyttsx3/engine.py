@@ -110,8 +110,7 @@ class Engine(object):
         """
         arr = self._connects.setdefault(topic, [])
         arr.append(cb)
-        return {"topic": topic, "cb": cb}
-        return {"topic": topic, "cb": cb}
+        return {'topic': topic, 'cb': cb}
 
     def disconnect(self, token: dict) -> None:
         """
@@ -120,14 +119,12 @@ class Engine(object):
         @param token: Token of the callback to unregister
         @type token: dict
         """
-        topic = token["topic"]
-        topic = token["topic"]
+        topic = token['topic']
         try:
             arr = self._connects[topic]
         except KeyError:
             return
-        arr.remove(token["cb"])
-        arr.remove(token["cb"])
+        arr.remove(token['cb'])
         if len(arr) == 0:
             del self._connects[topic]
 
@@ -153,7 +150,7 @@ class Engine(object):
         self.proxy.stop()
 
     def save_to_file(self, text, filename, name=None):
-        """
+        '''
         Adds an utterance to speak to the event queue.
 
         @param text: Text to speak
@@ -162,7 +159,7 @@ class Engine(object):
         @param name: Name to associate with this utterance. Included in
             notifications about this utterance.
         @type name: str
-        """
+        '''
         self.proxy.save_to_file(text, filename, name)
 
     def isBusy(self) -> bool:
@@ -222,8 +219,7 @@ class Engine(object):
         @raise RuntimeError: When the loop is already running
         """
         if self._inLoop:
-            raise RuntimeError("run loop already started")
-            raise RuntimeError("run loop already started")
+            raise RuntimeError('run loop already started')
         self._inLoop = True
         self._driverLoop = True
         self.proxy.runAndWait()
@@ -239,13 +235,10 @@ class Engine(object):
         @raise RuntimeError: When the loop is already running
         """
         if self._inLoop:
-            return
+            raise RuntimeError('run loop already started')
         self._inLoop = True
         self._driverLoop = useDriverLoop
-        if useDriverLoop:
-            self.proxy._driver.startLoop()  # This now starts the loop correctly in the driver
-        else:
-            self._iterator = self.proxy._driver.iterate()  # For an external loop
+        self.proxy.startLoop(self._driverLoop)
 
     def endLoop(self) -> None:
         """
@@ -254,23 +247,16 @@ class Engine(object):
         @raise RuntimeError: When the loop is not running
         """
         if not self._inLoop:
-            raise RuntimeError("run loop not started")
-            raise RuntimeError("run loop not started")
+            raise RuntimeError('run loop not started')
         self.proxy.endLoop(self._driverLoop)
         self._inLoop = False
 
     def iterate(self):
+        """
+        Must be called regularly when using an external event loop.
+        """
         if not self._inLoop:
-            raise RuntimeError("run loop not started")
-            raise RuntimeError("run loop not started")
+            raise RuntimeError('run loop not started')
         elif self._driverLoop:
-            raise RuntimeError("iterate not valid in driver run loop")
-        elif self._iterator is None:
-            raise RuntimeError(
-                "No iterator initialized. Ensure `startLoop(False)` was called."
-            )
-
-        try:
-            next(self._iterator)
-        except StopIteration:
-            self._iterator = None
+            raise RuntimeError('iterate not valid in driver run loop')
+        self.proxy.iterate()

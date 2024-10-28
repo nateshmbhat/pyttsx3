@@ -21,8 +21,9 @@ class AVSpeechDriver(NSObject):
         self._proxy = None
         self._tts = NSSpeechSynthesizer.alloc().initWithVoice_(None)
         self._tts.setDelegate_(self)
+        self._current_voice = None
         self._queue = []
-        self._should_stop_loop = False
+        self._should_stop_loop = False  # Flag to control loop
         return self
 
     @objc.python_method
@@ -38,99 +39,65 @@ class AVSpeechDriver(NSObject):
         self._tts.setDelegate_(None)
         self._tts = None
 
+    def onPumpFirst_(self, timer):
+        self._proxy.setBusy(False)
+
     def startLoop(self):
-        """Start the event loop for processing the queue."""
-        print("[DEBUG] AVSpeechDriver: Starting event loop")
         self._should_stop_loop = False
-        try:
-            NSTimer.scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_(
-                0.1, self, "processQueue:", None, True
-            )
-            print("[DEBUG] NSTimer scheduled successfully.")
-        except Exception as e:
-            print(f"[ERROR] Failed to schedule NSTimer: {e}")
-        self.processQueue_(None)  # Immediate initial process to check queue
+        NSTimer.scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_(
+            0.0, self, "processQueue:", None, True
+        )
         AppHelper.runConsoleEventLoop()
 
     @objc.signature(b"v@:@")
     def processQueue_(self, _):
-        """Process the next item in the queue."""
-        print("[DEBUG] AVSpeechDriver: Processing queue")
-
         if self._should_stop_loop:
-            print("[DEBUG] AVSpeechDriver: Stopping event loop")
             AppHelper.stopEventLoop()
             return
 
-        if not self._queue:
-            print("[DEBUG] AVSpeechDriver: Queue empty, ending loop")
-            self.endLoop()
-            return
+        if self._tts.isSpeaking():
+            return  # Wait until speaking is finished
 
-        command, args = self._queue.pop(0)
-        print(
-            f"[DEBUG] AVSpeechDriver: Executing command {command.__name__} with args {args}"
-        )
-        command(*args)
-        self._proxy.setBusy(True)
+        if self._queue:
+            command, args = self._queue.pop(0)
+            command(*args)
+            self._proxy.setBusy(True)
+        else:
+            self.endLoop()
 
     def endLoop(self):
-        """Stop the event loop."""
-        print("[DEBUG] AVSpeechDriver: Ending loop")
         self._should_stop_loop = True
         AppHelper.stopEventLoop()
 
     @objc.python_method
     def say(self, text):
-        """Queue the say command and verify queue contents."""
-        print(f"[DEBUG] AVSpeechDriver: Queueing 'say' command with text: {text}")
         self._queue.append((self._tts.startSpeakingString_, (text,)))
-        print(f"[DEBUG] Queue after appending 'say': {self._queue}")
-        self._should_stop_loop = False
         self.startLoop()
+
+    def stop(self):
+        self._tts.stopSpeaking()
+        self.endLoop()
 
     @objc.python_method
     def save_to_file(self, text, filename):
-        """Queue the save_to_file command and verify queue contents."""
         url = NSURL.fileURLWithPath_(filename)
-        print(
-            f"[DEBUG] AVSpeechDriver: Queueing 'save_to_file' command with text: {text} to file: {filename}"
-        )
         self._queue.append((self._tts.startSpeakingString_toURL_, (text, url)))
-        print(f"[DEBUG] Queue after appending 'save_to_file': {self._queue}")
-        self._should_stop_loop = False
         self.startLoop()
 
     def speechSynthesizer_didFinishSpeaking_(self, tts, success):
-        """Callback when speech finishes."""
-        print(f"[DEBUG] AVSpeechDriver: Speech finished with success={success}")
         self._proxy.notify("finished-utterance", completed=success)
         self._proxy.setBusy(False)
+        # Check the queue after finishing each command
         if not self._queue:
             self.endLoop()
 
     def speechSynthesizer_willSpeakWord_ofString_(self, tts, rng, text):
-        """Callback when about to speak a word."""
         current_word = text[rng.location : rng.location + rng.length]
         self._proxy.notify(
             "started-word", name=current_word, location=rng.location, length=rng.length
         )
 
-    def stop(self):
-        print("[DEBUG] AVSpeechDriver: Stopping speech")
-        self._tts.stopSpeaking()
-        self.endLoop()
-
-    def iterate(self):
-        """
-        Iterator for processing queued items in an external loop.
-        This allows external control over the loop.
-        """
-        while not self._should_stop_loop:
-            print("[DEBUG] AVSpeechDriver: Processing queue in iterate")
-            self.processQueue_(None)
-            yield
-
+    # Property management
     @objc.python_method
     def getProperty(self, name):
         if name == "voices":

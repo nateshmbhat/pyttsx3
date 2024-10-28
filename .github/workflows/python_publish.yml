@@ -33,7 +33,8 @@ jobs:
       - if: runner.os == 'Linux'
         run: |
           sudo apt-get update -q -q
-          sudo apt-get install --yes espeak-ng libespeak1
+          sudo apt-get install --yes espeak espeak-ng libespeak1
+          espeak --version
           espeak-ng --version
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

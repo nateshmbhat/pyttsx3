@@ -23,7 +23,7 @@ Install espeak and libespeak1 as shown below:
 
 ::
 
-	sudo apt update && sudo apt install espeak libespeak1
+	sudo apt update && sudo apt install espeak-ng libespeak1
 
 
 Usage :

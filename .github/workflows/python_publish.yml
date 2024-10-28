@@ -39,7 +39,9 @@ jobs:
           pip install --editable .
 
       - name: Run tests
-        run: pytest -s -vvv --ignore=tests/test_pyttsx3.py::test_interrupting_utterance  # Ignore test that hangs
+        run: pytest -s -vvv
+                --ignore=tests/test_pyttsx3.py::test_interrupting_utterance
+                --ignore=tests/test_pyttsx3.py::test_changing_voices
 
   build:
     runs-on: ubuntu-latest

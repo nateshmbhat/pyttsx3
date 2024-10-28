@@ -39,13 +39,13 @@ jobs:
           pip install --editable .
 
       - name: Run tests
-        run: pytest -s -vvv \
-                --ignore=tests/test_pyttsx3.py::test_interrupting_utterance \
-                --ignore=tests/test_pyttsx3.py::test_changing_voices \
-                --ignore=tests/test_pyttsx3.py::changing_speech_rate \
-                --ignore=tests/test_pyttsx3.py::changing_volume \
-                --ignore=tests/test_pyttsx3.py::running_driver_event_loop \
-                --ignore=tests/test_pyttsx3.py::external_event_loop
+        run: pytest -s -vvv
+                --deselect=tests/test_pyttsx3.py::test_interrupting_utterance
+                --deselect=tests/test_pyttsx3.py::test_changing_voices
+                --deselect=tests/test_pyttsx3.py::changing_speech_rate
+                --deselect=tests/test_pyttsx3.py::changing_volume
+                --deselect=tests/test_pyttsx3.py::running_driver_event_loop
+                --deselect=tests/test_pyttsx3.py::external_event_loop
 
   build:
     runs-on: ubuntu-latest

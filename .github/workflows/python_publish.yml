@@ -50,7 +50,7 @@ jobs:
           pip install --editable .
 
       - name: Run tests
-        run: pytest -s -vvv tests/test_pyttsx3.py::test_
+        run: pytest -s -vvv tests/test_pyttsx3.py::test_${{ matrix.test }}
 
   build:
     runs-on: ubuntu-latest

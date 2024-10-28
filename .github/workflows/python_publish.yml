@@ -31,10 +31,14 @@ jobs:
     timeout-minutes: 10  # Save resources while our pytests are hanging
     steps:
       - if: runner.os == 'Linux'
+        name: "Linux: apt-get install --yes espeak-ng libespeak1"
         run: |
           sudo apt-get update -q -q
           sudo apt-get install --yes espeak-ng libespeak1
-          espeak-ng --version
+          espeak-ng --version  # eSpeak NG text-to-speech: 1.50
+          espeak-ng "eSpeak-NG version $(espeak-ng --version) installed."
+          espeak-ng --voices  # List all voices supported by eSpeak.
+          espeak-ng --voices=en  # List all English voices supported by eSpeak.
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
@@ -47,6 +51,41 @@ jobs:
           pip install --editable .
 
       - run: pytest -s -vvv --timeout=600
+
+      # - name: macOS brew install eSpeak
+      #   if: runner.os == 'macOS'
+      #   run: |
+      #     brew install espeak
+      #     espeak --version  # speak text-to-speech: 1.48.03  04.Mar.14
+      #     espeak "eSpeak version $(espeak --version) installed."
+
+      # - name: macOS test eSpeak
+      #   if: runner.os == 'macOS'
+      #   shell: python
+      #   run: |
+      #     import pyttsx3
+      #     engine = pyttsx3.init('espeak')
+      #     engine.say('Hello eSpeak!')
+      #     engine.runAndWait()
+
+      - name: macOS brew uninstall eSpeak and install eSpeak-NG
+        if: runner.os == 'macOS'
+        run: |
+          # brew uninstall espeak
+          brew install espeak-ng
+          espeak-ng --version  # eSpeak NG text-to-speech: 1.51
+          espeak-ng "eSpeak-NG version $(espeak-ng --version) installed."
+          espeak-ng --voices  # List all voices supported by eSpeak.
+          espeak-ng --voices=en  # List all English voices supported by eSpeak.
+      
+      - name: macOS test eSpeak-NG
+        if: runner.os == 'macOS'
+        shell: python
+        run: |
+          import pyttsx3
+          engine = pyttsx3.init('espeak')
+          engine.say('Hello eSpeak-ng!')
+          engine.runAndWait()
 
   build:
     runs-on: ubuntu-latest

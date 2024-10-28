@@ -70,7 +70,7 @@ def test_apple__nsss_voices(engine):
         engine.setProperty("voice", _voice.id)
         name = _voice.id.split(".")[-1]
         names.append(name)
-        engine.say(f"{name} says {quick_brown_fox}")
+        engine.say(f"{name} says hello.")
     name_str = ", ".join(names)
     assert name_str == "Eddy, Flo, Grandma, Grandpa, Reed, Rocko, Sandy, Shelley"
     print(f"({name_str})", end=" ", flush=True)
@@ -169,9 +169,8 @@ def test_changing_volume(engine):
 )
 def test_changing_voices(engine):
     voices = engine.getProperty("voices")
-    for (
-        voice
-    ) in voices:  # TODO: This could be lots of voices! (e.g. 176 on macOS v15.x)
+    # TODO: This could be lots of voices! (e.g. 176 on macOS v15.x)
+    for (voice) in voices:
         engine.setProperty("voice", voice.id)
         engine.say(f"{voice.id = }. {quick_brown_fox}")
     engine.runAndWait()

@@ -6,7 +6,6 @@ import os
 import weakref
 
 from ..voice import Voice
-from . import fromUtf8, toUtf8
 
 SAPI4_VOICE_CLASS_ID = "{EEE78591-FE22-11D0-8BEF-0060081841DE}"
 
@@ -52,7 +51,7 @@ class SAPI4Driver:
 
     def say(self, text):
         self._proxy.setBusy(True)
-        self._tts.Speak(fromUtf8(toUtf8(text)), 1)  # Async mode
+        self._tts.Speak(str(text).encode("utf-8").decode("utf-8"), 1)  # Async mode
 
     def stop(self):
         self._tts.Stop()

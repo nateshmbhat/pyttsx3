@@ -2,7 +2,7 @@
 # pyttsx3 only requires `espeak` driver/library which is system-dependent
 
 ### Ubuntu
-#$ sudo apt install espeak-ng 
+#$ sudo apt install espeak ffmpeg
 
 ### Mac OS X (os.platform == 'Darwin')
 # pyobjc>=2.4

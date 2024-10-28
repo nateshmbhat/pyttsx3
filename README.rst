@@ -23,7 +23,7 @@ Install espeak , ffmpeg and libespeak1 as shown below:
 
 ::
 
-	sudo apt update && pt install espeak-ng 
+	sudo apt update && sudo apt install espeak ffmpeg libespeak1
 
 
 Usage :

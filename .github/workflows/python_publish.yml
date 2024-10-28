@@ -38,14 +38,15 @@ jobs:
           pip install pytest pytest-timeout
           pip install --editable .
 
-      - name: Run tests
+      - name: Run Ubuntu Linux tests
+        if: runner.os == 'Linux'
         run: pytest -s -vvv
                 --deselect=tests/test_pyttsx3.py::test_interrupting_utterance
                 --deselect=tests/test_pyttsx3.py::test_changing_voices
-                --deselect=tests/test_pyttsx3.py::changing_speech_rate
-                --deselect=tests/test_pyttsx3.py::changing_volume
-                --deselect=tests/test_pyttsx3.py::running_driver_event_loop
-                --deselect=tests/test_pyttsx3.py::external_event_loop
+
+      - name: Run non-Ubuntu Linux tests
+        if: runner.os != 'Linux'
+        run: pytest -s -vvv
 
   build:
     runs-on: ubuntu-latest

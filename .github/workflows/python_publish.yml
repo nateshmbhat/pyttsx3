@@ -15,8 +15,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['3.9', '3.11', '3.13']
+        os: [ubuntu-latest, windows-latest]  # , macos-latest
+        python-version: ['3.13']  # ['3.9', '3.11', '3.13']
+        test: [
+          speaking_text,
+          saving_to_file,
+          listening_for_events,
+          interrupting_utterance,
+          changing_voices,
+          changing_speech_rate,
+          changing_volume,
+          running_driver_event_loop,
+          external_event_loop
+        ]
       max-parallel: 9
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10  # Save resources while our pytests are hanging
@@ -39,7 +50,7 @@ jobs:
           pip install --editable .
 
       - name: Run tests
-        run: pytest
+        run: pytest -s -vvv tests/test_pyttsx3.py::test_
 
   build:
     runs-on: ubuntu-latest

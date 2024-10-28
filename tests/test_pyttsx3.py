@@ -1,4 +1,3 @@
-import os
 import sys
 from unittest import mock
 
@@ -23,6 +22,16 @@ def test_speaking_text(engine):
     engine.say("Sally sells seashells by the seashore.")
     engine.say("The quick brown fox jumped over the lazy dog.")
     engine.runAndWait()
+
+
+def test_engine_name(engine):
+    expected = {
+        'darwin': 'nsss',
+        'win32': 'sapi5'
+    }.get(sys.platform, 'espeak')
+    assert engine.name == expected
+    assert str(engine) == expected
+    assert repr(engine) == f"pyttsx3.engine.Engine('{expected}', debug=False)"
 
 
 # Test for saving voice to a file with additional validation

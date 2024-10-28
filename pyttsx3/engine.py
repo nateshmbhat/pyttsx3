@@ -1,6 +1,9 @@
-from . import driver
+from __future__ import annotations
+
 import traceback
 import weakref
+
+from . import driver
 
 
 class Engine(object):
@@ -17,7 +20,7 @@ class Engine(object):
     @type _debug: bool
     """
 
-    def __init__(self, driverName=None, debug=False):
+    def __init__(self, driverName: str | None = None, debug: bool = False):
         """
         Constructs a new TTS engine instance.
 
@@ -28,11 +31,24 @@ class Engine(object):
         @type debug: bool
         """
         self.proxy = driver.DriverProxy(weakref.proxy(self), driverName, debug)
-        # initialize other vars
+        self.name = self.proxy._module.__name__.split('.')[-1]
         self._connects = {}
-        self._inLoop = False
-        self._driverLoop = True
         self._debug = debug
+        self._driverLoop = True
+        self._inLoop = False
+
+    def __repr__(self) -> str:
+        """
+        repr(pyttsx3.init('nsss')) -> "pyttsx3.engine.Engine('nsss', debug=False)"
+        """
+        module_and_class = f"{self.__class__.__module__}.{self.__class__.__name__}"
+        return f"{module_and_class}('{self.name}', debug={self._debug})"
+    
+    def __str__(self) -> str:
+        """
+        str(pyttsx3.init('nsss')) -> 'nsss'
+        """
+        return self.name
 
     def _notify(self, topic, **kwargs):
         """
@@ -97,10 +113,10 @@ class Engine(object):
             notifications about this utterance.
         @type name: str
         """
-        if text == None:
-            return "Argument value can't be none or empty"
-        else:
+        if text and str(text).strip():
             self.proxy.say(text, name)
+        else:
+            return "Argument value can't be none or empty"
 
     def stop(self):
         """

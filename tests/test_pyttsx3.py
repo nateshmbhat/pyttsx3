@@ -18,7 +18,7 @@ def engine():
 
 # Test for speaking text
 # @pytest.mark.timeout(10)  # Set timeout to 10 seconds
-@pytest.mark.skipif(sys.platform == "win32", reason="TODO: Fix this test to pass on Windows")
+# @pytest.mark.skipif(sys.platform == "win32", reason="TODO: Fix this test to pass on Windows")
 def test_speaking_text(engine):
     engine.say("Sally sells seashells by the seashore.")
     engine.say("The quick brown fox jumped over the lazy dog.")
@@ -28,7 +28,7 @@ def test_speaking_text(engine):
 # Test for saving voice to a file with additional validation
 # @pytest.mark.timeout(10)  # Set timeout to 10 seconds
 # @pytest.mark.skipif(sys.platform in ("linux", "win32"), reason="TODO: Fix this test to pass on Linux and Windows")
-@pytest.mark.xfail(sys.platform == "darwin", reason="TODO: Fix this test to pass on macOS")
+# @pytest.mark.xfail(sys.platform == "darwin", reason="TODO: Fix this test to pass on macOS")
 def test_saving_to_file(engine, tmp_path):
     test_file = tmp_path / "test.wav"  # Using .wav for easier validation
 
@@ -51,7 +51,7 @@ def test_saving_to_file(engine, tmp_path):
 
 # Test for listening for events
 # @pytest.mark.timeout(10)  # Set timeout to 10 seconds
-@pytest.mark.skipif(sys.platform in ("linux", "win32"), reason="TODO: Fix this test to pass on Linux and Windows")
+# @pytest.mark.skipif(sys.platform in ("linux", "win32"), reason="TODO: Fix this test to pass on Linux and Windows")
 def test_listening_for_events(engine):
     onStart = mock.Mock()
     onWord = mock.Mock()
@@ -72,7 +72,7 @@ def test_listening_for_events(engine):
 
 # Test for interrupting an utterance
 # @pytest.mark.timeout(10)  # Set timeout to 10 seconds
-@pytest.mark.skipif(sys.platform in ("linux", "win32"), reason="TODO: Fix this test to pass on Linux and Windows")
+# @pytest.mark.skipif(sys.platform in ("linux", "win32"), reason="TODO: Fix this test to pass on Linux and Windows")
 def test_interrupting_utterance(engine):
     def onWord(name, location, length):
         if location > 10:
@@ -89,7 +89,7 @@ def test_interrupting_utterance(engine):
 
 # Test for changing voices
 # @pytest.mark.timeout(10)  # Set timeout to 10 seconds
-@pytest.mark.skipif(sys.platform in ("linux", "win32"), reason="TODO: Fix this test to pass on Linux and Windows")
+# @pytest.mark.skipif(sys.platform in ("linux", "win32"), reason="TODO: Fix this test to pass on Linux and Windows")
 def test_changing_voices(engine):
     voices = engine.getProperty("voices")
     for voice in voices:
@@ -100,7 +100,7 @@ def test_changing_voices(engine):
 
 # Test for changing speech rate
 # @pytest.mark.timeout(10)  # Set timeout to 10 seconds
-@pytest.mark.skipif(sys.platform in ("linux", "win32"), reason="TODO: Fix this test to pass on Linux and Windows")
+# @pytest.mark.skipif(sys.platform in ("linux", "win32"), reason="TODO: Fix this test to pass on Linux and Windows")
 def test_changing_speech_rate(engine):
     rate = engine.getProperty("rate")
     engine.setProperty("rate", rate + 50)
@@ -110,7 +110,7 @@ def test_changing_speech_rate(engine):
 
 # Test for changing volume
 # @pytest.mark.timeout(10)  # Set timeout to 10 seconds
-@pytest.mark.skipif(sys.platform in ("linux", "win32"), reason="TODO: Fix this test to pass on Linux and Windows")
+# @pytest.mark.skipif(sys.platform in ("linux", "win32"), reason="TODO: Fix this test to pass on Linux and Windows")
 def test_changing_volume(engine):
     volume = engine.getProperty("volume")
     engine.setProperty("volume", volume - 0.25)
@@ -120,7 +120,7 @@ def test_changing_volume(engine):
 
 # Test for running a driver event loop
 # @pytest.mark.timeout(10)  # Set timeout to 10 seconds
-@pytest.mark.skipif(sys.platform in ("linux", "win32"), reason="TODO: Fix this test to pass on Linux and Windows")
+# @pytest.mark.skipif(sys.platform in ("linux", "win32"), reason="TODO: Fix this test to pass on Linux and Windows")
 def test_running_driver_event_loop(engine):
     def onStart(name):
         print("starting", name)
@@ -143,7 +143,7 @@ def test_running_driver_event_loop(engine):
 
 # Test for using an external event loop
 # @pytest.mark.timeout(10)  # Set timeout to 10 seconds
-@pytest.mark.skipif(sys.platform in ("linux", "win32"), reason="TODO: Fix this test to pass on Linux and Windows")
+# @pytest.mark.skipif(sys.platform in ("linux", "win32"), reason="TODO: Fix this test to pass on Linux and Windows")
 def test_external_event_loop(engine):
     def externalLoop():
         for _ in range(5):

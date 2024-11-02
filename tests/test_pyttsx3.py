@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import sys
+import wave
 from unittest import mock
 
 import pytest
-import wave
 
 import pyttsx3
 

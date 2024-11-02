@@ -76,7 +76,7 @@ class EspeakDriver(object):
                             "utf-8", errors="ignore"
                         )
                         kwargs["languages"] = [language_code]
-                    except UnicodeDecodeError as e:
+                    except UnicodeDecodeError:
                         kwargs["languages"] = ["Unknown"]
                     genders = [None, "male", "female"]
                 kwargs["gender"] = genders[v.gender]

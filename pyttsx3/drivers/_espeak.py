@@ -61,7 +61,7 @@ try:
         raise RuntimeError(
             "This means you probably do not have eSpeak or eSpeak-ng installed!"
         )
-except Exception as exp:
+except Exception:
     raise
 
 # constants and such from speak_lib.h

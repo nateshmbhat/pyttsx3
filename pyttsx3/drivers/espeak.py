@@ -13,7 +13,6 @@ from . import _espeak
 from ..voice import Voice
 
 
-
 # noinspection PyPep8Naming
 def buildDriver(proxy):
     return EspeakDriver(proxy)
@@ -69,7 +68,7 @@ class EspeakDriver(object):
         if name == "voices":
             voices = []
             for v in _espeak.ListVoices(None):
-                kwargs = {'id': v.name.decode('utf-8'), 'name': v.name.decode('utf-8')}
+                kwargs = {"id": v.name.decode("utf-8"), "name": v.name.decode("utf-8")}
                 if v.languages:
                     try:
                         language_code_bytes = v.languages[1:]
@@ -86,7 +85,7 @@ class EspeakDriver(object):
             return voices
         elif name == "voice":
             voice = _espeak.GetCurrentVoice()
-            return voice.contents.name.decode('utf-8')
+            return voice.contents.name.decode("utf-8")
         elif name == "rate":
             return _espeak.GetParameter(_espeak.RATE)
         elif name == "volume":
@@ -102,7 +101,7 @@ class EspeakDriver(object):
             if value is None:
                 return
             try:
-                utf8Value = str(value).encode('utf-8')
+                utf8Value = str(value).encode("utf-8")
                 _espeak.SetVoiceByName(utf8Value)
             except ctypes.ArgumentError as e:
                 raise ValueError(str(e))
@@ -137,7 +136,9 @@ class EspeakDriver(object):
         self._speaking = True
         self._data_buffer = b""  # Ensure buffer is cleared before starting
         try:
-            _espeak.Synth(str(text).encode('utf-8'), flags=_espeak.ENDPAUSE | _espeak.CHARS_UTF8)
+            _espeak.Synth(
+                str(text).encode("utf-8"), flags=_espeak.ENDPAUSE | _espeak.CHARS_UTF8
+            )
         except Exception as e:
             self._proxy.setBusy(False)
             self._proxy.notify("error", exception=e)

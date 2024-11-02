@@ -33,7 +33,6 @@ def buildDriver(proxy):
 
 # noinspection PyUnresolvedReferences,PyPep8Naming,PyUnusedLocal
 class NSSpeechDriver(NSObject):
-
     def __init__(self):
         self._proxy = None
         self._tts = None

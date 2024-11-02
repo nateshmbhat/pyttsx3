@@ -2,11 +2,10 @@
 # pyttsx3 only requires `espeak` driver/library which is system-dependent
 
 ### Ubuntu
-#$ sudo apt install espeak 
+#$ sudo apt install espeak
 
 ### Mac OS X (os.platform == 'Darwin')
 # pyobjc>=2.4
 
 ### Windows (os.platform == 'Windows')
 # pypiwin32
-

@@ -16,11 +16,11 @@
 
 	pip install pyttsx3
 
-> If you get installation errors , make sure you first upgrade your wheel version using :  
+> If you get installation errors , make sure you first upgrade your wheel version using :
 `pip install --upgrade wheel`
 
 
-## Features : 
+## Features :
 
 - ✨Fully **OFFLINE** text to speech conversion
 - 🎈 Choose among different voices installed in your system
@@ -30,11 +30,11 @@
 - ❤️ Simple, powerful, & intuitive API
 
 
-#### Linux installation requirements : 
+#### Linux installation requirements :
 
-+ If you are on a linux system and if the voice output is not working , then  : 
++ If you are on a linux system and if the voice output is not working , then  :
 
-	Install espeak and libespeak1 as shown below: 
+	Install espeak and libespeak1 as shown below:
 
 	```
 	sudo apt update && sudo apt install espeak libespeak1
@@ -60,7 +60,7 @@ import pyttsx3
 pyttsx3.speak("I will speak this text")
 ```
 
-	
+
 **Changing Voice , Rate and Volume :**
 
 ```python3

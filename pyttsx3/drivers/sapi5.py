@@ -178,8 +178,7 @@ class SAPI5DriverEventSink(object):
         d.endLoop()  # hangs if you dont have this
 
     def _ISpeechVoiceEvents_Word(self, stream_number, stream_position, char, length):
-        current_text = self._driver._current_text
-        if current_text:
+        if (current_text := self._driver._current_text):
             current_word = current_text[char : char + length]
         else:
             current_word = "Unknown"

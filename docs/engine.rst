@@ -15,10 +15,10 @@ The Engine factory
 
    :param driverName: Name of the :mod:`pyttsx3.drivers` module to load and use. Defaults to the best available driver for the platform, currently:
 
+      * `avsynth` - AVSynthesizer on macOS
+      * `espeak` - eSpeak on all platforms
+      * `nsss` - NSSpeechSynthesizer on macOS (Deprecated by Apple)
       * `sapi5` - SAPI5 on Windows
-      * `nsss` - NSSpeechSynthesizer on Mac OS X
-      * `avsynth` - AVSynthesizer on Mac OS X (NSSS Is deprecated)
-      * `espeak` - eSpeak on every other platform
 
    :param debug: Enable debug output or not.
    :raises ImportError: When the requested driver is not found

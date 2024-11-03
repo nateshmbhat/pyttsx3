@@ -106,10 +106,10 @@ https://pyttsx3.readthedocs.io/en/latest/
 
 #### Included TTS engines:
 
-* sapi5 (Windows)
-* nsss (Mac OS)
-* avsynth (Mac OS)
-* espeak (Linux, Mac OS, Windows)
+* avsynth on macOS
+* espeak on Linux, macOS, and Windows
+* nsss on macOS (deprecated by Apple)
+* sapi5 on Windows
 
 Feel free to wrap another text-to-speech engine for use with ``pyttsx3``.
 

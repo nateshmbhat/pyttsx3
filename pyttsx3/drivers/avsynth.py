@@ -51,7 +51,7 @@ class AVSpeechDriver(NSObject):
         )
         AppHelper.runConsoleEventLoop()
 
-    @objc.signature(b"v@:@")
+    @objc.typedSelector(b"v@:@")
     def processQueue_(self, _):
         if self._should_stop_loop:
             AppHelper.stopEventLoop()

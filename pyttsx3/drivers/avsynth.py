@@ -17,7 +17,9 @@ class AVSpeechDriver(NSObject):
     def init(self):
         self = objc.super(AVSpeechDriver, self).init()
         if self is None:
-            return None
+            return
+            # or perhaps better...
+            raise RuntimeError("Unable to instantiate an AVSpeechDriver")
         self._proxy = None
         self._tts = NSSpeechSynthesizer.alloc().initWithVoice_(None)
         self._tts.setDelegate_(self)

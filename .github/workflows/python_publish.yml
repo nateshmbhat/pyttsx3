@@ -24,10 +24,8 @@ jobs:
       - if: runner.os == 'Linux'
         run: |
           sudo apt-get update -q -q
-          sudo apt-get install --yes espeak espeak-ng ffmpeg libespeak1
-          espeak --version
+          sudo apt-get install --yes espeak-ng libespeak1
           espeak-ng --version
-          ffmpeg --version || true
       - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v5

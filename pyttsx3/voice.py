@@ -7,8 +7,11 @@ class Voice(object):
         self.age = age
 
     def __str__(self):
-        return """<Voice id=%(id)s
+        return (
+            """<Voice id=%(id)s
           name=%(name)s
           languages=%(languages)s
           gender=%(gender)s
-          age=%(age)s>""" % self.__dict__
+          age=%(age)s>"""
+            % self.__dict__
+        )

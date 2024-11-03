@@ -64,7 +64,7 @@ class SAPI5Driver(object):
         # see SpeechVoiceSpeakFlags: https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ms720892%28v%3dvs.85%29
         # and Speak : https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ms723609(v=vs.85)
         self._tts.Speak(
-            str(text).encode('utf-8').decode('utf-8'), 1
+            str(text).encode("utf-8").decode("utf-8"), 1
         )  # -> stream_number as described in the remarks of the documentation
 
     def stop(self):
@@ -81,7 +81,7 @@ class SAPI5Driver(object):
         temp_stream = self._tts.AudioOutputStream
         self._current_text = text
         self._tts.AudioOutputStream = stream
-        self._tts.Speak(str(text).encode('utf-8').decode('utf-8'))
+        self._tts.Speak(str(text).encode("utf-8").decode("utf-8"))
         self._tts.AudioOutputStream = temp_stream
         stream.close()
         os.chdir(cwd)

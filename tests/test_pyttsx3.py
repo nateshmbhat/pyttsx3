@@ -32,8 +32,9 @@ def test_engine_name(engine):
 def test_speaking_text(engine):
     engine.say("Sally sells seashells by the seashore.")
     engine.say(quick_brown_fox)
-    print(list(pyttsx3._activeEngines.values()))
+    print(list(pyttsx3._activeEngines.values()), flush=True)
     engine.runAndWait()
+    print(list(pyttsx3._activeEngines.values()), flush=True)
 
 
 @pytest.mark.skipif(
@@ -45,7 +46,7 @@ def test_apple__nsss_voices(engine):
     macos_version, _, macos_hardware = platform.mac_ver()
     print(f"{sys.platform = }, {macos_version = } on {macos_hardware = }")
     print(list(pyttsx3._activeEngines))
-    print(engine)
+    print(engine, flush=True)
     assert str(engine) == "nsss", "Expected engine name to be nsss on macOS and iOS"
     voice = engine.getProperty("voice")
     # On macOS v14.x, the default nsss voice is com.apple.voice.compact.en-US.Samantha.

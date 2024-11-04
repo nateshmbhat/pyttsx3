@@ -52,23 +52,7 @@ jobs:
 
       - run: pytest -s -vvv --timeout=600
 
-      # - name: macOS brew install eSpeak
-      #   if: runner.os == 'macOS'
-      #   run: |
-      #     brew install espeak
-      #     espeak --version  # speak text-to-speech: 1.48.03  04.Mar.14
-      #     espeak "eSpeak version $(espeak --version) installed."
-
-      # - name: macOS test eSpeak
-      #   if: runner.os == 'macOS'
-      #   shell: python
-      #   run: |
-      #     import pyttsx3
-      #     engine = pyttsx3.init('espeak')
-      #     engine.say('Hello eSpeak!')
-      #     engine.runAndWait()
-
-      - name: macOS brew uninstall eSpeak and install eSpeak-NG
+      - name: macOS brew install eSpeak-NG
         if: runner.os == 'macOS'
         run: |
           # brew uninstall espeak
@@ -84,7 +68,7 @@ jobs:
         run: |
           import pyttsx3
           engine = pyttsx3.init('espeak')
-          engine.say('Hello eSpeak-ng!')
+          engine.say('Hello eSpeak-NG!')
           engine.runAndWait()
 
   build:
@@ -95,8 +79,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 

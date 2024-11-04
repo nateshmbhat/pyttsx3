@@ -1,4 +1,4 @@
-# This workflows will upload a Python Package using Twine when a release is created.
+# This workflow will upload a Python Package using Twine when a release is created.
 # https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
 name: CI
 
@@ -34,6 +34,15 @@ jobs:
         run: sudo apt-get update -q -q && sudo apt-get install --yes espeak-ng libespeak1
       - if: runner.os == 'macOS'
         run: brew install espeak-ng
+      - name: Download and install eSpeak-NG
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/espeak-ng/espeak-ng/releases/download/1.51/espeak-ng-X64.msi" -OutFile "espeak-ng.msi"
+          Start-Process msiexec.exe -ArgumentList '/i espeak-ng.msi /quiet /norestart' -Wait
+          # dir "$env:ProgramFiles\eSpeak NG"
+          $env:Path += ";$env:ProgramFiles\eSpeak NG"
+          espeak-ng --version
       - if: runner.os != 'Windows'
         run: espeak-ng --version
 

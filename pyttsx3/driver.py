@@ -49,6 +49,7 @@ class DriverProxy(object):
         self._engine = engine
         self._queue = []
         self._busy = True
+        self._looping = False
         self._name = None
         self._iterator = None
         self._debug = debug
@@ -193,15 +194,19 @@ class DriverProxy(object):
         """
         Called by the engine to start an event loop.
         """
+        print("driver.startLoop setting looping to true..")
+        self._looping = True
         if useDriverLoop:
             self._driver.startLoop()
         else:
-            self._iterator = self._driver.iterate()
+            self._iterator = self._driver.iterate() or iter([])
 
     def endLoop(self, useDriverLoop):
         """
         Called by the engine to stop an event loop.
         """
+        print("DriverProxy.endLoop called, setting looping to False")
+        self._looping = False
         self._queue = []
         self._driver.stop()
         if useDriverLoop:

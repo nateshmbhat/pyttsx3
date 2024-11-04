@@ -212,6 +212,8 @@ def Synth(
     flags=0,
     user_data=None,
 ):
+    if isinstance(text, str):
+        text = text.encode("utf-8")
     return cSynth(
         text,
         len(text) * 10,
@@ -528,16 +530,31 @@ The parameter is for future use, and should be set to NULL"""
 if __name__ == "__main__":
 
     def synth_cb(wav, numsample, events):
-        print(numsample, end="")
+        print(f"Callback received: numsample={numsample}")
         i = 0
         while True:
-            if events[i].type == EVENT_LIST_TERMINATED:
+            event_type = events[i].type
+            if event_type == EVENT_LIST_TERMINATED:
+                print("Event: LIST_TERMINATED")
                 break
-            print(events[i].type, end="")
+            elif event_type == EVENT_WORD:
+                print("Event: WORD")
+            elif event_type == EVENT_SENTENCE:
+                print("Event: SENTENCE")
+            elif event_type == EVENT_MARK:
+                print("Event: MARK")
+            elif event_type == EVENT_PLAY:
+                print("Event: PLAY")
+            elif event_type == EVENT_END:
+                print("Event: END")
+            elif event_type == EVENT_MSG_TERMINATED:
+                print("Event: MSG_TERMINATED")
+            else:
+                print(f"Unknown event type: {event_type}")
             i += 1
         return 0
 
-    samplerate = Initialize(output=AUDIO_OUTPUT_PLAYBACK)
+    samplerate = Initialize(output=AUDIO_OUTPUT_RETRIEVAL)
     SetSynthCallback(synth_cb)
     s = "This is a test, only a test. "
     uid = c_uint(0)

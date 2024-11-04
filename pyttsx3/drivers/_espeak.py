@@ -112,7 +112,7 @@ Initialize = cfunc(
     ("option", c_int, 1, 0),
 )
 Initialize.__doc__ = """Must be called before any synthesis functions are called.
-  output: the audio data can either be played by eSpeak or passed back by the SynthCallback function. 
+  output: the audio data can either be played by eSpeak or passed back by the SynthCallback function.
   buflength:  The length in mS of sound buffers passed to the SynthCallback function.
   path: The directory which contains the espeak-data directory, or NULL for the default location.
   options: bit 0: 1=allow espeakEVENT_PHONEME events.
@@ -135,7 +135,7 @@ def SetSynthCallback(cb):
 
 SetSynthCallback.__doc__ = """Must be called before any synthesis functions are called.
    This specifies a function in the calling program which is called when a buffer of
-   speech sound data has been produced. 
+   speech sound data has been produced.
 
 
    The callback function is of the form:
@@ -252,7 +252,7 @@ Synth.__doc__ = """Synthesize speech for the specified text.  The speech sound d
       start of the text.
 
    position_type:  Determines whether "position" is a number of characters, words, or sentences.
-      Values: 
+      Values:
 
    end_position:  If set, this gives a character position at which speaking will stop.  A value
       of zero indicates no end position.
@@ -271,13 +271,13 @@ Synth.__doc__ = """Synthesize speech for the specified text.  The speech sound d
       espeak.ENDPAUSE  If set then a sentence pause is added at the end of the text.  If not set then
          this pause is suppressed.
 
-   unique_identifier: message identifier; helpful for identifying later 
+   unique_identifier: message identifier; helpful for identifying later
      data supplied to the callback.
 
    user_data: pointer which will be passed to the callback function.
 
-   Return: EE_OK: operation achieved 
-           EE_BUFFER_FULL: the command can not be buffered; 
+   Return: EE_OK: operation achieved
+           EE_BUFFER_FULL: the command can not be buffered;
              you may try after a while to call the function again.
 	   EE_INTERNAL_ERROR."""
 
@@ -306,25 +306,25 @@ Synth_Mark.__doc__ = """Synthesize speech for the specified text.  Similar to es
 
    For the other parameters, see espeak_Synth()
 
-   Return:  EE_OK: operation achieved 
-            EE_BUFFER_FULL: the command can not be buffered; 
+   Return:  EE_OK: operation achieved
+            EE_BUFFER_FULL: the command can not be buffered;
              you may try after a while to call the function again.
 	        EE_INTERNAL_ERROR."""
 
 Key = cfunc("espeak_Key", dll, c_int, ("key_name", c_char_p, 1))
 Key.__doc__ = """Speak the name of a keyboard key.
-   Currently this just speaks the "key_name" as given 
+   Currently this just speaks the "key_name" as given
 
-   Return: EE_OK: operation achieved 
-           EE_BUFFER_FULL: the command can not be buffered; 
+   Return: EE_OK: operation achieved
+           EE_BUFFER_FULL: the command can not be buffered;
              you may try after a while to call the function again.
 	   EE_INTERNAL_ERROR."""
 
 Char = cfunc("espeak_Char", dll, c_int, ("character", c_wchar, 1))
-Char.__doc__ = """Speak the name of the given character 
+Char.__doc__ = """Speak the name of the given character
 
-   Return: EE_OK: operation achieved 
-           EE_BUFFER_FULL: the command can not be buffered; 
+   Return: EE_OK: operation achieved
+           EE_BUFFER_FULL: the command can not be buffered;
              you may try after a while to call the function again.
 	   EE_INTERNAL_ERROR."""
 
@@ -365,7 +365,7 @@ SetParameter.__doc__ = """Sets the value of the specified parameter.
       espeak.RANGE:   pitch range, range 0-100. 0-monotone, 50=normal
 
       espeak.PUNCTUATION:  which punctuation characters to announce:
-         value in espeak_PUNCT_TYPE (none, all, some), 
+         value in espeak_PUNCT_TYPE (none, all, some),
          see espeak_GetParameter() to specify which characters are announced.
 
       espeak.CAPITALS: announce capital letters by:
@@ -375,8 +375,8 @@ SetParameter.__doc__ = """Sets the value of the specified parameter.
          3 or higher, by raising pitch.  This values gives the amount in Hz by which the pitch
             of a word raised to indicate it has a capital letter.
 
-   Return: EE_OK: operation achieved 
-           EE_BUFFER_FULL: the command can not be buffered; 
+   Return: EE_OK: operation achieved
+           EE_BUFFER_FULL: the command can not be buffered;
              you may try after a while to call the function again.
            EE_INTERNAL_ERROR."""
 
@@ -387,13 +387,13 @@ GetParameter.__doc__ = """current=0  Returns the default value of the specified 
 SetPunctuationList = cfunc(
     "espeak_SetPunctuationList", dll, c_int, ("punctlist", c_wchar, 1)
 )
-SetPunctuationList.__doc__ = """Specified a list of punctuation characters whose names are 
+SetPunctuationList.__doc__ = """Specified a list of punctuation characters whose names are
 to be spoken when the value of the Punctuation parameter is set to "some".
 
    punctlist:  A list of character codes, terminated by a zero character.
 
-   Return:  EE_OK: operation achieved 
-            EE_BUFFER_FULL: the command can not be buffered; 
+   Return:  EE_OK: operation achieved
+            EE_BUFFER_FULL: the command can not be buffered;
              you may try after a while to call the function again.
             EE_INTERNAL_ERROR."""
 
@@ -469,8 +469,8 @@ SetVoiceByName = cfunc("espeak_SetVoiceByName", dll, c_int, ("name", c_char_p, 1
 SetVoiceByName.__doc__ = """Searches for a voice with a matching "name" field.  Language is not considered.
    "name" is a UTF8 string.
 
-   Return:   EE_OK: operation achieved 
-             EE_BUFFER_FULL: the command can not be buffered; 
+   Return:   EE_OK: operation achieved
+             EE_BUFFER_FULL: the command can not be buffered;
              you may try after a while to call the function again.
              EE_INTERNAL_ERROR."""
 
@@ -505,7 +505,7 @@ Cancel.__doc__ = """Stop immediately synthesis and audio output of the current t
    function returns, the audio output is fully stopped and the synthesizer is ready to
    synthesize a new message.
 
-   Return:  EE_OK: operation achieved 
+   Return:  EE_OK: operation achieved
             EE_INTERNAL_ERROR."""
 
 IsPlaying = cfunc("espeak_IsPlaying", dll, c_int)
@@ -513,12 +513,12 @@ IsPlaying.__doc__ = """Returns 1 if audio is played, 0 otherwise."""
 
 Synchronize = cfunc("espeak_Synchronize", dll, c_int)
 Synchronize.__doc__ = """This function returns when all data have been spoken.
-   Return:  EE_OK: operation achieved 
+   Return:  EE_OK: operation achieved
 	        EE_INTERNAL_ERROR."""
 
 Terminate = cfunc("espeak_Terminate", dll, c_int)
 Terminate.__doc__ = """last function to be called.
-   Return:  EE_OK: operation achieved 
+   Return:  EE_OK: operation achieved
 	        EE_INTERNAL_ERROR."""
 
 Info = cfunc("espeak_Info", dll, c_char_p, ("ptr", c_void_p, 1, 0))

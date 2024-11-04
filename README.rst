@@ -11,15 +11,15 @@ Installation
 	pip install pyttsx3
 
 
-> If you get installation errors , make sure you first upgrade your wheel version using :  
+> If you get installation errors , make sure you first upgrade your wheel version using :
 `pip install --upgrade wheel`
 
 **Linux installation requirements :**
 #####################################
 
-+ If you are on a linux system and if the voice output is not working , then  : 
++ If you are on a linux system and if the voice output is not working , then  :
 
-Install espeak and libespeak1 as shown below: 
+Install espeak and libespeak1 as shown below:
 
 ::
 
@@ -34,8 +34,8 @@ Usage :
 	engine = pyttsx3.init()
 	engine.say("I will speak this text")
 	engine.runAndWait()
-	
-	
+
+
 **Changing Voice , Rate and Volume :**
 
 ::

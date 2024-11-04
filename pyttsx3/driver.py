@@ -43,7 +43,6 @@ class DriverProxy(object):
         }.get(sys.platform, "espeak")
         # import driver module
         self._module = importlib.import_module(f"pyttsx3.drivers.{driverName}")
-        self._module = importlib.import_module(f"pyttsx3.drivers.{driverName}")
         # build driver instance
         self._driver = self._module.buildDriver(weakref.proxy(self))
         # initialize refs
@@ -53,7 +52,6 @@ class DriverProxy(object):
         self._name = None
         self._iterator = None
         self._debug = debug
-        self._current_text = ""
         self._current_text = ""
 
     def __del__(self):
@@ -87,7 +85,6 @@ class DriverProxy(object):
             try:
                 cmd[0](*cmd[1])
             except Exception as e:
-                self.notify("error", exception=e)
                 self.notify("error", exception=e)
                 if self._debug:
                     traceback.print_exc()
@@ -147,7 +144,6 @@ class DriverProxy(object):
                 mtd, args, name = self._queue[0]
             except IndexError:
                 break
-            if mtd == self._engine.endLoop:
             if mtd == self._engine.endLoop:
                 break
             self._queue.pop(0)

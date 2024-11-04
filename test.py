@@ -19,7 +19,7 @@ def on_word(name, location, length):
     # Interrupt the utterance if location is above a threshold to simulate test_interrupting_utterance
     if location > 10:
         print("Interrupting utterance by calling endLoop...")
-        engine.endLoop()  # Directly call endLoop instead of stop
+        engine.stop()  # Directly call endLoop instead of stop
 
 
 def on_end(name, completed):

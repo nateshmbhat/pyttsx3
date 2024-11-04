@@ -52,4 +52,4 @@ repos:
     rev: v0.7.2
     hooks:  # Format before linting
       - id: ruff-format
-  #     - id: ruff
+      - id: ruff

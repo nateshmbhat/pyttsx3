@@ -37,7 +37,6 @@ def demo_interrupting_utterance():
     print("\nRunning demo_interrupting_utterance...")
     engine.say("The quick brown fox jumped over the lazy dog.")
     engine.runAndWait()
-    engine.endLoop()
 
 
 # Demo for test_external_event_loop
@@ -53,6 +52,7 @@ def demo_external_event_loop():
     engine.say("The quick brown fox jumped over the lazy dog.")
     engine.startLoop(False)  # Start loop without blocking
     external_loop()
+    print("Calling endLoop from external demo...")
     engine.endLoop()  # End the event loop explicitly
 
 

@@ -1,5 +1,4 @@
 import importlib
-import sys
 import traceback
 import weakref
 import time

@@ -14,8 +14,9 @@ The Engine factory
    Gets a reference to an engine instance that will use the given driver. If the requested driver is already in use by another engine instance, that engine is returned. Otherwise, a new engine is created.
 
    :param driverName: Name of the :mod:`pyttsx3.drivers` module to load and use. Defaults to the best available driver for the platform, currently:
+
       * `avsynth` - AVSynthesizer on macOS
-      * `espeak` - eSpeak on every platform
+      * `espeak` - eSpeak on all platforms
       * `nsss` - NSSpeechSynthesizer on macOS (deprecated by Apple)
       * `sapi5` - SAPI5 on Windows
 

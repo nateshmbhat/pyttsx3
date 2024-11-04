@@ -239,10 +239,7 @@ class Engine(object):
             raise RuntimeError("run loop already started")
         self._inLoop = True
         self._driverLoop = useDriverLoop
-        if useDriverLoop:
-            self.proxy._driver.startLoop()  # This now starts the loop correctly in the driver
-        else:
-            self._iterator = self.proxy._driver.iterate()  # For an external loop
+        self.proxy.startLoop(self._driverLoop)
 
     def endLoop(self) -> None:
         """
@@ -256,16 +253,11 @@ class Engine(object):
         self._inLoop = False
 
     def iterate(self):
+        """
+        Must be called regularly when using an external event loop.
+        """
         if not self._inLoop:
             raise RuntimeError("run loop not started")
         elif self._driverLoop:
             raise RuntimeError("iterate not valid in driver run loop")
-        elif self._iterator is None:
-            raise RuntimeError(
-                "No iterator initialized. Ensure `startLoop(False)` was called."
-            )
-
-        try:
-            next(self._iterator)
-        except StopIteration:
-            self._iterator = None
+        self.proxy.iterate()

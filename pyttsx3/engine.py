@@ -1,6 +1,34 @@
-from . import driver
+from __future__ import annotations
+
+import sys
 import traceback
 import weakref
+
+from . import driver
+
+# https://docs.python.org/3/library/sys.html#sys.platform
+# The keys are values of Python sys.platform, the values are tuples of engine names.
+# The first engine in the value tuple is the default engine for that platform.
+_engines_by_sys_platform = {
+    "darwin": ("nsss", "espeak"),  # NSSpeechSynthesizer (deprecated)
+    "win32": ("sapi5", "espeak"),
+}
+
+
+def engines_by_sys_platform() -> tuple[str]:
+    """
+    Return the names of all TTS engines for the current operating system.
+    If sys.platform is not in _engines_by_sys_platform, return ("espeak",).
+    """
+    return _engines_by_sys_platform.get(sys.platform, ("espeak",))
+
+
+def default_engine_by_sys_platform() -> str:
+    """
+    Return the name of the default TTS engine for the current operating system.
+    The first engine in the value tuple is the default engine for that platform.
+    """
+    return engines_by_sys_platform()[0]
 
 
 class Engine(object):
@@ -17,7 +45,7 @@ class Engine(object):
     @type _debug: bool
     """
 
-    def __init__(self, driverName=None, debug=False):
+    def __init__(self, driverName: str | None = None, debug: bool = False):
         """
         Constructs a new TTS engine instance.
 
@@ -27,12 +55,25 @@ class Engine(object):
         @param debug: Debugging output enabled or not
         @type debug: bool
         """
-        self.proxy = driver.DriverProxy(weakref.proxy(self), driverName, debug)
-        # initialize other vars
+        self.driver_name = driverName or default_engine_by_sys_platform()
+        self.proxy = driver.DriverProxy(weakref.proxy(self), self.driver_name, debug)
         self._connects = {}
         self._inLoop = False
         self._driverLoop = True
         self._debug = debug
+
+    def __repr__(self) -> str:
+        """
+        repr(pyttsx3.init('nsss')) -> "pyttsx3.engine.Engine('nsss', debug=False)"
+        """
+        module_and_class = f"{self.__class__.__module__}.{self.__class__.__name__}"
+        return f"{module_and_class}('{self.driver_name}', debug={self._debug})"
+
+    def __str__(self) -> str:
+        """
+        str(pyttsx3.init('nsss')) -> 'nsss'
+        """
+        return self.driver_name
 
     def _notify(self, topic, **kwargs):
         """

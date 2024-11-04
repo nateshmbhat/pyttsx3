@@ -1,4 +1,5 @@
-import os
+from __future__ import annotations
+
 import sys
 from unittest import mock
 
@@ -9,11 +10,18 @@ import pyttsx3
 
 
 @pytest.fixture
-def engine():
+def engine(driver_name: str | None = None) -> pyttsx3.engine.Engine:
     """Fixture for initializing pyttsx3 engine."""
-    engine = pyttsx3.init()
+    engine = pyttsx3.init(driver_name)
     yield engine
     engine.stop()  # Ensure the engine stops after tests
+
+
+def test_engine_name(engine):
+    expected = pyttsx3.engine.default_engine_by_sys_platform()
+    assert engine.driver_name == expected
+    assert str(engine) == expected
+    assert repr(engine) == f"pyttsx3.engine.Engine('{expected}', debug=False)"
 
 
 # Test for speaking text

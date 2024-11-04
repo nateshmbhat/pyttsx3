@@ -292,3 +292,37 @@ class EspeakDriver(object):
         if not self._looping:
             logging.debug("[DEBUG] Starting loop from say")
             self.startLoop()
+
+    def runAndWait(self, timeout=0.01):
+        """
+        Runs an event loop until the queue is empty or the timeout is reached.
+        """
+        # First, check if the loop is already running
+        if self._looping:
+            logging.debug("[DEBUG] Loop already active; waiting for completion.")
+            start_time = time.time()
+            while self._looping and (time.time() - start_time < timeout):
+                time.sleep(0.1)
+            if self._looping:
+                logging.debug("[WARNING] Forcing loop exit due to timeout.")
+                self.endLoop()
+                self._proxy.setBusy(False)
+
+        # Push endLoop to the queue to complete the sequence
+        self._proxy._push(self._proxy._engine.endLoop, tuple())
+
+        # Start the loop if not already running
+        if not self._looping:
+            self.startLoop()
+
+        # Track the start time for timeout handling
+        start_time = time.time()
+
+        # Main wait loop to ensure commands are fully processed
+        while self._queue or self._text_to_say or self._speaking:
+            if time.time() - start_time > timeout:
+                logging.debug("[WARNING] runAndWait timeout reached.")
+                break
+            time.sleep(0.1)  # Allow time for the loop to process items in the queue
+
+        logging.debug("[DEBUG] runAndWait completed.")

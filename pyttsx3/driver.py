@@ -2,7 +2,6 @@ import importlib
 import traceback
 import weakref
 import logging
-import time
 
 
 class DriverProxy(object):
@@ -182,41 +181,13 @@ class DriverProxy(object):
         """
         self._push(self._driver.setProperty, (name, value))
 
-    def runAndWait(self, timeout=0.01):
+    def runAndWait(self):
         """
-        Runs an event loop until the queue is empty or the timeout is reached.
+        Called by the engine to start an event loop, process all commands in
+        the queue at the start of the loop, and then exit the loop.
         """
-        # First, check if the loop is already running
-        if self._driver._looping:
-            logging.debug("[DEBUG] Loop already active; waiting for completion.")
-            start_time = time.time()
-            while self._driver._looping and (time.time() - start_time < timeout):
-                time.sleep(0.1)
-            if self._driver._looping:
-                logging.debug("[WARNING] Forcing loop exit due to timeout.")
-                self._driver.endLoop()
-                self.setBusy(False)
-
-        # Push endLoop to the queue to complete the sequence
         self._push(self._engine.endLoop, tuple())
-
-        # Start the loop if not already running
-        if not self._driver._looping:
-            self._driver.startLoop()
-
-        # Track the start time for timeout handling
-        start_time = time.time()
-
-        # Main wait loop to ensure commands are fully processed
-        while (
-            self._driver._queue or self._driver._text_to_say or self._driver._speaking
-        ):
-            if time.time() - start_time > timeout:
-                logging.debug("[WARNING] runAndWait timeout reached.")
-                break
-            time.sleep(0.1)  # Allow time for the loop to process items in the queue
-
-        logging.debug("[DEBUG] runAndWait completed.")
+        self._driver.startLoop()
 
     def startLoop(self, useDriverLoop):
         """

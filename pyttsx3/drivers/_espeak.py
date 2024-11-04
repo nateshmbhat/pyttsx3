@@ -36,6 +36,7 @@ def load_library():
     global dll
     paths = [
         # macOS paths
+        "/opt/homebrew/lib/libespeak-ng.1.dylib",
         "/usr/local/lib/libespeak-ng.1.dylib",
         "/usr/local/lib/libespeak.dylib",
         # Linux paths

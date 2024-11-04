@@ -11,5 +11,3 @@ pyttsx3\drivers\nsss.py
 pyttsx3\drivers\sapi5.py
 pyttsx3\engine.py
 pyttsx3\voice.py
-setup.cfg
-setup.py

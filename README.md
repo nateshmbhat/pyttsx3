@@ -96,17 +96,10 @@ engine.runAndWait()
 https://pyttsx3.readthedocs.io/en/latest/
 
 #### Included TTS engines:
-
-<<<<<<< HEAD
-* espeak
-* nsss
-* sapi5
-=======
+* avsynth (macOS)
+* espeak (Linux, macOS, Windows)
+* nsss (macOS)
 * sapi5 (Windows)
-* nsss (Mac OS)
-* avsynth (Mac OS)
-* espeak (Linux, Mac OS, Windows)
->>>>>>> 911b5f9 (Initial work. Looks all working)
 
 Feel free to wrap another text-to-speech engine for use with ``pyttsx3``.
 

@@ -35,7 +35,14 @@ class DriverProxy(object):
         @param debug: Debugging output enabled or not
         @type debug: bool
         """
+<<<<<<< HEAD
         assert driverName
+=======
+        driverName = driverName or {
+            "darwin": "avsynth",
+            "win32": "sapi5",
+        }.get(sys.platform, "espeak")
+>>>>>>> 78f470c (fix for dict method in upstream)
         # import driver module
         self._module = importlib.import_module(f"pyttsx3.drivers.{driverName}")
         # build driver instance
@@ -105,7 +112,7 @@ class DriverProxy(object):
         @type busy: bool
         """
         self._busy = busy
-        if not self._busy:
+        if not self._busy and hasattr(self, "_queue"):
             self._pump()
 
     def isBusy(self):

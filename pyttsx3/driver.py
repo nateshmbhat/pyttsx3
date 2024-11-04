@@ -1,6 +1,7 @@
-import importlib
+import sys
 import traceback
 import weakref
+import importlib
 
 
 class DriverProxy(object):
@@ -24,18 +25,22 @@ class DriverProxy(object):
     @type _iterator: iterator
     """
 
-    def __init__(self, engine, driverName: str, debug: bool):
+    def __init__(self, engine, driverName, debug):
         """
         Constructor.
 
         @param engine: Reference to the engine that owns the driver
         @type engine: L{engine.Engine}
-        @param driverName: Name of the driver module to use under drivers/
+        @param driverName: Name of the driver module to use under drivers/ or
+            None to select the default for the platform
         @type driverName: str
         @param debug: Debugging output enabled or not
         @type debug: bool
         """
-        assert driverName
+        driverName = driverName or {
+            "darwin": "avsynth",
+            "win32": "sapi5",
+        }.get(sys.platform, "espeak")
         # import driver module
         self._module = importlib.import_module(f"pyttsx3.drivers.{driverName}")
         # build driver instance
@@ -66,9 +71,6 @@ class DriverProxy(object):
         @param name: Name associated with the command
         @type name: str
         """
-        print(
-            f"[DEBUG] Adding command to queue: {mtd.__name__}, args: {args}, name: {name}"
-        )
         self._queue.append((mtd, args, name))
         self._pump()
 
@@ -77,9 +79,6 @@ class DriverProxy(object):
         Attempts to process the next command in the queue if one exists and the
         driver is not currently busy.
         """
-        print(
-            f"[DEBUG] Pump called. Queue length: {len(self._queue)}, Busy status: {self._busy}"
-        )
         while (not self._busy) and len(self._queue):
             cmd = self._queue.pop(0)
             self._name = cmd[2]
@@ -110,6 +109,7 @@ class DriverProxy(object):
         @param busy: True when busy, false when idle
         @type busy: bool
         """
+
         self._busy = busy
         if not self._busy and hasattr(self, "_queue"):
             self._pump()

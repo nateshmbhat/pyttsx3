@@ -17,7 +17,7 @@ The Engine factory
 
       * `avsynth` - AVSynthesizer on macOS
       * `espeak` - eSpeak on all platforms
-      * `nsss` - NSSpeechSynthesizer on macOS (deprecated by Apple)
+      * `nsss` - NSSpeechSynthesizer on macOS (Deprecated by Apple)
       * `sapi5` - SAPI5 on Windows
 
    :param debug: Enable debug output or not.

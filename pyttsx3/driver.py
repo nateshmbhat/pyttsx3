@@ -51,7 +51,6 @@ class DriverProxy(object):
         self._iterator = None
         self._debug = debug
         self._current_text = ""
-        self._current_text = ""
 
     def __del__(self):
         try:
@@ -84,7 +83,6 @@ class DriverProxy(object):
             try:
                 cmd[0](*cmd[1])
             except Exception as e:
-                self.notify("error", exception=e)
                 self.notify("error", exception=e)
                 if self._debug:
                     traceback.print_exc()
@@ -144,7 +142,6 @@ class DriverProxy(object):
                 mtd, args, name = self._queue[0]
             except IndexError:
                 break
-            if mtd == self._engine.endLoop:
             if mtd == self._engine.endLoop:
                 break
             self._queue.pop(0)

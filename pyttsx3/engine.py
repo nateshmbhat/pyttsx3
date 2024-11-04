@@ -97,7 +97,7 @@ class Engine(object):
             notifications about this utterance.
         @type name: str
         """
-        if text == None:
+        if text is None:
             return "Argument value can't be none or empty"
         else:
             self.proxy.say(text, name)
@@ -180,7 +180,12 @@ class Engine(object):
             raise RuntimeError("run loop already started")
         self._inLoop = True
         self._driverLoop = True
-        self.proxy.runAndWait()
+        try:
+            self.proxy.runAndWait()
+        finally:
+            # Ensure cleanup if `runAndWait` completes or encounters an error
+            self._inLoop = False
+            self._driverLoop = False
 
     def startLoop(self, useDriverLoop=True):
         """
@@ -208,6 +213,7 @@ class Engine(object):
             raise RuntimeError("run loop not started")
         self.proxy.endLoop(self._driverLoop)
         self._inLoop = False
+        self._driverLoop = False  # Reset `_driverLoop` on end
 
     def iterate(self):
         """

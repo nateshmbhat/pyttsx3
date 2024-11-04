@@ -1,8 +1,6 @@
-import time
-import ctypes
-from unittest import mock
-
 import pyttsx3
+from pyinstrument import Profiler
+import time
 
 # Initialize the pyttsx3 engine
 engine = pyttsx3.init("espeak")
@@ -27,9 +25,9 @@ def on_end(name, completed):
 
 
 # Connect the listeners
-engine.connect("started-utterance", on_start)
-engine.connect("started-word", on_word)
-engine.connect("finished-utterance", on_end)
+# engine.connect("started-utterance", on_start)
+# engine.connect("started-word", on_word)
+# engine.connect("finished-utterance", on_end)
 
 
 # Demo for test_interrupting_utterance
@@ -56,14 +54,28 @@ def demo_external_event_loop():
     engine.endLoop()  # End the event loop explicitly
 
 
+# Demo for testing multiple `say` calls followed by `runAndWait`
+def demo_multiple_say_calls():
+    print("\nRunning demo_multiple_say_calls...")
+    engine.say("The first sentence.")
+    engine.runAndWait()  # Should speak "The first sentence."
+
+    print("Calling say after the first runAndWait()...")
+    engine.say("The second sentence follows immediately.")
+    engine.runAndWait()  # Should speak "The second sentence follows immediately."
+
+    print("Calling say after the second runAndWait()...")
+    engine.say("Finally, the third sentence is spoken.")
+    engine.runAndWait()  # Should speak "Finally, the third sentence is spoken."
+
+
 # Run demos
 demo_interrupting_utterance()
-from pyinstrument import Profiler
 
 # Initialize the profiler
 profiler = Profiler()
 
-# Start profiling
+# Start profiling for the external event loop demo
 profiler.start()
 
 # Run the external event loop demo
@@ -71,6 +83,8 @@ demo_external_event_loop()
 
 # Stop profiling
 profiler.stop()
-
 # Print the profiling report
 profiler.print()
+
+# Run the multiple `say` calls demo
+demo_multiple_say_calls()

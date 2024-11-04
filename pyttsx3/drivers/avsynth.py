@@ -1,6 +1,6 @@
 import objc
 from AppKit import NSSpeechSynthesizer
-from Foundation import NSObject, NSTimer, NSRunLoop, NSDefaultRunLoopMode, NSURL, NSDate
+from Foundation import NSObject, NSTimer, NSRunLoop, NSDefaultRunLoopMode, NSURL, NSDate  # noqa: F401
 from PyObjCTools import AppHelper
 from ..voice import Voice
 

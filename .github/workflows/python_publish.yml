@@ -77,7 +77,7 @@ jobs:
           espeak-ng "eSpeak-NG version $(espeak-ng --version) installed."
           espeak-ng --voices  # List all voices supported by eSpeak.
           espeak-ng --voices=en  # List all English voices supported by eSpeak.
-      
+
       - name: macOS test eSpeak-NG
         if: runner.os == 'macOS'
         shell: python

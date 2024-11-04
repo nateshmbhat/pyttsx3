@@ -170,7 +170,7 @@ def test_changing_volume(engine):
 def test_changing_voices(engine):
     voices = engine.getProperty("voices")
     # TODO: This could be lots of voices! (e.g. 176 on macOS v15.x)
-    for (voice) in voices:
+    for voice in voices:
         engine.setProperty("voice", voice.id)
         engine.say(f"{voice.id = }. {quick_brown_fox}")
     engine.runAndWait()

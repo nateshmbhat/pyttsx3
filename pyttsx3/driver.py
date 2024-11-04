@@ -84,7 +84,7 @@ class DriverProxy(object):
             except Exception as e:
                 self.notify("error", exception=e)
                 if self._debug:
-                    traceback.logging.debug_exc()
+                    traceback.print_exc()
 
     def notify(self, topic, **kwargs):
         """

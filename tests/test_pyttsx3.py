@@ -1,35 +1,83 @@
-import os
+from __future__ import annotations
+
 import sys
+import wave
 from unittest import mock
 
 import pytest
-import wave
 
 import pyttsx3
 
+quick_brown_fox = "The quick brown fox jumped over the lazy dog."
+
 
 @pytest.fixture
-def engine():
+def engine(driver_name: str | None = None) -> pyttsx3.engine.Engine:
     """Fixture for initializing pyttsx3 engine."""
-    engine = pyttsx3.init()
+    engine = pyttsx3.init(driver_name)
     yield engine
     engine.stop()  # Ensure the engine stops after tests
 
 
-# Test for speaking text
-# @pytest.mark.timeout(10)  # Set timeout to 10 seconds
+def test_engine_name(engine):
+    expected = pyttsx3.engine.default_engine_by_sys_platform()
+    assert engine.driver_name == expected
+    assert str(engine) == expected
+    assert repr(engine) == f"pyttsx3.engine.Engine('{expected}', debug=False)"
+
+
 @pytest.mark.skipif(
     sys.platform == "win32", reason="TODO: Fix this test to pass on Windows"
 )
 def test_speaking_text(engine):
     engine.say("Sally sells seashells by the seashore.")
-    engine.say("The quick brown fox jumped over the lazy dog.")
+    engine.say(quick_brown_fox)
+    print(list(pyttsx3._activeEngines.values()))
     engine.runAndWait()
 
 
-# Test for saving voice to a file with additional validation
-# @pytest.mark.timeout(10)  # Set timeout to 10 seconds
-# @pytest.mark.skipif(sys.platform in ("linux", "win32"), reason="TODO: Fix this test to pass on Linux and Windows")
+@pytest.mark.skipif(
+    sys.platform not in ("darwin", "ios"), reason="Testing only on macOS and iOS"
+)
+def test_apple__nsss_voices(engine):
+    import platform
+
+    macos_version, _, macos_hardware = platform.mac_ver()
+    print(f"{sys.platform = }, {macos_version = } on {macos_hardware = }")
+    print(list(pyttsx3._activeEngines))
+    print(engine)
+    assert str(engine) == "nsss", "Expected engine name to be nsss on macOS and iOS"
+    voice = engine.getProperty("voice")
+    # On macOS v14.x, the default nsss voice is com.apple.voice.compact.en-US.Samantha.
+    # ON macOS v15.x, the default nsss voice is ""
+    assert (
+        voice in ("", "com.apple.voice.compact.en-US.Samantha")
+    ), "Expected default voice to be com.apple.voice.compact.en-US.Samantha on macOS and iOS"
+    voices = engine.getProperty("voices")
+    # On macOS v14.x, nsss has 143 voices.
+    # On macOS v15.x, nsss has 176 voices
+    print(f"On macOS v{macos_version}, {engine} has {len(voices) = } voices.")
+    assert len(voices) in (176, 143), "Expected 176 or 143 voices on macOS and iOS"
+    # print("\n".join(voice.id for voice in voices))
+    en_us_voices = [
+        voice for voice in voices if voice.id.startswith("com.apple.eloquence.en-US.")
+    ]
+    assert (
+        len(en_us_voices) == 8
+    ), "Expected 8 com.apple.eloquence.en-US voices on macOS and iOS"
+    names = []
+    for _voice in en_us_voices:
+        engine.setProperty("voice", _voice.id)
+        name = _voice.id.split(".")[-1]
+        names.append(name)
+        engine.say(f"{name} says {quick_brown_fox}")
+    name_str = ", ".join(names)
+    assert name_str == "Eddy, Flo, Grandma, Grandpa, Reed, Rocko, Sandy, Shelley"
+    print(f"({name_str})", end=" ", flush=True)
+    engine.runAndWait()
+    engine.setProperty("voice", voice)  # Reset voice to original value
+
+
 @pytest.mark.xfail(
     sys.platform == "darwin", reason="TODO: Fix this test to pass on macOS"
 )
@@ -53,11 +101,8 @@ def test_saving_to_file(engine, tmp_path):
         assert wf.getframerate() == 22050, "The audio file framerate should be 22050 Hz"
 
 
-# Test for listening for events
-# @pytest.mark.timeout(10)  # Set timeout to 10 seconds
 @pytest.mark.skipif(
-    sys.platform in ("linux", "win32"),
-    reason="TODO: Fix this test to pass on Linux and Windows",
+    sys.platform == "win32", reason="TODO: Fix this test to pass on Windows"
 )
 def test_listening_for_events(engine):
     onStart = mock.Mock()
@@ -68,7 +113,7 @@ def test_listening_for_events(engine):
     engine.connect("started-word", onWord)
     engine.connect("finished-utterance", onEnd)
 
-    engine.say("The quick brown fox jumped over the lazy dog.")
+    engine.say(quick_brown_fox)
     engine.runAndWait()
 
     # Ensure the event handlers were called
@@ -77,8 +122,6 @@ def test_listening_for_events(engine):
     assert onEnd.called
 
 
-# Test for interrupting an utterance
-# @pytest.mark.timeout(10)  # Set timeout to 10 seconds
 @pytest.mark.skipif(
     sys.platform in ("linux", "win32"),
     reason="TODO: Fix this test to pass on Linux and Windows",
@@ -90,58 +133,52 @@ def test_interrupting_utterance(engine):
 
     onWord_mock = mock.Mock(side_effect=onWord)
     engine.connect("started-word", onWord_mock)
-    engine.say("The quick brown fox jumped over the lazy dog.")
+    engine.say(quick_brown_fox)
     engine.runAndWait()
 
     # Check that stop was called
     assert onWord_mock.called
 
 
-# Test for changing voices
-# @pytest.mark.timeout(10)  # Set timeout to 10 seconds
 @pytest.mark.skipif(
-    sys.platform in ("linux", "win32"),
-    reason="TODO: Fix this test to pass on Linux and Windows",
-)
-def test_changing_voices(engine):
-    voices = engine.getProperty("voices")
-    for voice in voices:
-        engine.setProperty("voice", voice.id)
-        engine.say("The quick brown fox jumped over the lazy dog.")
-    engine.runAndWait()
-
-
-# Test for changing speech rate
-# @pytest.mark.timeout(10)  # Set timeout to 10 seconds
-@pytest.mark.skipif(
-    sys.platform in ("linux", "win32"),
-    reason="TODO: Fix this test to pass on Linux and Windows",
+    sys.platform == "win32", reason="TODO: Fix this test to pass on Windows"
 )
 def test_changing_speech_rate(engine):
     rate = engine.getProperty("rate")
-    engine.setProperty("rate", rate + 50)
-    engine.say("The quick brown fox jumped over the lazy dog.")
+    rate_plus_fifty = rate + 50
+    engine.setProperty("rate", rate_plus_fifty)
+    engine.say(f"{rate_plus_fifty = } {quick_brown_fox}")
     engine.runAndWait()
+    engine.setProperty("rate", rate)  # Reset rate to original value
 
 
-# Test for changing volume
-# @pytest.mark.timeout(10)  # Set timeout to 10 seconds
 @pytest.mark.skipif(
-    sys.platform in ("linux", "win32"),
-    reason="TODO: Fix this test to pass on Linux and Windows",
+    sys.platform == "win32", reason="TODO: Fix this test to pass on Windows"
 )
 def test_changing_volume(engine):
     volume = engine.getProperty("volume")
-    engine.setProperty("volume", volume - 0.25)
-    engine.say("The quick brown fox jumped over the lazy dog.")
+    volume_minus_a_quarter = volume - 0.25
+    engine.setProperty("volume", volume_minus_a_quarter)
+    engine.say(f"{volume_minus_a_quarter = } {quick_brown_fox}")
+    engine.runAndWait()
+    engine.setProperty("volume", volume)  # Reset volume to original value
+
+
+@pytest.mark.skipif(
+    sys.platform == "win32", reason="TODO: Fix this test to pass on Windows"
+)
+def test_changing_voices(engine):
+    voices = engine.getProperty("voices")
+    for (
+        voice
+    ) in voices:  # TODO: This could be lots of voices! (e.g. 176 on macOS v15.x)
+        engine.setProperty("voice", voice.id)
+        engine.say(f"{voice.id = }. {quick_brown_fox}")
     engine.runAndWait()
 
 
-# Test for running a driver event loop
-# @pytest.mark.timeout(10)  # Set timeout to 10 seconds
 @pytest.mark.skipif(
-    sys.platform in ("linux", "win32"),
-    reason="TODO: Fix this test to pass on Linux and Windows",
+    sys.platform == "win32", reason="TODO: Fix this test to pass on Windows"
 )
 def test_running_driver_event_loop(engine):
     def onStart(name):
@@ -159,12 +196,10 @@ def test_running_driver_event_loop(engine):
     engine.connect("started-utterance", onStart)
     engine.connect("started-word", onWord)
     engine.connect("finished-utterance", onEnd)
-    engine.say("The quick brown fox jumped over the lazy dog.", "fox")
+    engine.say(quick_brown_fox, "fox")
     engine.startLoop()
 
 
-# Test for using an external event loop
-# @pytest.mark.timeout(10)  # Set timeout to 10 seconds
 @pytest.mark.skipif(
     sys.platform in ("linux", "win32"),
     reason="TODO: Fix this test to pass on Linux and Windows",
@@ -174,7 +209,7 @@ def test_external_event_loop(engine):
         for _ in range(5):
             engine.iterate()
 
-    engine.say("The quick brown fox jumped over the lazy dog.", "fox")
+    engine.say(quick_brown_fox, "fox")
     engine.startLoop(False)
     externalLoop()
     engine.endLoop()

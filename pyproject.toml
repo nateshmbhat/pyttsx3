@@ -52,3 +52,8 @@ urls = { Homepage = "https://github.com/nateshmbhat/pyttsx3" }
 [tool.setuptools]
 packages = [ "pyttsx3", "pyttsx3.drivers" ]
 include-package-data = false
+
+[tool.ruff]
+target-version = "py39"
+line-length = 88
+lint.extend-ignore = [ "F403", "F405", "F821" ]

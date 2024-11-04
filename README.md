@@ -13,14 +13,13 @@
 
 ## Installation :
 
-
 	pip install pyttsx3
 
-> If you get installation errors , make sure you first upgrade your wheel version using :  
+> If you get installation errors , make sure you first upgrade your wheel version using :
 `pip install --upgrade wheel`
 
 
-## Features : 
+## Features :
 
 - ✨Fully **OFFLINE** text to speech conversion
 - 🎈 Choose among different voices installed in your system
@@ -30,14 +29,14 @@
 - ❤️ Simple, powerful, & intuitive API
 
 
-#### Linux installation requirements : 
+#### Linux installation requirements :
 
-+ If you are on a linux system and if the voice output is not working , then  : 
++ If you are on a Linux system and if the voice output is not working, then  :
 
-	Install espeak and libespeak1 as shown below: 
+	Install espeak-ng and libespeak1 as shown below:
 
 	```
-	sudo apt update && sudo apt install espeak libespeak1
+	sudo apt update && sudo apt install espeak-ng libespeak1
 	```
 
 ## Usage :
@@ -47,7 +46,7 @@ import pyttsx3
 engine = pyttsx3.init()
 
 # For Mac, If you face error related to "pyobjc" when running the `init()` method :
-# Install 9.0.1 version of pyobjc : "pip install pyobjc==9.0.1"
+# Install 9.0.1 version of pyobjc : "pip install pyobjc>=9.0.1"
 
 engine.say("I will speak this text")
 engine.runAndWait()
@@ -60,60 +59,52 @@ import pyttsx3
 pyttsx3.speak("I will speak this text")
 ```
 
-	
 **Changing Voice , Rate and Volume :**
 
 ```python3
 import pyttsx3
 engine = pyttsx3.init() # object creation
 
-""" RATE"""
+# RATE
 rate = engine.getProperty('rate')   # getting details of current speaking rate
-print (rate)                        #printing current voice rate
+print (rate)                        # printing current voice rate
 engine.setProperty('rate', 125)     # setting up new voice rate
 
+# VOLUME
+volume = engine.getProperty('volume')   # getting to know current volume level (min=0 and max=1)
+print (volume)                          # printing current volume level
+engine.setProperty('volume',1.0)        # setting up volume level  between 0 and 1
 
-"""VOLUME"""
-volume = engine.getProperty('volume')   #getting to know current volume level (min=0 and max=1)
-print (volume)                          #printing current volume level
-engine.setProperty('volume',1.0)    # setting up volume level  between 0 and 1
-
-"""VOICE"""
-voices = engine.getProperty('voices')       #getting details of current voice
-#engine.setProperty('voice', voices[0].id)  #changing index, changes voices. o for male
-engine.setProperty('voice', voices[1].id)   #changing index, changes voices. 1 for female
+# VOICE
+voices = engine.getProperty('voices')       # getting details of current voice
+#engine.setProperty('voice', voices[0].id)  # changing index, changes voices. o for male
+engine.setProperty('voice', voices[1].id)   # changing index, changes voices. 1 for female
 
 engine.say("Hello World!")
 engine.say('My current speaking rate is ' + str(rate))
 engine.runAndWait()
 engine.stop()
 
-
-"""Saving Voice to a file"""
-# On linux make sure that 'espeak' is installed
+# Saving Voice to a file
+# On Linux, make sure that 'espeak-ng' is installed
 engine.save_to_file('Hello World', 'test.mp3')
 engine.runAndWait()
-
 ```
-
-
-
 
 ### **Full documentation of the Library**
 
 https://pyttsx3.readthedocs.io/en/latest/
 
-
 #### Included TTS engines:
 
-* sapi5
-* nsss
 * espeak
+* nsss
+* sapi5
 
 Feel free to wrap another text-to-speech engine for use with ``pyttsx3``.
 
 ### Project Links :
 
-* PyPI (https://pypi.python.org)
+* PyPI (https://pypi.org/project/pyttsx3)
 * GitHub (https://github.com/nateshmbhat/pyttsx3)
 * Full Documentation (https://pyttsx3.readthedocs.org)

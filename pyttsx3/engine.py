@@ -1,6 +1,34 @@
-from . import driver
+from __future__ import annotations
+
+import sys
 import traceback
 import weakref
+
+from . import driver
+
+# https://docs.python.org/3/library/sys.html#sys.platform
+# The keys are values of Python sys.platform, the values are tuples of engine names.
+# The first engine in the value tuple is the default engine for that platform.
+_engines_by_sys_platform = {
+    "darwin": ("nsss", "espeak"),  # NSSpeechSynthesizer (deprecated)
+    "win32": ("sapi5", "espeak"),
+}
+
+
+def engines_by_sys_platform() -> tuple[str]:
+    """
+    Return the names of all TTS engines for the current operating system.
+    If sys.platform is not in _engines_by_sys_platform, return ("espeak",).
+    """
+    return _engines_by_sys_platform.get(sys.platform, ("espeak",))
+
+
+def default_engine_by_sys_platform() -> str:
+    """
+    Return the name of the default TTS engine for the current operating system.
+    The first engine in the value tuple is the default engine for that platform.
+    """
+    return engines_by_sys_platform()[0]
 
 
 class Engine(object):
@@ -17,7 +45,7 @@ class Engine(object):
     @type _debug: bool
     """
 
-    def __init__(self, driverName=None, debug=False):
+    def __init__(self, driverName: str | None = None, debug: bool = False):
         """
         Constructs a new TTS engine instance.
 
@@ -27,14 +55,27 @@ class Engine(object):
         @param debug: Debugging output enabled or not
         @type debug: bool
         """
-        self.proxy = driver.DriverProxy(weakref.proxy(self), driverName, debug)
-        # initialize other vars
+        self.driver_name = driverName or default_engine_by_sys_platform()
+        self.proxy = driver.DriverProxy(weakref.proxy(self), self.driver_name, debug)
         self._connects = {}
-        self._inLoop = False
-        self._driverLoop = True
         self._debug = debug
+        self._driverLoop = True
+        self._inLoop = False
 
-    def _notify(self, topic, **kwargs):
+    def __repr__(self) -> str:
+        """
+        repr(pyttsx3.init('nsss')) -> "pyttsx3.engine.Engine('nsss', debug=False)"
+        """
+        module_and_class = f"{self.__class__.__module__}.{self.__class__.__name__}"
+        return f"{module_and_class}('{self.driver_name}', debug={self._debug})"
+
+    def __str__(self) -> str:
+        """
+        str(pyttsx3.init('nsss')) -> 'nsss'
+        """
+        return self.driver_name
+
+    def _notify(self, topic: str, **kwargs) -> None:
         """
         Invokes callbacks for an event topic.
 
@@ -50,7 +91,7 @@ class Engine(object):
                 if self._debug:
                     traceback.print_exc()
 
-    def connect(self, topic, cb):
+    def connect(self, topic: str, cb: callable) -> dict:
         """
         Registers a callback for an event topic. Valid topics and their
         associated values:
@@ -71,7 +112,7 @@ class Engine(object):
         arr.append(cb)
         return {"topic": topic, "cb": cb}
 
-    def disconnect(self, token):
+    def disconnect(self, token: dict) -> None:
         """
         Unregisters a callback for an event topic.
 
@@ -87,7 +128,7 @@ class Engine(object):
         if len(arr) == 0:
             del self._connects[topic]
 
-    def say(self, text, name=None):
+    def say(self, text: str | None, name: str | None = None):
         """
         Adds an utterance to speak to the event queue.
 
@@ -97,18 +138,18 @@ class Engine(object):
             notifications about this utterance.
         @type name: str
         """
-        if text == None:
-            return "Argument value can't be none or empty"
-        else:
+        if str(text or "").strip():
             self.proxy.say(text, name)
+        else:
+            return "Argument value can't be None or empty"
 
-    def stop(self):
+    def stop(self) -> None:
         """
         Stops the current utterance and clears the event queue.
         """
         self.proxy.stop()
 
-    def save_to_file(self, text, filename, name=None):
+    def save_to_file(self, text: str, filename: str, name: str | None = None) -> None:
         """
         Adds an utterance to speak to the event queue.
 
@@ -119,16 +160,17 @@ class Engine(object):
             notifications about this utterance.
         @type name: str
         """
+        assert text and filename
         self.proxy.save_to_file(text, filename, name)
 
-    def isBusy(self):
+    def isBusy(self) -> bool:
         """
         @return: True if an utterance is currently being spoken, false if not
         @rtype: bool
         """
         return self.proxy.isBusy()
 
-    def getProperty(self, name):
+    def getProperty(self, name: str) -> object:
         """
         Gets the current value of a property. Valid names and values include:
 
@@ -146,9 +188,10 @@ class Engine(object):
         @rtype: object
         @raise KeyError: When the property name is unknown
         """
+        assert name
         return self.proxy.getProperty(name)
 
-    def setProperty(self, name, value):
+    def setProperty(self, name: str, value: str | float) -> None:
         """
         Adds a property value to set to the event queue. Valid names and values
         include:
@@ -168,7 +211,7 @@ class Engine(object):
         """
         self.proxy.setProperty(name, value)
 
-    def runAndWait(self):
+    def runAndWait(self) -> None:
         """
         Runs an event loop until all commands queued up until this method call
         complete. Blocks during the event loop and returns when the queue is
@@ -182,7 +225,7 @@ class Engine(object):
         self._driverLoop = True
         self.proxy.runAndWait()
 
-    def startLoop(self, useDriverLoop=True):
+    def startLoop(self, useDriverLoop: bool = True) -> None:
         """
         Starts an event loop to process queued commands and callbacks.
 
@@ -198,7 +241,7 @@ class Engine(object):
         self._driverLoop = useDriverLoop
         self.proxy.startLoop(self._driverLoop)
 
-    def endLoop(self):
+    def endLoop(self) -> None:
         """
         Stops a running event loop.
 

@@ -15,7 +15,7 @@ def text_to_speech(text):
 
 def speech_to_text():
     r = s.Recognizer()  # an object r which recognises the voice
-    with s.Microphone() as source:
+    with s.Microphone():
         # when using with statement. The with statement itself ensures proper acquisition and release of resources
         print(r.recognize_google(audio))
         text_to_speech(r.recognize_google(audio))

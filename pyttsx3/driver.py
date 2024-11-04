@@ -1,7 +1,6 @@
-import sys
+import importlib
 import traceback
 import weakref
-import importlib
 
 
 class DriverProxy(object):
@@ -25,22 +24,18 @@ class DriverProxy(object):
     @type _iterator: iterator
     """
 
-    def __init__(self, engine, driverName, debug):
+    def __init__(self, engine, driverName: str, debug: bool):
         """
         Constructor.
 
         @param engine: Reference to the engine that owns the driver
         @type engine: L{engine.Engine}
-        @param driverName: Name of the driver module to use under drivers/ or
-            None to select the default for the platform
+        @param driverName: Name of the driver module to use under drivers/
         @type driverName: str
         @param debug: Debugging output enabled or not
         @type debug: bool
         """
-        driverName = driverName or {
-            "darwin": "nsss",
-            "win32": "sapi5",
-        }.get(sys.platform, "espeak")
+        assert driverName
         # import driver module
         self._module = importlib.import_module(f"pyttsx3.drivers.{driverName}")
         # build driver instance

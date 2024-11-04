@@ -10,7 +10,7 @@ from . import driver
 # The keys are values of Python sys.platform, the values are tuples of engine names.
 # The first engine in the value tuple is the default engine for that platform.
 _engines_by_sys_platform = {
-    "darwin": ("nsss", "espeak"),  # NSSpeechSynthesizer (deprecated)
+    "darwin": ("avsynth", "espeak"),  # NSSpeechSynthesizer (deprecated)
     "win32": ("sapi5", "espeak"),
 }
 
@@ -110,7 +110,7 @@ class Engine(object):
         """
         arr = self._connects.setdefault(topic, [])
         arr.append(cb)
-        return {'topic': topic, 'cb': cb}
+        return {"topic": topic, "cb": cb}
 
     def disconnect(self, token: dict) -> None:
         """
@@ -119,12 +119,12 @@ class Engine(object):
         @param token: Token of the callback to unregister
         @type token: dict
         """
-        topic = token['topic']
+        topic = token["topic"]
         try:
             arr = self._connects[topic]
         except KeyError:
             return
-        arr.remove(token['cb'])
+        arr.remove(token["cb"])
         if len(arr) == 0:
             del self._connects[topic]
 
@@ -150,7 +150,7 @@ class Engine(object):
         self.proxy.stop()
 
     def save_to_file(self, text, filename, name=None):
-        '''
+        """
         Adds an utterance to speak to the event queue.
 
         @param text: Text to speak
@@ -159,7 +159,7 @@ class Engine(object):
         @param name: Name to associate with this utterance. Included in
             notifications about this utterance.
         @type name: str
-        '''
+        """
         self.proxy.save_to_file(text, filename, name)
 
     def isBusy(self) -> bool:
@@ -219,7 +219,7 @@ class Engine(object):
         @raise RuntimeError: When the loop is already running
         """
         if self._inLoop:
-            raise RuntimeError('run loop already started')
+            raise RuntimeError("run loop already started")
         self._inLoop = True
         self._driverLoop = True
         self.proxy.runAndWait()
@@ -235,7 +235,7 @@ class Engine(object):
         @raise RuntimeError: When the loop is already running
         """
         if self._inLoop:
-            raise RuntimeError('run loop already started')
+            raise RuntimeError("run loop already started")
         self._inLoop = True
         self._driverLoop = useDriverLoop
         self.proxy.startLoop(self._driverLoop)
@@ -247,7 +247,7 @@ class Engine(object):
         @raise RuntimeError: When the loop is not running
         """
         if not self._inLoop:
-            raise RuntimeError('run loop not started')
+            raise RuntimeError("run loop not started")
         self.proxy.endLoop(self._driverLoop)
         self._inLoop = False
 
@@ -256,7 +256,7 @@ class Engine(object):
         Must be called regularly when using an external event loop.
         """
         if not self._inLoop:
-            raise RuntimeError('run loop not started')
+            raise RuntimeError("run loop not started")
         elif self._driverLoop:
-            raise RuntimeError('iterate not valid in driver run loop')
+            raise RuntimeError("iterate not valid in driver run loop")
         self.proxy.iterate()

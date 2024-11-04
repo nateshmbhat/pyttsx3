@@ -5,6 +5,7 @@ import ctypes
 import time
 import subprocess
 from tempfile import NamedTemporaryFile
+import logging
 
 if platform.system() == "Windows":
     import winsound
@@ -61,7 +62,7 @@ class EspeakDriver(object):
 
     def stop(self):
         if not self._stopping:
-            print("[DEBUG] EspeakDriver.stop called")
+            logging.debug("[DEBUG] EspeakDriver.stop called")
             if self._looping:
                 self._stopping = True
                 self._looping = False
@@ -186,7 +187,7 @@ class EspeakDriver(object):
                             f.setsampwidth(2)
                             f.setframerate(22050)
                             f.writeframes(self._data_buffer)
-                        print(f"Audio saved to {self._save_file}")
+                        logging.debug(f"Audio saved to {self._save_file}")
                     except Exception as e:
                         raise RuntimeError(f"Error saving WAV file: {e}")
                 else:
@@ -213,9 +214,9 @@ class EspeakDriver(object):
 
                         os.remove(temp_wav_name)
                     except Exception as e:
-                        print(f"Playback error: {e}")
+                        logging.debug(f"Playback error: {e}")
 
-                print(
+                logging.debug(
                     "[DEBUG] Utterance complete; resetting text_to_say and speaking flag."
                 )
                 self._text_to_say = None  # Clear text once utterance completes
@@ -239,25 +240,25 @@ class EspeakDriver(object):
     def endLoop(self):
         """End the loop only when there’s no more text to say."""
         if self._queue or self._text_to_say:
-            print(
+            logging.debug(
                 "EndLoop called, but queue or text_to_say is not empty; continuing..."
             )
             return  # Keep looping if there’s still text
         else:
-            print("EndLoop called; stopping loop.")
+            logging.debug("EndLoop called; stopping loop.")
             self._looping = False
             self._proxy.setBusy(False)
 
     def startLoop(self, external=False):
         """Start the synthesis loop."""
-        print("Starting loop")
+        logging.debug("Starting loop")
         self._looping = True
         self._is_external_loop = external
 
         while self._looping:
             if not self._speaking and self._queue:
                 self._text_to_say = self._queue.pop(0)
-                print(f"Synthesizing text: {self._text_to_say}")
+                logging.debug(f"Synthesizing text: {self._text_to_say}")
                 self._start_synthesis(self._text_to_say)
 
             try:
@@ -286,8 +287,8 @@ class EspeakDriver(object):
             yield
 
     def say(self, text):
-        print(f"[DEBUG] EspeakDriver.say called with text: {text}")
+        logging.debug(f"[DEBUG] EspeakDriver.say called with text: {text}")
         self._queue.append(text)  # Add text to the local queue
         if not self._looping:
-            print("[DEBUG] Starting loop from say")
+            logging.debug("[DEBUG] Starting loop from say")
             self.startLoop()

@@ -1,6 +1,7 @@
 import importlib
 import traceback
 import weakref
+import logging
 import time
 
 
@@ -83,7 +84,7 @@ class DriverProxy(object):
             except Exception as e:
                 self.notify("error", exception=e)
                 if self._debug:
-                    traceback.print_exc()
+                    traceback.logging.debug_exc()
 
     def notify(self, topic, **kwargs):
         """
@@ -106,7 +107,9 @@ class DriverProxy(object):
         @type busy: bool
         """
         if self._busy != busy:
-            print(f"[DEBUG] Transitioning to {'busy' if busy else 'idle'} state.")
+            logging.debug(
+                f"[DEBUG] Transitioning to {'busy' if busy else 'idle'} state."
+            )
         self._busy = busy
         if not busy:
             self._pump()
@@ -185,12 +188,12 @@ class DriverProxy(object):
         """
         # First, check if the loop is already running
         if self._driver._looping:
-            print("[DEBUG] Loop already active; waiting for completion.")
+            logging.debug("[DEBUG] Loop already active; waiting for completion.")
             start_time = time.time()
             while self._driver._looping and (time.time() - start_time < timeout):
                 time.sleep(0.1)
             if self._driver._looping:
-                print("[WARNING] Forcing loop exit due to timeout.")
+                logging.debug("[WARNING] Forcing loop exit due to timeout.")
                 self._driver.endLoop()
                 self.setBusy(False)
 
@@ -209,11 +212,11 @@ class DriverProxy(object):
             self._driver._queue or self._driver._text_to_say or self._driver._speaking
         ):
             if time.time() - start_time > timeout:
-                print("[WARNING] runAndWait timeout reached.")
+                logging.debug("[WARNING] runAndWait timeout reached.")
                 break
             time.sleep(0.1)  # Allow time for the loop to process items in the queue
 
-        print("[DEBUG] runAndWait completed.")
+        logging.debug("[DEBUG] runAndWait completed.")
 
     def startLoop(self, useDriverLoop):
         """
@@ -228,11 +231,11 @@ class DriverProxy(object):
         """
         Called by the engine to stop an event loop.
         """
-        print("DriverProxy.endLoop called; useDriverLoop:", useDriverLoop)
+        logging.debug(f"DriverProxy.endLoop called; useDriverLoop:: {useDriverLoop}")
         self._queue = []
         self._driver.stop()
         if useDriverLoop:
-            print("DriverProxy.endLoop calling driver.endLoop")
+            logging.debug("DriverProxy.endLoop calling driver.endLoop")
             self._driver.endLoop()
         else:
             self._iterator = None

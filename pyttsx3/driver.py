@@ -105,7 +105,7 @@ class DriverProxy:
         @type busy: bool
         """
         self._busy = busy
-        if not self._busy:
+        if not self._busy and hasattr(self, "_queue"):
             self._pump()
 
     def isBusy(self):

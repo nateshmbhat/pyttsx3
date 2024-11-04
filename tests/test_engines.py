@@ -15,7 +15,9 @@ def test_engine_name(driver_name):
     assert engine.driver_name == driver_name
     assert str(engine) == driver_name
     assert repr(engine) == f"pyttsx3.engine.Engine('{driver_name}', debug=False)"
-    engine.stop()
+    print(list(pyttsx3._activeEngines.values()), end=" ")
+    if driver_name != "avsynth":
+        engine.stop()
 
 
 @pytest.mark.skipif(
@@ -26,9 +28,10 @@ def test_speaking_text(driver_name):
     engine = pyttsx3.init(driver_name)
     engine.say("Sally sells seashells by the seashore.")
     engine.say(quick_brown_fox)
-    print(list(pyttsx3._activeEngines.values()), flush=True)
+    print(list(pyttsx3._activeEngines.values()), end=" ", flush=True)
     engine.runAndWait()
-    print(list(pyttsx3._activeEngines.values()), flush=True)
+    if driver_name == "avsynth":
+        print("On avsynth, runAndWait() will never return.")
     engine.stop()
 
 

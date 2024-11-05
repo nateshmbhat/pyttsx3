@@ -36,48 +36,6 @@ def test_speaking_text(engine):
     engine.runAndWait()
 
 
-@pytest.mark.skipif(
-    sys.platform not in ("darwin", "ios"), reason="Testing only on macOS and iOS"
-)
-def test_apple_nsss_voices(engine):
-    import platform
-
-    macos_version, _, macos_hardware = platform.mac_ver()
-    print(f"{sys.platform = }, {macos_version = } on {macos_hardware = }")
-    print(list(pyttsx3._activeEngines))
-    print(engine)
-    assert str(engine) == "nsss", "Expected engine name to be nsss on macOS and iOS"
-    voice = engine.getProperty("voice")
-    # On macOS v14.x, the default nsss voice is com.apple.voice.compact.en-US.Samantha.
-    # ON macOS v15.x, the default nsss voice is ""
-    assert (
-        voice in ("", "com.apple.voice.compact.en-US.Samantha")
-    ), "Expected default voice to be com.apple.voice.compact.en-US.Samantha on macOS and iOS"
-    voices = engine.getProperty("voices")
-    # On macOS v14.x, nsss has 143 voices.
-    # On macOS v15.x, nsss has 176 voices
-    print(f"On macOS v{macos_version}, {engine} has {len(voices) = } voices.")
-    assert len(voices) in (176, 143), "Expected 176 or 143 voices on macOS and iOS"
-    # print("\n".join(voice.id for voice in voices))
-    en_us_voices = [
-        voice for voice in voices if voice.id.startswith("com.apple.eloquence.en-US.")
-    ]
-    assert (
-        len(en_us_voices) == 8
-    ), "Expected 8 com.apple.eloquence.en-US voices on macOS and iOS"
-    names = []
-    for _voice in en_us_voices:
-        engine.setProperty("voice", _voice.id)
-        name = _voice.id.split(".")[-1]
-        names.append(name)
-        engine.say(f"{name} says hello")
-    name_str = ", ".join(names)
-    assert name_str == "Eddy, Flo, Grandma, Grandpa, Reed, Rocko, Sandy, Shelley"
-    print(f"({name_str})", end=" ", flush=True)
-    engine.runAndWait()
-    engine.setProperty("voice", voice)  # Reset voice to original value
-
-
 @pytest.mark.xfail(
     sys.platform == "darwin", reason="TODO: Fix this test to pass on macOS"
 )

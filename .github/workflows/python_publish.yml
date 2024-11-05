@@ -28,7 +28,6 @@ jobs:
         python-version: ['3.9', '3.11', '3.13']
       max-parallel: 9
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 10  # Save resources while our pytests are hanging
     steps:
       - if: runner.os == 'Linux'
         run: sudo apt-get update -q -q && sudo apt-get install --yes espeak-ng libespeak1
@@ -54,10 +53,11 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install pytest pytest-timeout
+          pip install pytest
           pip install --editable .
 
-      - run: pytest -s -vvv --strict --timeout=600
+      - timeout-minutes: 10  # Save resources while our pytests are hanging
+        run: pytest -s -vvv --strict
 
   build:
     runs-on: ubuntu-latest

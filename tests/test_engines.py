@@ -9,9 +9,6 @@ import pyttsx3
 quick_brown_fox = "The quick brown fox jumped over the lazy dog."
 
 
-@pytest.mark.skipif(
-    sys.platform == "win32", reason="TODO: Install eSpeak-NG on Windows"
-)
 @pytest.mark.parametrize("driver_name", pyttsx3.engine.engines_by_sys_platform())
 def test_engine_name(driver_name):
     engine = pyttsx3.init(driver_name)
@@ -22,7 +19,7 @@ def test_engine_name(driver_name):
 
 
 @pytest.mark.skipif(
-    sys.platform == "win32", reason="TODO: Install eSpeak-NG on Windows"
+    sys.platform == "win32", reason="TODO: Make this test pass on eSpeak-NG on Windows"
 )
 @pytest.mark.parametrize("driver_name", pyttsx3.engine.engines_by_sys_platform())
 def test_speaking_text(driver_name):

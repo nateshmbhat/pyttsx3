@@ -31,10 +31,12 @@ jobs:
     timeout-minutes: 10  # Save resources while our pytests are hanging
     steps:
       - if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update -q -q
-          sudo apt-get install --yes espeak-ng libespeak1
-          espeak-ng --version
+        run: sudo apt-get update -q -q && sudo apt-get install --yes espeak-ng libespeak1
+      - if: runner.os == 'macOS'
+        run: brew install espeak-ng
+      - if: runner.os != 'Windows'
+        run: espeak-ng --version
+
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
@@ -46,7 +48,7 @@ jobs:
           pip install pytest pytest-timeout
           pip install --editable .
 
-      - run: pytest -s -vvv --timeout=600
+      - run: pytest -s -vvv --strict --timeout=600
 
   build:
     runs-on: ubuntu-latest

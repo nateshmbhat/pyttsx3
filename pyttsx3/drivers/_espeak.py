@@ -530,7 +530,7 @@ The parameter is for future use, and should be set to NULL"""
 if __name__ == "__main__":
 
     def synth_cb(wav, numsample, events):
-        print(f"Callback received: numsample={numsample}")
+        print(f"Callback received: {numsample=}")
         i = 0
         while True:
             event_type = events[i].type

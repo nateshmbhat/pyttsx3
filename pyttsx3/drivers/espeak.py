@@ -7,6 +7,8 @@ import subprocess
 from tempfile import NamedTemporaryFile
 import logging
 
+logger = logging.getLogger(__name__)
+
 if platform.system() == "Windows":
     import winsound
 

@@ -1,3 +1,6 @@
+from . import _espeak
+from ..voice import Voice
+
 import os
 import wave
 import platform
@@ -11,9 +14,6 @@ logger = logging.getLogger(__name__)
 
 if platform.system() == "Windows":
     import winsound
-
-from . import _espeak
-from ..voice import Voice
 
 
 # noinspection PyPep8Naming
@@ -185,9 +185,9 @@ class EspeakDriver(object):
                     # Save audio to file if requested
                     try:
                         with wave.open(self._save_file, "wb") as f:
-                            f.setnchannels(1)
-                            f.setsampwidth(2)
-                            f.setframerate(22050)
+                            f.setnchannels(1)  # Mono
+                            f.setsampwidth(2)  # 16-bit samples
+                            f.setframerate(22050)  # 22,050 Hz sample rate
                             f.writeframes(self._data_buffer)
                         logging.debug(f"Audio saved to {self._save_file}")
                     except Exception as e:
@@ -199,9 +199,9 @@ class EspeakDriver(object):
                             suffix=".wav", delete=False
                         ) as temp_wav:
                             with wave.open(temp_wav, "wb") as f:
-                                f.setnchannels(1)
-                                f.setsampwidth(2)
-                                f.setframerate(22050)
+                                f.setnchannels(1)  # Mono
+                                f.setsampwidth(2)  # 16-bit samples
+                                f.setframerate(22050)  # 22,050 Hz sample rate
                                 f.writeframes(self._data_buffer)
 
                             temp_wav_name = temp_wav.name

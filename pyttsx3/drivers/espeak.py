@@ -85,7 +85,7 @@ class EspeakDriver(object):
             return voices
         elif name == "voice":
             voice = _espeak.GetCurrentVoice()
-            return voice.contents.name.decode("utf-8")
+            return voice.contents.name.decode("utf-8") if voice.contents.name else None
         elif name == "rate":
             return _espeak.GetParameter(_espeak.RATE)
         elif name == "volume":

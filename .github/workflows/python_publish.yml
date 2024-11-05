@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
         python-version: ['3.9', '3.11', '3.13']
       max-parallel: 9
     runs-on: ${{ matrix.os }}

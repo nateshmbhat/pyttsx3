@@ -50,6 +50,16 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install MSBuild and other dependencies on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          choco install visualstudio2019-buildtools -y
+          choco install visualstudio2022-workload-vctools -y
+          $env:Path += ";C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin"
+          $env:Path += ";C:\Program Files\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin"
+          pip install pycparser
+
       - name: Install dependencies
         run: |
           pip install --upgrade pip

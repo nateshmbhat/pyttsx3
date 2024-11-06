@@ -45,6 +45,7 @@ dependencies = [
   "pyobjc>=2.4; platform_system=='Darwin'",
   "pypiwin32; platform_system=='Windows'",
   "pywin32; platform_system=='Windows'",
+  "pythonnet; platform_system=='Windows'",
 ]
 
 urls = { Homepage = "https://github.com/nateshmbhat/pyttsx3" }

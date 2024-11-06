@@ -139,6 +139,8 @@ class Engine(object):
         @type name: str
         """
         if str(text or "").strip():
+            print(f"[DEBUG] engine - Adding utterance to speak: {text}")
+            print(f"[DEBUG] DotNetSpeech instance ID: {id(self)}")  
             self.proxy.say(text, name)
         else:
             return "Argument value can't be None or empty"

@@ -213,6 +213,8 @@ def Synth(
     flags=0,
     user_data=None,
 ):
+    if isinstance(text, str):
+        text = text.encode("utf-8")
     return cSynth(
         text,
         len(text) * 10,
@@ -542,7 +544,7 @@ if __name__ == "__main__":
     SetSynthCallback(synth_cb)
     s = "This is a test, only a test. "
     uid = c_uint(0)
-    # print 'pitch=',GetParameter(PITCH)
+    # print('pitch=',GetParameter(PITCH))
     # SetParameter(PITCH, 50, 0)
     print(Synth(s))
     while IsPlaying():

@@ -542,8 +542,8 @@ if __name__ == "__main__":
     SetSynthCallback(synth_cb)
     s = "This is a test, only a test. "
     uid = c_uint(0)
-    # print 'pitch=',GetParameter(PITCH)
+    # print('pitch=',GetParameter(PITCH))
     # SetParameter(PITCH, 50, 0)
-    print(Synth(s))
+    print(Synth(s.encode("utf-8")))
     while IsPlaying():
         time.sleep(0.1)

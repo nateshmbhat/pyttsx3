@@ -2,10 +2,17 @@ import clr
 import threading
 import queue
 import time
-from System.Speech.Synthesis import SpeechSynthesizer, SpeakCompletedEventArgs
-from .voice import Voice
 
-clr.AddReference("System.Speech")
+
+def get_dotnet_speech_classes():
+    """Sets up .NET references and imports System.Speech classes."""
+    clr.AddReference("System.Speech")
+    from System.Speech.Synthesis import SpeechSynthesizer, SpeakCompletedEventArgs
+
+    return SpeechSynthesizer, SpeakCompletedEventArgs
+
+
+SpeechSynthesizer, SpeakCompletedEventArgs = get_dotnet_speech_classes()
 
 
 def buildDriver(proxy):

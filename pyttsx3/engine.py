@@ -11,7 +11,7 @@ from . import driver
 # The first engine in the value tuple is the default engine for that platform.
 _engines_by_sys_platform = {
     "darwin": ("nsss", "espeak"),  # NSSpeechSynthesizer (deprecated)
-    "win32": ("sapi5", "espeak"),
+    "win32": ("sapi5", "dotnetspeech", "espeak"),
 }
 
 

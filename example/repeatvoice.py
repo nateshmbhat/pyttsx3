@@ -1,5 +1,6 @@
-import pyttsx3  # pyttsx3 is a text-to-speech conversion library in Python
 import speech_recognition as s  # Google Speech API in Python
+
+import pyttsx3  # pyttsx3 is a text-to-speech conversion library in Python
 
 # Functional programming Model
 

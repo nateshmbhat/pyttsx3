@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import time
 from ctypes import (
     CFUNCTYPE,
@@ -20,7 +18,7 @@ from ctypes import (
 
 
 def cfunc(name, dll, result, *args):
-    """build and apply a ctypes prototype complete with parameter flags"""
+    """Build and apply a ctypes prototype complete with parameter flags"""
     atypes = []
     aflags = []
     for arg in args:
@@ -454,11 +452,13 @@ cListVoices.__doc__ = """Reads the voice files from espeak-data/voices and creat
 
 
 def ListVoices(voice_spec=None):
-    """Reads the voice files from espeak-data/voices and returns a list of VOICE objects.
+    """
+    Reads the voice files from espeak-data/voices and returns a list of VOICE objects.
 
     If voice_spec is None then all voices are listed.
     If voice spec is given, then only the voices which are compatible with the voice_spec
-    are listed, and they are listed in preference order."""
+    are listed, and they are listed in preference order.
+    """
     ppv = cListVoices(voice_spec)
     res = []
     i = 0

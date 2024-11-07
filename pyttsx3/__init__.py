@@ -1,5 +1,6 @@
-from .engine import Engine
 import weakref
+
+from .engine import Engine
 
 _activeEngines = weakref.WeakValueDictionary()
 

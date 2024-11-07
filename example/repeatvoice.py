@@ -1,7 +1,7 @@
 # pip3 install SpeechRecognition
+import speech_recognition  # A speech-to-text conversion library in Python
 
 import pyttsx3  # A text-to-speech conversion library in Python
-import speech_recognition  # A speech-to-text conversion library in Python
 
 
 def text_to_speech(text):

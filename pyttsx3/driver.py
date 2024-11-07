@@ -3,7 +3,7 @@ import traceback
 import weakref
 
 
-class DriverProxy(object):
+class DriverProxy:
     """
     Proxy to a driver implementation.
 

@@ -1,4 +1,4 @@
-class Voice(object):
+class Voice:
     def __init__(self, id, name=None, languages=[], gender=None, age=None):
         self.id = id
         self.name = name

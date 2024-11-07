@@ -119,13 +119,13 @@ class NSSpeechDriver(NSObject):
                 self._toVoice(NSSpeechSynthesizer.attributesForVoice_(v))
                 for v in list(NSSpeechSynthesizer.availableVoices())
             ]
-        elif name == "voice":
+        if name == "voice":
             return self._tts.voice()
-        elif name == "rate":
+        if name == "rate":
             return self._tts.rate()
-        elif name == "volume":
+        if name == "volume":
             return self._tts.volume()
-        elif name == "pitch":
+        if name == "pitch":
             print("Pitch adjustment not supported when using NSSS")
         else:
             raise KeyError("unknown property %s" % name)

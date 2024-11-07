@@ -1,7 +1,7 @@
 # noinspection PyUnresolvedReferences
 import objc
 from AppKit import NSSpeechSynthesizer
-from Foundation import *
+from Foundation import NSURL, NSDate, NSDefaultRunLoopMode, NSObject, NSRunLoop, NSTimer
 from PyObjCTools import AppHelper
 
 # noinspection PyProtectedMember
@@ -150,10 +150,13 @@ class NSSpeechDriver(NSObject):
 
     @objc.python_method
     def save_to_file(self, text, filename):
+        """
+        Apple writes .aiff, not .wav. https://github.com/nateshmbhat/pyttsx3/issues/361
+        """
         self._proxy.setBusy(True)
         self._completed = True
         self._current_text = text
-        url = Foundation.NSURL.fileURLWithPath_(filename)
+        url = NSURL.fileURLWithPath_(filename)
         self._tts.startSpeakingString_toURL_(text, url)
 
     def speechSynthesizer_didFinishSpeaking_(self, tts, success):

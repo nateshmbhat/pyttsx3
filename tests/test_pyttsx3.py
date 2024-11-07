@@ -36,10 +36,10 @@ def test_speaking_text(engine):
     engine.runAndWait()
 
 
-@pytest.mark.xfail(
-    sys.platform == "darwin", reason="TODO: Fix this test to pass on macOS"
-)
 def test_saving_to_file(engine, tmp_path):
+    """
+    Apple writes .aiff, not .wav.  https://github.com/nateshmbhat/pyttsx3/issues/361
+    """
     test_file = tmp_path / "test.wav"  # Using .wav for easier validation
 
     # Save the speech to a file
@@ -53,10 +53,13 @@ def test_saving_to_file(engine, tmp_path):
     assert test_file.stat().st_size > 0, "The audio file is empty"
 
     # Check if the file is a valid .wav file using the wave module
-    with wave.open(str(test_file), "rb") as wf:
-        assert wf.getnchannels() == 1, "The audio file should have 1 channel (mono)"
-        assert wf.getsampwidth() == 2, "The audio file sample width should be 2 bytes"
-        assert wf.getframerate() == 22050, "The audio file framerate should be 22050 Hz"
+    try:
+        with wave.open(str(test_file), "rb") as wf:
+            assert wf.getnchannels() == 1, "The audio file should have 1 channel (mono)"
+            assert wf.getsampwidth() == 2, "Audio file sample width should be 2 bytes"
+            assert wf.getframerate() == 22050, "Audio file framerate should be 22050 Hz"
+    except wave.Error:
+        assert sys.platform in {"darwin", "ios"}, "Apple writes .aiff, not .wav files."
 
 
 @pytest.mark.skipif(

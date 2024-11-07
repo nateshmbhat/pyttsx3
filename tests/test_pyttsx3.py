@@ -20,7 +20,7 @@ def engine(driver_name: str | None = None) -> pyttsx3.engine.Engine:
     engine.stop()  # Ensure the engine stops after tests
 
 
-def test_engine_name(engine):
+def test_engine_name(engine) -> None:
     expected = pyttsx3.engine.default_engine_by_sys_platform()
     assert engine.driver_name == expected
     assert str(engine) == expected
@@ -30,7 +30,7 @@ def test_engine_name(engine):
 @pytest.mark.skipif(
     sys.platform == "win32", reason="TODO: Fix this test to pass on Windows"
 )
-def test_speaking_text(engine):
+def test_speaking_text(engine) -> None:
     engine.say("Sally sells seashells by the seashore.")
     engine.say(quick_brown_fox)
     print(list(pyttsx3._activeEngines.values()))
@@ -154,7 +154,7 @@ def test_saving_to_file(engine, tmp_path: Path) -> None:
 @pytest.mark.skipif(
     sys.platform == "win32", reason="TODO: Fix this test to pass on Windows"
 )
-def test_listening_for_events(engine):
+def test_listening_for_events(engine) -> None:
     onStart = mock.Mock()
     onWord = mock.Mock()
     onEnd = mock.Mock()
@@ -176,8 +176,8 @@ def test_listening_for_events(engine):
     sys.platform in ("linux", "win32"),
     reason="TODO: Fix this test to pass on Linux and Windows",
 )
-def test_interrupting_utterance(engine):
-    def onWord(name, location, length):
+def test_interrupting_utterance(engine) -> None:
+    def onWord(name, location, length) -> None:
         if location > 10:
             engine.stop()
 
@@ -193,7 +193,7 @@ def test_interrupting_utterance(engine):
 @pytest.mark.skipif(
     sys.platform == "win32", reason="TODO: Fix this test to pass on Windows"
 )
-def test_changing_speech_rate(engine):
+def test_changing_speech_rate(engine) -> None:
     rate = engine.getProperty("rate")
     rate_plus_fifty = rate + 50
     engine.setProperty("rate", rate_plus_fifty)
@@ -205,7 +205,7 @@ def test_changing_speech_rate(engine):
 @pytest.mark.skipif(
     sys.platform == "win32", reason="TODO: Fix this test to pass on Windows"
 )
-def test_changing_volume(engine):
+def test_changing_volume(engine) -> None:
     volume = engine.getProperty("volume")
     volume_minus_a_quarter = volume - 0.25
     engine.setProperty("volume", volume_minus_a_quarter)
@@ -217,7 +217,7 @@ def test_changing_volume(engine):
 @pytest.mark.skipif(
     sys.platform == "win32", reason="TODO: Fix this test to pass on Windows"
 )
-def test_changing_voices(engine):
+def test_changing_voices(engine) -> None:
     voices = engine.getProperty("voices")
     for (
         voice
@@ -230,14 +230,14 @@ def test_changing_voices(engine):
 @pytest.mark.skipif(
     sys.platform == "win32", reason="TODO: Fix this test to pass on Windows"
 )
-def test_running_driver_event_loop(engine):
-    def onStart(name):
+def test_running_driver_event_loop(engine) -> None:
+    def onStart(name) -> None:
         print("starting", name)
 
-    def onWord(name, location, length):
+    def onWord(name, location, length) -> None:
         print("word", name, location, length)
 
-    def onEnd(name, completed):
+    def onEnd(name, completed) -> None:
         if name == "fox":
             engine.say("What a lazy dog!", "dog")
         elif name == "dog":
@@ -254,8 +254,8 @@ def test_running_driver_event_loop(engine):
     sys.platform in ("linux", "win32"),
     reason="TODO: Fix this test to pass on Linux and Windows",
 )
-def test_external_event_loop(engine):
-    def externalLoop():
+def test_external_event_loop(engine) -> None:
+    def externalLoop() -> None:
         for _ in range(5):
             engine.iterate()
 

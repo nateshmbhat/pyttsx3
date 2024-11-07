@@ -4,7 +4,7 @@ import speech_recognition  # A speech-to-text conversion library in Python
 import pyttsx3  # A text-to-speech conversion library in Python
 
 
-def text_to_speech(text):
+def text_to_speech(text) -> None:
     # engine connects us to hardware in this case
     eng = pyttsx3.init()
     # Engine created
@@ -13,7 +13,7 @@ def text_to_speech(text):
     eng.runAndWait()
 
 
-def speech_to_text():
+def speech_to_text() -> None:
     recognizer = speech_recognition.Recognizer()
     with speech_recognition.Microphone() as microphone:
         audio = recognizer.listen(microphone)

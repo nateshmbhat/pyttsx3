@@ -18,7 +18,7 @@ import weakref
 
 import pythoncom
 
-from ..voice import Voice
+from pyttsx3.voice import Voice
 
 # common voices
 MSSAM = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Speech\\Voices\\Tokens\\MSSam"
@@ -36,7 +36,7 @@ def buildDriver(proxy):
 
 # noinspection PyPep8Naming,PyShadowingNames
 class SAPI5Driver:
-    def __init__(self, proxy):
+    def __init__(self, proxy) -> None:
         self._tts = comtypes.client.CreateObject("SAPI.SPVoice")
         # all events
         self._tts.EventInterests = 33790
@@ -52,10 +52,10 @@ class SAPI5Driver:
         self._rateWpm = 200
         self.setProperty("voice", self.getProperty("voice"))
 
-    def destroy(self):
+    def destroy(self) -> None:
         self._tts.EventInterests = 0
 
-    def say(self, text):
+    def say(self, text) -> None:
         self._proxy.setBusy(True)
         self._proxy.notify("started-utterance")
         self._speaking = True
@@ -67,14 +67,14 @@ class SAPI5Driver:
             str(text).encode("utf-8").decode("utf-8"), 1
         )  # -> stream_number as described in the remarks of the documentation
 
-    def stop(self):
+    def stop(self) -> None:
         if not self._speaking:
             return
         self._proxy.setBusy(True)
         self._stopping = True
         self._tts.Speak("", 3)
 
-    def save_to_file(self, text, filename):
+    def save_to_file(self, text, filename) -> None:
         cwd = os.getcwd()
         stream = comtypes.client.CreateObject("SAPI.SPFileStream")
         stream.Open(filename, SpeechLib.SSFMCreateForWrite)
@@ -95,7 +95,8 @@ class SAPI5Driver:
         for token in tokens:
             if token.Id == id_:
                 return token
-        raise ValueError("unknown voice id %s", id_)
+        msg = "unknown voice id %s"
+        raise ValueError(msg, id_)
 
     def getProperty(self, name):
         if name == "voices":
@@ -108,10 +109,11 @@ class SAPI5Driver:
             return self._tts.Volume / 100.0
         if name == "pitch":
             print("Pitch adjustment not supported when using SAPI5")
-        else:
-            raise KeyError("unknown property %s" % name)
+            return None
+        msg = f"unknown property {name}"
+        raise KeyError(msg)
 
-    def setProperty(self, name, value):
+    def setProperty(self, name, value) -> None:
         if name == "voice":
             token = self._tokenFromId(value)
             self._tts.Voice = token
@@ -133,9 +135,10 @@ class SAPI5Driver:
         elif name == "pitch":
             print("Pitch adjustment not supported when using SAPI5")
         else:
-            raise KeyError("unknown property %s" % name)
+            msg = f"unknown property {name}"
+            raise KeyError(msg)
 
-    def startLoop(self):
+    def startLoop(self) -> None:
         first = True
         self._looping = True
         while self._looping:
@@ -145,7 +148,7 @@ class SAPI5Driver:
             pythoncom.PumpWaitingMessages()
             time.sleep(0.05)
 
-    def endLoop(self):
+    def endLoop(self) -> None:
         self._looping = False
 
     def iterate(self):
@@ -157,18 +160,18 @@ class SAPI5Driver:
 
 # noinspection PyPep8Naming,PyProtectedMember,PyUnusedLocal,PyShadowingNames
 class SAPI5DriverEventSink:
-    def __init__(self):
+    def __init__(self) -> None:
         self._driver = None
 
-    def setDriver(self, driver):
+    def setDriver(self, driver) -> None:
         self._driver = driver
 
-    def _ISpeechVoiceEvents_StartStream(self, stream_number, stream_position):
+    def _ISpeechVoiceEvents_StartStream(self, stream_number, stream_position) -> None:
         self._driver._proxy.notify(
             "started-word", location=stream_number, length=stream_position
         )
 
-    def _ISpeechVoiceEvents_EndStream(self, stream_number, stream_position):
+    def _ISpeechVoiceEvents_EndStream(self, stream_number, stream_position) -> None:
         d = self._driver
         if d._speaking:
             d._proxy.notify("finished-utterance", completed=not d._stopping)
@@ -177,7 +180,9 @@ class SAPI5DriverEventSink:
         d._proxy.setBusy(False)
         d.endLoop()  # hangs if you dont have this
 
-    def _ISpeechVoiceEvents_Word(self, stream_number, stream_position, char, length):
+    def _ISpeechVoiceEvents_Word(
+        self, stream_number, stream_position, char, length
+    ) -> None:
         if current_text := self._driver._current_text:
             current_word = current_text[char : char + length]
         else:

@@ -18,7 +18,7 @@ from ctypes import (
 
 
 def cfunc(name, dll, result, *args):
-    """Build and apply a ctypes prototype complete with parameter flags"""
+    """Build and apply a ctypes prototype complete with parameter flags."""
     atypes = []
     aflags = []
     for arg in args:
@@ -30,7 +30,7 @@ def cfunc(name, dll, result, *args):
 dll = None
 
 
-def load_library():
+def load_library() -> bool:
     global dll
     paths = [
         # macOS paths
@@ -57,9 +57,8 @@ def load_library():
 
 try:
     if not load_library():
-        raise RuntimeError(
-            "This means you probably do not have eSpeak or eSpeak-ng installed!"
-        )
+        msg = "This means you probably do not have eSpeak or eSpeak-ng installed!"
+        raise RuntimeError(msg)
 except Exception:
     raise
 
@@ -126,7 +125,7 @@ cSetSynthCallback = cfunc(
 SynthCallback = None
 
 
-def SetSynthCallback(cb):
+def SetSynthCallback(cb) -> None:
     global SynthCallback
     SynthCallback = t_espeak_callback(cb)
     cSetSynthCallback(SynthCallback)
@@ -162,7 +161,7 @@ cSetUriCallback = cfunc(
 UriCallback = None
 
 
-def SetUriCallback(cb):
+def SetUriCallback(cb) -> None:
     global UriCallback
     UriCallback = t_UriCallback(UriCallback)
     cSetUriCallback(UriCallback)
@@ -283,7 +282,7 @@ Synth.__doc__ = """Synthesize speech for the specified text.  The speech sound d
            EE_INTERNAL_ERROR."""
 
 
-def Synth_Mark(text, index_mark, end_position=0, flags=CHARS_AUTO):
+def Synth_Mark(text, index_mark, end_position=0, flags=CHARS_AUTO) -> None:
     cSynth_Mark(text, len(text) + 1, index_mark, end_position, flags)
 
 
@@ -432,11 +431,11 @@ class VOICE(Structure):
         ("spare", c_void_p),
     ]
 
-    def __repr__(self):
-        """Print the fields"""
+    def __repr__(self) -> str:
+        """Print the fields."""
         res = []
         for field in self._fields_:
-            res.append("%s=%s" % (field[0], repr(getattr(self, field[0]))))
+            res.append(f"{field[0]}={getattr(self, field[0])!r}")
         return self.__class__.__name__ + "(" + ",".join(res) + ")"
 
 
@@ -530,7 +529,7 @@ The parameter is for future use, and should be set to NULL"""
 
 if __name__ == "__main__":
 
-    def synth_cb(wav, numsample, events):
+    def synth_cb(wav, numsample, events) -> int:
         print(numsample, end="")
         i = 0
         while True:

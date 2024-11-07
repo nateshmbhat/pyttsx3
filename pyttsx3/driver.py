@@ -1,3 +1,4 @@
+import contextlib
 import importlib
 import traceback
 import weakref
@@ -24,7 +25,7 @@ class DriverProxy:
     @type _iterator: iterator
     """
 
-    def __init__(self, engine, driverName: str, debug: bool):
+    def __init__(self, engine, driverName: str, debug: bool) -> None:
         """
         Constructor.
 
@@ -49,13 +50,11 @@ class DriverProxy:
         self._debug = debug
         self._current_text = ""
 
-    def __del__(self):
-        try:
+    def __del__(self) -> None:
+        with contextlib.suppress(AttributeError, TypeError):
             self._driver.destroy()
-        except (AttributeError, TypeError):
-            pass
 
-    def _push(self, mtd, args, name=None):
+    def _push(self, mtd, args, name=None) -> None:
         """
         Adds a command to the queue.
 
@@ -69,7 +68,7 @@ class DriverProxy:
         self._queue.append((mtd, args, name))
         self._pump()
 
-    def _pump(self):
+    def _pump(self) -> None:
         """
         Attempts to process the next command in the queue if one exists and the
         driver is not currently busy.
@@ -84,7 +83,7 @@ class DriverProxy:
                 if self._debug:
                     traceback.print_exc()
 
-    def notify(self, topic, **kwargs):
+    def notify(self, topic, **kwargs) -> None:
         """
         Sends a notification to the engine from the driver.
 
@@ -97,7 +96,7 @@ class DriverProxy:
             kwargs["name"] = self._name
         self._engine._notify(topic, **kwargs)
 
-    def setBusy(self, busy):
+    def setBusy(self, busy) -> None:
         """
         Called by the driver to indicate it is busy.
 
@@ -111,11 +110,11 @@ class DriverProxy:
     def isBusy(self):
         """
         @return: True if the driver is busy, false if not
-        @rtype: bool
+        @rtype: bool.
         """
         return self._busy
 
-    def say(self, text, name):
+    def say(self, text, name) -> None:
         """
         Called by the engine to push a say command onto the queue.
 
@@ -127,7 +126,7 @@ class DriverProxy:
         self._current_text = text
         self._push(self._driver.say, (text,), name)
 
-    def stop(self):
+    def stop(self) -> None:
         """
         Called by the engine to stop the current utterance and clear the queue
         of commands.
@@ -143,7 +142,7 @@ class DriverProxy:
             self._queue.pop(0)
         self._driver.stop()
 
-    def save_to_file(self, text, filename, name):
+    def save_to_file(self, text, filename, name) -> None:
         """
         Called by the engine to push a say command onto the queue.
 
@@ -165,7 +164,7 @@ class DriverProxy:
         """
         return self._driver.getProperty(name)
 
-    def setProperty(self, name, value):
+    def setProperty(self, name, value) -> None:
         """
         Called by the engine to set a driver property value.
 
@@ -176,27 +175,23 @@ class DriverProxy:
         """
         self._push(self._driver.setProperty, (name, value))
 
-    def runAndWait(self):
+    def runAndWait(self) -> None:
         """
         Called by the engine to start an event loop, process all commands in
         the queue at the start of the loop, and then exit the loop.
         """
-        self._push(self._engine.endLoop, tuple())
+        self._push(self._engine.endLoop, ())
         self._driver.startLoop()
 
-    def startLoop(self, useDriverLoop):
-        """
-        Called by the engine to start an event loop.
-        """
+    def startLoop(self, useDriverLoop) -> None:
+        """Called by the engine to start an event loop."""
         if useDriverLoop:
             self._driver.startLoop()
         else:
             self._iterator = self._driver.iterate()
 
-    def endLoop(self, useDriverLoop):
-        """
-        Called by the engine to stop an event loop.
-        """
+    def endLoop(self, useDriverLoop) -> None:
+        """Called by the engine to stop an event loop."""
         self._queue = []
         self._driver.stop()
         if useDriverLoop:
@@ -205,12 +200,10 @@ class DriverProxy:
             self._iterator = None
         self.setBusy(True)
 
-    def iterate(self):
+    def iterate(self) -> None:
         """
         Called by the engine to iterate driver commands and notifications from
         within an external event loop.
         """
-        try:
+        with contextlib.suppress(StopIteration):
             next(self._iterator)
-        except StopIteration:
-            pass

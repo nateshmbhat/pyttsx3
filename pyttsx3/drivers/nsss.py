@@ -7,22 +7,20 @@ from PyObjCTools import AppHelper
 # noinspection PyProtectedMember
 from PyObjCTools.AppHelper import PyObjCAppHelperRunLoopStopper
 
-from ..voice import Voice
+from pyttsx3.voice import Voice
 
 
 # noinspection PyUnresolvedReferences
 class RunLoopStopper(PyObjCAppHelperRunLoopStopper):
-    """
-    Overrides PyObjCAppHelperRunLoopStopper to terminate after endLoop.
-    """
+    """Overrides PyObjCAppHelperRunLoopStopper to terminate after endLoop."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.shouldStop = False
 
     def init(self):
         return objc.super(RunLoopStopper, self).init()
 
-    def stop(self):
+    def stop(self) -> None:
         self.shouldStop = True
 
 
@@ -33,7 +31,7 @@ def buildDriver(proxy):
 
 # noinspection PyUnresolvedReferences,PyPep8Naming,PyUnusedLocal
 class NSSpeechDriver(NSObject):
-    def __init__(self):
+    def __init__(self) -> None:
         self._proxy = None
         self._tts = None
         self._completed = False
@@ -54,14 +52,14 @@ class NSSpeechDriver(NSObject):
             self._completed = True
         return self
 
-    def destroy(self):
+    def destroy(self) -> None:
         self._tts.setDelegate_(None)
         del self._tts
 
-    def onPumpFirst_(self, timer):
+    def onPumpFirst_(self, timer) -> None:
         self._proxy.setBusy(False)
 
-    def startLoop(self):
+    def startLoop(self) -> None:
         # https://github.com/ronaldoussoren/pyobjc/blob/master/pyobjc-framework-Cocoa/Lib/PyObjCTools/AppHelper.py#L243C25-L243C25  # noqa
         NSTimer.scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_(
             0.0, self, "onPumpFirst:", None, False
@@ -82,7 +80,7 @@ class NSSpeechDriver(NSObject):
         PyObjCAppHelperRunLoopStopper.removeRunLoopStopperFromRunLoop_(runLoop)
 
     @staticmethod
-    def endLoop():
+    def endLoop() -> None:
         AppHelper.stopEventLoop()
 
     def iterate(self):
@@ -90,14 +88,14 @@ class NSSpeechDriver(NSObject):
         yield
 
     @objc.python_method
-    def say(self, text):
+    def say(self, text) -> None:
         self._proxy.setBusy(True)
         self._completed = True
         self._proxy.notify("started-utterance")
         self._current_text = text
         self._tts.startSpeakingString_(text)
 
-    def stop(self):
+    def stop(self) -> None:
         if self._proxy.isBusy():
             self._completed = False
         self._tts.stopSpeaking()
@@ -127,11 +125,12 @@ class NSSpeechDriver(NSObject):
             return self._tts.volume()
         if name == "pitch":
             print("Pitch adjustment not supported when using NSSS")
-        else:
-            raise KeyError("unknown property %s" % name)
+            return None
+        msg = f"unknown property {name}"
+        raise KeyError(msg)
 
     @objc.python_method
-    def setProperty(self, name, value):
+    def setProperty(self, name, value) -> None:
         if name == "voice":
             # vol/rate gets reset, so store and restore it
             vol = self._tts.volume()
@@ -146,28 +145,24 @@ class NSSpeechDriver(NSObject):
         elif name == "pitch":
             print("Pitch adjustment not supported when using NSSS")
         else:
-            raise KeyError("unknown property %s" % name)
+            msg = f"unknown property {name}"
+            raise KeyError(msg)
 
     @objc.python_method
-    def save_to_file(self, text, filename):
-        """
-        Apple writes .aiff, not .wav. https://github.com/nateshmbhat/pyttsx3/issues/361
-        """
+    def save_to_file(self, text, filename) -> None:
+        """Apple writes .aiff, not .wav. https://github.com/nateshmbhat/pyttsx3/issues/361."""
         self._proxy.setBusy(True)
         self._completed = True
         self._current_text = text
         url = NSURL.fileURLWithPath_(filename)
         self._tts.startSpeakingString_toURL_(text, url)
 
-    def speechSynthesizer_didFinishSpeaking_(self, tts, success):
-        if not self._completed:
-            success = False
-        else:
-            success = True
+    def speechSynthesizer_didFinishSpeaking_(self, tts, success) -> None:
+        success = bool(self._completed)
         self._proxy.notify("finished-utterance", completed=success)
         self._proxy.setBusy(False)
 
-    def speechSynthesizer_willSpeakWord_ofString_(self, tts, rng, text):
+    def speechSynthesizer_willSpeakWord_ofString_(self, tts, rng, text) -> None:
         if self._current_text:
             current_word = self._current_text[rng.location : rng.location + rng.length]
         else:

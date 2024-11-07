@@ -56,4 +56,3 @@ include-package-data = false
 [tool.ruff]
 target-version = "py39"
 line-length = 88
-lint.extend-ignore = [ "F403", "F405", "F821" ]

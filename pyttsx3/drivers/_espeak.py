@@ -280,7 +280,7 @@ Synth.__doc__ = """Synthesize speech for the specified text.  The speech sound d
    Return: EE_OK: operation achieved
            EE_BUFFER_FULL: the command can not be buffered;
              you may try after a while to call the function again.
-	   EE_INTERNAL_ERROR."""
+           EE_INTERNAL_ERROR."""
 
 
 def Synth_Mark(text, index_mark, end_position=0, flags=CHARS_AUTO):
@@ -310,7 +310,7 @@ Synth_Mark.__doc__ = """Synthesize speech for the specified text.  Similar to es
    Return:  EE_OK: operation achieved
             EE_BUFFER_FULL: the command can not be buffered;
              you may try after a while to call the function again.
-	        EE_INTERNAL_ERROR."""
+                EE_INTERNAL_ERROR."""
 
 Key = cfunc("espeak_Key", dll, c_int, ("key_name", c_char_p, 1))
 Key.__doc__ = """Speak the name of a keyboard key.
@@ -319,7 +319,7 @@ Key.__doc__ = """Speak the name of a keyboard key.
    Return: EE_OK: operation achieved
            EE_BUFFER_FULL: the command can not be buffered;
              you may try after a while to call the function again.
-	   EE_INTERNAL_ERROR."""
+           EE_INTERNAL_ERROR."""
 
 Char = cfunc("espeak_Char", dll, c_int, ("character", c_wchar, 1))
 Char.__doc__ = """Speak the name of the given character
@@ -327,7 +327,7 @@ Char.__doc__ = """Speak the name of the given character
    Return: EE_OK: operation achieved
            EE_BUFFER_FULL: the command can not be buffered;
              you may try after a while to call the function again.
-	   EE_INTERNAL_ERROR."""
+           EE_INTERNAL_ERROR."""
 
 # Speech Parameters
 SILENCE = 0  # internal use
@@ -517,12 +517,12 @@ IsPlaying.__doc__ = """Returns 1 if audio is played, 0 otherwise."""
 Synchronize = cfunc("espeak_Synchronize", dll, c_int)
 Synchronize.__doc__ = """This function returns when all data have been spoken.
    Return:  EE_OK: operation achieved
-	        EE_INTERNAL_ERROR."""
+                EE_INTERNAL_ERROR."""
 
 Terminate = cfunc("espeak_Terminate", dll, c_int)
 Terminate.__doc__ = """last function to be called.
    Return:  EE_OK: operation achieved
-	        EE_INTERNAL_ERROR."""
+                EE_INTERNAL_ERROR."""
 
 Info = cfunc("espeak_Info", dll, c_char_p, ("ptr", c_void_p, 1, 0))
 Info.__doc__ = """Returns the version number string.

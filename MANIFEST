@@ -7,6 +7,7 @@ pyttsx3\engine.py
 pyttsx3\voice.py
 pyttsx3\drivers\__init__.py
 pyttsx3\drivers\_espeak.py
+pyttsx3\drivers\dotnetspeech.py
 pyttsx3\drivers\dummy.py
 pyttsx3\drivers\espeak.py
 pyttsx3\drivers\nsss.py

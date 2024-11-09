@@ -67,6 +67,8 @@ class DriverProxy:
         @type name: str
         """
         self._queue.append((mtd, args, name))
+        print(f"[DEBUG] Added to proxy queue: {mtd.__name__} with args: {args}")
+
         self._pump()
 
     def _pump(self):
@@ -75,6 +77,7 @@ class DriverProxy:
         driver is not currently busy.
         """
         while (not self._busy) and len(self._queue):
+            print("[DEBUG] Pumping next command from queue.")
             cmd = self._queue.pop(0)
             self._name = cmd[2]
             try:
@@ -124,6 +127,7 @@ class DriverProxy:
         @param name: Name to associate with the utterance
         @type name: str
         """
+        print("[DEBUG] - DRiver Adding text to queue: {text}")
         self._current_text = text
         self._push(self._driver.say, (text,), name)
 

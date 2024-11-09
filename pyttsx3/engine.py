@@ -11,7 +11,7 @@ from . import driver
 # The first engine in the value tuple is the default engine for that platform.
 _engines_by_sys_platform = {
     "darwin": ("nsss", "espeak"),  # NSSpeechSynthesizer (deprecated)
-    "win32": ("sapi5", "espeak"),
+    "win32": ("sapi5", "dotnetspeech", "espeak"),
 }
 
 
@@ -139,6 +139,8 @@ class Engine:
         @type name: str
         """
         if str(text or "").strip():
+            print(f"[DEBUG] engine - Adding utterance to speak: {text}")
+            print(f"[DEBUG] DotNetSpeech instance ID: {id(self)}")  
             self.proxy.say(text, name)
         else:
             return "Argument value can't be None or empty"

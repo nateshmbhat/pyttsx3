@@ -50,6 +50,28 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install MSBuild and other dependencies on Windows for DotNet
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          choco install dotnetfx -y
+          choco install netfx-4.8-devpack -y
+          choco install visualstudio2019-buildtools -y
+          choco install visualstudio2022-workload-vctools -y
+          $env:Path += ";C:\Program Files (x86)\Microsoft Visual S  tudio\2019\BuildTools\MSBuild\Current\Bin"
+          $env:Path += ";C:\Program Files\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin"
+          pip install pycparser
+
+      - name: Check .NET Framework Installation Path for System.Speech
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          if (Test-Path "C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Speech") {
+              Write-Output "System.Speech is found in GAC."
+          } else {
+              Write-Output "System.Speech is NOT found in GAC."
+          }
+
       - name: Install dependencies
         run: |
           pip install --upgrade pip

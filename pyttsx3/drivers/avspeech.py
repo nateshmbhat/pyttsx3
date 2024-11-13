@@ -10,6 +10,7 @@ from AVFoundation import (
 from Foundation import NSObject
 from CoreFoundation import CFRunLoopRunInMode, kCFRunLoopDefaultMode
 from ..voice import Voice
+import logging
 
 
 def buildDriver(proxy):
@@ -71,8 +72,7 @@ class AVSpeechDriver(NSObject):
         if not self._tts.isSpeaking():
             command, args = self._queue.pop(0)
             command(*args)  # Start speaking the next utterance
-             # Debugging: Show each utterance
-             print(f"Processing utterance: {args[0].speechString()}")
+            logging.debug(f"Processing utterance: {args[0].speechString()}")
             self._proxy.setBusy(True)
 
     @objc.python_method
@@ -83,7 +83,7 @@ class AVSpeechDriver(NSObject):
         utterance.setRate_(self._rate)
         utterance.setVolume_(self._volume)
         self._queue.append((self._tts.speakUtterance_, (utterance,)))
-        print(f"Queued utterance: {text}")  # Debugging: Track each queued item
+        logging.debug(f"Queued utterance: {text}")  # Debugging: Track each queued item
 
     def stop(self):
         self._tts.stopSpeakingAtBoundary_(AVSpeechBoundaryImmediate)
@@ -91,7 +91,7 @@ class AVSpeechDriver(NSObject):
 
     # AVSpeechSynthesizer delegate methods
     def speechSynthesizer_didFinishSpeechUtterance_(self, tts, utterance):
-        print(
+        logging.debug(
             f"Finished utterance: {utterance.speechString()}"
         )  # Debugging: Track each completed utterance
         self._proxy.notify("finished-utterance", completed=True)

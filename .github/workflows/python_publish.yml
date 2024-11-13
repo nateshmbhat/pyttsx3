@@ -30,7 +30,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - if: runner.os == 'Linux'
-        run: sudo apt-get update -q -q && sudo apt-get install --yes espeak-ng libespeak1
+        run: sudo apt-get update -q -q && sudo apt-get install --yes alsa-utils espeak-ng libespeak1
       - if: runner.os == 'macOS'
         run: brew install espeak-ng
       - name: Download and install eSpeak-NG

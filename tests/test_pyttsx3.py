@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sys
 import wave
+import time
 from unittest import mock
 
 import pytest
@@ -136,6 +137,9 @@ def test_saving_to_file(engine, tmp_path):
     # Save the speech to a file
     engine.save_to_file("Hello World", str(test_file))
     engine.runAndWait()
+
+    # Add a small delay to ensure file processing completes
+    time.sleep(0.1)
 
     # Check if the file was created
     assert test_file.exists(), "The audio file was not created"

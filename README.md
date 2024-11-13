@@ -104,7 +104,7 @@ https://pyttsx3.readthedocs.io
 | [SAPI5][]               |       |       |    ✅︎   |
 
 > [!NOTE]
-> * AVSpeech support is still experimental.
+> * AVSpeechSynthesizer support is still experimental.
 > * NSSpeechSynthesizer is deprecated by Apple.
 
 [AVSpeech]: https://developer.apple.com/documentation/avfoundation/speech_synthesis

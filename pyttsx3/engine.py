@@ -10,7 +10,7 @@ from . import driver
 # The keys are values of Python sys.platform, the values are tuples of engine names.
 # The first engine in the value tuple is the default engine for that platform.
 _engines_by_sys_platform = {
-    "darwin": ("nsss", "espeak"),  # NSSpeechSynthesizer (deprecated)
+    "darwin": ("nsss", "espeak", "avspeech"),
     "win32": ("sapi5", "espeak"),
 }
 
@@ -160,7 +160,6 @@ class Engine:
             notifications about this utterance.
         @type name: str
         """
-        assert text and filename
         self.proxy.save_to_file(text, filename, name)
 
     def isBusy(self) -> bool:
@@ -224,6 +223,8 @@ class Engine:
         self._inLoop = True
         self._driverLoop = True
         self.proxy.runAndWait()
+        self._inLoop = False
+        self.proxy.setBusy(False)
 
     def startLoop(self, useDriverLoop: bool = True) -> None:
         """

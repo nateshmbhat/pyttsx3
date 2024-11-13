@@ -71,9 +71,8 @@ class AVSpeechDriver(NSObject):
         if not self._tts.isSpeaking():
             command, args = self._queue.pop(0)
             command(*args)  # Start speaking the next utterance
-            print(
-                f"Processing utterance: {args[0].speechString()}"
-            )  # Debugging: Show each utterance
+             # Debugging: Show each utterance
+             print(f"Processing utterance: {args[0].speechString()}")
             self._proxy.setBusy(True)
 
     @objc.python_method

@@ -208,19 +208,31 @@ class EspeakDriver:
                         if platform.system() == "Darwin":
                             subprocess.run(["afplay", temp_wav_name], check=True)
                         elif platform.system() == "Linux":
-                            try:
-                                subprocess.run(
-                                    f"aplay {temp_wav_name} -q", shell=True, check=True
-                                )
-                            except subprocess.CalledProcessError:
+                            if "CI" in os.environ:
                                 logging.debug(
-                                    "Falling back to ffplay for audio playback."
+                                    "Running in CI environment; using ffmpeg for silent processing."
                                 )
+                                # Use ffmpeg to process the audio file without playback
                                 subprocess.run(
-                                    f"ffplay -autoexit -nodisp {temp_wav_name}",
+                                    f"ffmpeg -i {temp_wav_name} -f null -",
                                     shell=True,
+                                    check=True,
                                 )
-
+                            else:
+                                try:
+                                    subprocess.run(
+                                        f"aplay {temp_wav_name} -q",
+                                        shell=True,
+                                        check=True,
+                                    )
+                                except subprocess.CalledProcessError:
+                                    logging.debug(
+                                        "Falling back to ffplay for audio playback."
+                                    )
+                                    subprocess.run(
+                                        f"ffplay -autoexit -nodisp {temp_wav_name}",
+                                        shell=True,
+                                    )
                         elif platform.system() == "Windows":
                             winsound.PlaySound(temp_wav_name, winsound.SND_FILENAME)
 

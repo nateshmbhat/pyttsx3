@@ -91,9 +91,8 @@ class AVSpeechDriver(NSObject):
 
     # AVSpeechSynthesizer delegate methods
     def speechSynthesizer_didFinishSpeechUtterance_(self, tts, utterance):
-        logging.debug(
-            f"Finished utterance: {utterance.speechString()}"
-        )  # Debugging: Track each completed utterance
+        # Debugging: Track each completed utterance
+        logging.debug(f"Finished utterance: {utterance.speechString()}")
         self._proxy.notify("finished-utterance", completed=True)
         self._proxy.setBusy(False)
         self.processQueue_(None)  # Continue processing next in queue

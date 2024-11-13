@@ -1,10 +1,14 @@
-"""AVSpeech driver for pyttsx3.
+"""
+AVSpeech driver for pyttsx3.
 
 This driver uses the AVSpeechSynthesizer class from AVFoundation on macOS.
 It is based on the NSSpeechSynthesizer driver and provides similar functionality.
 """
 
+from __future__ import annotations
+
 import logging
+from typing import TYPE_CHECKING
 
 import objc
 from AVFoundation import (
@@ -20,8 +24,11 @@ from Foundation import NSObject
 
 from pyttsx3.voice import Voice
 
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
-def buildDriver(proxy):
+
+def buildDriver(proxy):  # noqa: N802, ANN001, ANN201
     """Build an AVSpeech driver instance."""
     driver = AVSpeechDriver.alloc().init()
     driver.setProxy(proxy)
@@ -93,7 +100,7 @@ class AVSpeechDriver(NSObject):
         if not self._tts.isSpeaking():
             command, args = self._queue.pop(0)
             command(*args)  # Start speaking the next utterance
-            logging.debug(f"Processing utterance: {args[0].speechString()}")
+            logging.debug("Processing utterance: %s:", {args[0].speechString()})
             self._proxy.setBusy(True)
 
     @objc.python_method
@@ -105,7 +112,7 @@ class AVSpeechDriver(NSObject):
         utterance.setRate_(self._rate)
         utterance.setVolume_(self._volume)
         self._queue.append((self._tts.speakUtterance_, (utterance,)))
-        logging.debug(f"Queued utterance: {text}")  # Debugging: Track each queued item
+        logging.debug("Queued utterance: %s", text)
 
     def stop(self) -> None:
         """Stop the current utterance."""
@@ -115,8 +122,7 @@ class AVSpeechDriver(NSObject):
     # AVSpeechSynthesizer delegate methods
     def speechSynthesizer_didFinishSpeechUtterance_(self, tts, utterance) -> None:
         """Notify the engine when an utterance is finished."""
-        # Debugging: Track each completed utterance
-        logging.debug(f"Finished utterance: {utterance.speechString()}")
+        logging.debug("Finished utterance: %s", utterance.speechString())
         self._proxy.notify("finished-utterance", completed=True)
         self._proxy.setBusy(False)
         self.processQueue_(None)  # Continue processing next in queue
@@ -136,7 +142,7 @@ class AVSpeechDriver(NSObject):
         )
 
     @objc.python_method
-    def iterate(self):
+    def iterate(self) -> Iterator[None]:
         """Iterate the AVSpeech driver loop."""
         while self._queue or self._tts.isSpeaking():
             self.processQueue_(None)
@@ -144,7 +150,7 @@ class AVSpeechDriver(NSObject):
             yield
 
     @objc.python_method
-    def getProperty(self, name):
+    def getProperty(self, name: str) -> str | float | list[Voice]:
         """Get the value of the given property."""
         if name == "voices":
             return [
@@ -167,7 +173,7 @@ class AVSpeechDriver(NSObject):
         raise KeyError(msg)
 
     @objc.python_method
-    def setProperty(self, name, value) -> None:
+    def setProperty(self, name: str, value: str | float | None) -> None:
         """Set the value of the given property."""
         if name == "voice":
             self._current_voice = AVSpeechSynthesisVoice.voiceWithIdentifier_(value)

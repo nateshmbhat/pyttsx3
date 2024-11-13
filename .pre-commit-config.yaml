@@ -55,4 +55,3 @@ repos:
       - id: ruff-format
         args: [ --diff ]
       - id: ruff-format
-

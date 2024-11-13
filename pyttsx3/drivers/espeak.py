@@ -208,7 +208,11 @@ class EspeakDriver:
                         if platform.system() == "Darwin":
                             subprocess.run(["afplay", temp_wav_name], check=True)
                         elif platform.system() == "Linux":
-                            os.system(f"aplay {temp_wav_name} -q")
+                            try:
+                                subprocess.run(f"aplay {temp_wav_name} -q", shell=True, check=True)
+                            except subprocess.CalledProcessError:
+                                logging.debug("Falling back to ffplay for audio playback.")
+                                subprocess.run(f"ffplay -autoexit -nodisp {temp_wav_name}", shell=True)
                         elif platform.system() == "Windows":
                             winsound.PlaySound(temp_wav_name, winsound.SND_FILENAME)
 

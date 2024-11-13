@@ -5,17 +5,16 @@ from AVFoundation import (
     AVSpeechSynthesisVoice,
     AVAudioSession,
     AVSpeechUtteranceDefaultSpeechRate,
+    AVSpeechBoundaryImmediate,
 )
-from Foundation import NSObject, NSTimer
-from PyObjCTools import AppHelper
+from Foundation import NSObject
+from CoreFoundation import CFRunLoopRunInMode, kCFRunLoopDefaultMode
 from ..voice import Voice
 
 
-# noinspection PyPep8Naming
 def buildDriver(proxy):
     driver = AVSpeechDriver.alloc().init()
     driver.setProxy(proxy)
-    driver.initialize_busy_state()
     return driver
 
 
@@ -25,12 +24,10 @@ class AVSpeechDriver(NSObject):
         if self is None:
             raise RuntimeError("Unable to instantiate an AVSpeechDriver")
 
-        # Set up the audio session
         session = AVAudioSession.sharedInstance()
         session.setCategory_error_("playback", None)
         session.setActive_error_(True, None)
 
-        # Initialize TTS and driver properties
         self._proxy = None
         self._tts = AVSpeechSynthesizer.alloc().init()
         self._tts.setDelegate_(self)
@@ -51,10 +48,6 @@ class AVSpeechDriver(NSObject):
     def initialize_busy_state(self):
         if self._proxy and hasattr(self._proxy, "_queue"):
             self._proxy.setBusy(False)
-        else:
-            NSTimer.scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_(
-                0.1, self, "initialize_busy_state", None, False
-            )
 
     def destroy(self):
         self._tts.setDelegate_(None)
@@ -62,31 +55,26 @@ class AVSpeechDriver(NSObject):
 
     def startLoop(self):
         self._should_stop_loop = False
-        NSTimer.scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_(
-            0.0, self, "processQueue:", None, True
-        )
-        AppHelper.runConsoleEventLoop()
-
-    @objc.typedSelector(b"v@:@")
-    def processQueue_(self, _):
-        if self._should_stop_loop:
-            AppHelper.stopEventLoop()
-            return
-
-        if self._tts.isSpeaking():
-            return  # Wait until speaking is finished
-
-        if self._queue:
-            command, args = self._queue.pop(0)
-            print(f"Processing command: {command} with args: {args}")
-            command(*args)
-            self._proxy.setBusy(True)
-        else:
-            self.endLoop()
+        while not self._should_stop_loop and (self._queue or self._tts.isSpeaking()):
+            self.processQueue_(None)
+            CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.01, False)
 
     def endLoop(self):
         self._should_stop_loop = True
-        AppHelper.stopEventLoop()
+
+    @objc.typedSelector(b"v@:@")
+    def processQueue_(self, _):
+        if not self._queue:
+            self.endLoop()
+            return
+
+        if not self._tts.isSpeaking():
+            command, args = self._queue.pop(0)
+            command(*args)  # Start speaking the next utterance
+            print(
+                f"Processing utterance: {args[0].speechString()}"
+            )  # Debugging: Show each utterance
+            self._proxy.setBusy(True)
 
     @objc.python_method
     def say(self, text):
@@ -96,26 +84,23 @@ class AVSpeechDriver(NSObject):
         utterance.setRate_(self._rate)
         utterance.setVolume_(self._volume)
         self._queue.append((self._tts.speakUtterance_, (utterance,)))
-        self.startLoop()
+        print(f"Queued utterance: {text}")  # Debugging: Track each queued item
 
     def stop(self):
-        self._tts.stopSpeaking()
+        self._tts.stopSpeakingAtBoundary_(AVSpeechBoundaryImmediate)
         self.endLoop()
-
-    @objc.python_method
-    def save_to_file(self, text, filename):
-        # File saving is not directly supported with AVSpeechSynthesizer, so this will require custom handling.
-        print("save_to_file is not natively supported with AVSpeechSynthesizer.")
 
     # AVSpeechSynthesizer delegate methods
     def speechSynthesizer_didFinishSpeechUtterance_(self, tts, utterance):
+        print(
+            f"Finished utterance: {utterance.speechString()}"
+        )  # Debugging: Track each completed utterance
         self._proxy.notify("finished-utterance", completed=True)
         self._proxy.setBusy(False)
-        if not self._queue:
-            self.endLoop()
+        self.processQueue_(None)  # Continue processing next in queue
 
     def speechSynthesizer_willSpeakRangeOfSpeechString_(self, tts, info):
-        characterRange = info["AVSpeechSynthesisIPAPhonemeBounds"]
+        characterRange = info["NSRange"]
         utterance = info["AVSpeechSynthesisSpeechString"]
         current_word = utterance[
             characterRange.location : characterRange.location + characterRange.length
@@ -127,7 +112,13 @@ class AVSpeechDriver(NSObject):
             length=characterRange.length,
         )
 
-    # Property management
+    @objc.python_method
+    def iterate(self):
+        while self._queue or self._tts.isSpeaking():
+            self.processQueue_(None)
+            CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.01, False)
+            yield
+
     @objc.python_method
     def getProperty(self, name):
         if name == "voices":
@@ -155,7 +146,7 @@ class AVSpeechDriver(NSObject):
         if name == "voice":
             self._current_voice = AVSpeechSynthesisVoice.voiceWithIdentifier_(value)
         elif name == "rate":
-            self._rate = value
+            self._rate = value * AVSpeechUtteranceDefaultSpeechRate
         elif name == "volume":
             self._volume = value
         else:

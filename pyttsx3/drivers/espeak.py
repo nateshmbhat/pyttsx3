@@ -15,6 +15,7 @@ if platform.system() == "Windows":
 from ..voice import Voice
 from . import _espeak
 
+
 # noinspection PyPep8Naming
 def buildDriver(proxy):
     return EspeakDriver(proxy)

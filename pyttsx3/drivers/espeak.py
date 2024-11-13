@@ -220,6 +220,7 @@ class EspeakDriver:
                                     f"ffplay -autoexit -nodisp {temp_wav_name}",
                                     shell=True,
                                 )
+
                         elif platform.system() == "Windows":
                             winsound.PlaySound(temp_wav_name, winsound.SND_FILENAME)
 

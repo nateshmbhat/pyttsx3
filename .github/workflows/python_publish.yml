@@ -46,6 +46,8 @@ jobs:
           espeak-ng --version
       - if: runner.os != 'Windows'
         run: espeak-ng --version
+      - if: runner.os != 'macOS'
+        uses: FedericoCarboni/setup-ffmpeg@v3
 
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

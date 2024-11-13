@@ -39,7 +39,53 @@ def test_speaking_text(engine):
 @pytest.mark.skipif(
     sys.platform not in ("darwin", "ios"), reason="Testing only on macOS and iOS"
 )
-def test_apple__nsss_voices(engine):
+def test_apple_avspeech_voices(engine):
+    import platform
+
+    macos_version, _, macos_hardware = platform.mac_ver()
+    print(f"{sys.platform = }, {macos_version = } on {macos_hardware = }")
+    print(list(pyttsx3._activeEngines))
+    print(engine)
+    # assert str(engine) == "avsynth", "Expected engine name to be avsynth on macOS and iOS"
+    voice = engine.getProperty("voice")
+    # On macOS v14.x, the default nsss voice is com.apple.voice.compact.en-US.Samantha.
+    # ON macOS v15.x, the default nsss voice is "".
+    # ON macOS v15.x, the default avsynth voice is None.
+
+    assert voice in (
+        None,
+        "",
+        "com.apple.voice.compact.en-US.Samantha",
+    ), f"Expected default voice {voice} to be com.apple.voice.compact.en-US.Samantha"
+    voices = engine.getProperty("voices")
+    # On macOS v14.x, nsss has 143 voices.
+    # On macOS v15.x, nsss has 176 voices
+    print(f"On macOS v{macos_version}, {engine} has {len(voices) = } voices.")
+    assert len(voices) in (176, 143), "Expected 176 or 143 voices on macOS and iOS"
+    # print("\n".join(voice.id for voice in voices))
+    en_us_voices = [
+        voice for voice in voices if voice.id.startswith("com.apple.eloquence.en-US.")
+    ]
+    assert (
+        len(en_us_voices) == 8
+    ), "Expected 8 com.apple.eloquence.en-US voices on macOS and iOS"
+    names = []
+    for _voice in en_us_voices:
+        engine.setProperty("voice", _voice.id)
+        name = _voice.id.split(".")[-1]
+        names.append(name)
+        engine.say(f"{name} says hello.")
+    name_str = ", ".join(names)
+    assert name_str == "Eddy, Flo, Grandma, Grandpa, Reed, Rocko, Sandy, Shelley"
+    print(f"({name_str})", end=" ", flush=True)
+    engine.runAndWait()
+    engine.setProperty("voice", voice)  # Reset voice to original value
+
+
+@pytest.mark.skipif(
+    sys.platform not in ("darwin", "ios"), reason="Testing only on macOS and iOS"
+)
+def test_apple_nsss_voices(engine):
     import platform
 
     macos_version, _, macos_hardware = platform.mac_ver()
@@ -82,6 +128,9 @@ def test_apple__nsss_voices(engine):
     sys.platform == "darwin", reason="TODO: Fix this test to pass on macOS"
 )
 def test_saving_to_file(engine, tmp_path):
+    """
+    Apple writes .aiff, not .wav.  https://github.com/nateshmbhat/pyttsx3/issues/361
+    """
     test_file = tmp_path / "test.wav"  # Using .wav for easier validation
 
     # Save the speech to a file
@@ -95,10 +144,13 @@ def test_saving_to_file(engine, tmp_path):
     assert test_file.stat().st_size > 0, "The audio file is empty"
 
     # Check if the file is a valid .wav file using the wave module
-    with wave.open(str(test_file), "rb") as wf:
-        assert wf.getnchannels() == 1, "The audio file should have 1 channel (mono)"
-        assert wf.getsampwidth() == 2, "The audio file sample width should be 2 bytes"
-        assert wf.getframerate() == 22050, "The audio file framerate should be 22050 Hz"
+    try:
+        with wave.open(str(test_file), "rb") as wf:
+            assert wf.getnchannels() == 1, "The audio file should have 1 channel (mono)"
+            assert wf.getsampwidth() == 2, "Audio file sample width should be 2 bytes"
+            assert wf.getframerate() == 22050, "Audio file framerate should be 22050 Hz"
+    except wave.Error:
+        assert sys.platform in {"darwin", "ios"}, "Apple writes .aiff, not .wav files."
 
 
 @pytest.mark.skipif(

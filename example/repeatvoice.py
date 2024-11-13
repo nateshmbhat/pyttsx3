@@ -1,7 +1,7 @@
-import pyttsx3  # pyttsx3 is a text-to-speech conversion library in Python
-import speech_recognition as s  # Google Speech API in Python
+# pip3 install SpeechRecognition
+import speech_recognition  # A speech-to-text conversion library in Python
 
-# Functional programming Model
+import pyttsx3  # A text-to-speech conversion library in Python
 
 
 def text_to_speech(text):
@@ -14,11 +14,13 @@ def text_to_speech(text):
 
 
 def speech_to_text():
-    r = s.Recognizer()  # an object r which recognises the voice
-    with s.Microphone():
-        # when using with statement. The with statement itself ensures proper acquisition and release of resources
-        print(r.recognize_google(audio))
-        text_to_speech(r.recognize_google(audio))
+    recognizer = speech_recognition.Recognizer()
+    with speech_recognition.Microphone() as microphone:
+        audio = recognizer.listen(microphone)
+    text = recognizer.recognize_google(audio)
+    print(text)
+    text_to_speech(text)
 
 
-speech_to_text()
+if __name__ == "__main__":
+    speech_to_text()

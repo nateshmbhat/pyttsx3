@@ -10,7 +10,7 @@ from . import driver
 # The keys are values of Python sys.platform, the values are tuples of engine names.
 # The first engine in the value tuple is the default engine for that platform.
 _engines_by_sys_platform = {
-    "darwin": ("nsss", "espeak"),  # NSSpeechSynthesizer (deprecated)
+    "darwin": ("nsss", "espeak", "avspeech"),
     "win32": ("sapi5", "espeak"),
 }
 
@@ -31,7 +31,7 @@ def default_engine_by_sys_platform() -> str:
     return engines_by_sys_platform()[0]
 
 
-class Engine(object):
+class Engine:
     """
     @ivar proxy: Proxy to a driver implementation
     @type proxy: L{DriverProxy}
@@ -160,7 +160,6 @@ class Engine(object):
             notifications about this utterance.
         @type name: str
         """
-        assert text and filename
         self.proxy.save_to_file(text, filename, name)
 
     def isBusy(self) -> bool:
@@ -224,6 +223,8 @@ class Engine(object):
         self._inLoop = True
         self._driverLoop = True
         self.proxy.runAndWait()
+        self._inLoop = False
+        self.proxy.setBusy(False)
 
     def startLoop(self, useDriverLoop: bool = True) -> None:
         """
@@ -258,6 +259,6 @@ class Engine(object):
         """
         if not self._inLoop:
             raise RuntimeError("run loop not started")
-        elif self._driverLoop:
+        if self._driverLoop:
             raise RuntimeError("iterate not valid in driver run loop")
         self.proxy.iterate()

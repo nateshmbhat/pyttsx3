@@ -49,7 +49,9 @@ repos:
           - tomli
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.7.2
+    rev: v0.7.3
     hooks:  # Format before linting
-      - id: ruff-format
       - id: ruff
+      - id: ruff-format
+        args: [ --diff ]
+      - id: ruff-format

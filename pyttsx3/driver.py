@@ -4,7 +4,7 @@ import weakref
 import logging
 
 
-class DriverProxy(object):
+class DriverProxy:
     """
     Proxy to a driver implementation.
 

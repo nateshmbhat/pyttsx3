@@ -35,7 +35,7 @@ def buildDriver(proxy):
 
 
 # noinspection PyPep8Naming,PyShadowingNames
-class SAPI5Driver(object):
+class SAPI5Driver:
     def __init__(self, proxy):
         self._tts = comtypes.client.CreateObject("SAPI.SPVoice")
         # all events
@@ -100,13 +100,13 @@ class SAPI5Driver(object):
     def getProperty(self, name):
         if name == "voices":
             return [self._toVoice(attr) for attr in self._tts.GetVoices()]
-        elif name == "voice":
+        if name == "voice":
             return self._tts.Voice.Id
-        elif name == "rate":
+        if name == "rate":
             return self._rateWpm
-        elif name == "volume":
+        if name == "volume":
             return self._tts.Volume / 100.0
-        elif name == "pitch":
+        if name == "pitch":
             print("Pitch adjustment not supported when using SAPI5")
         else:
             raise KeyError("unknown property %s" % name)
@@ -156,7 +156,7 @@ class SAPI5Driver(object):
 
 
 # noinspection PyPep8Naming,PyProtectedMember,PyUnusedLocal,PyShadowingNames
-class SAPI5DriverEventSink(object):
+class SAPI5DriverEventSink:
     def __init__(self):
         self._driver = None
 

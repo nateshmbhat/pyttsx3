@@ -1,12 +1,9 @@
-from . import _espeak
-from ..voice import Voice
-
-import os
-import wave
-import platform
 import ctypes
-import time
+import os
+import platform
 import subprocess
+import time
+import wave
 from tempfile import NamedTemporaryFile
 import logging
 
@@ -15,6 +12,8 @@ logger = logging.getLogger(__name__)
 if platform.system() == "Windows":
     import winsound
 
+from ..voice import Voice
+from . import _espeak
 
 # noinspection PyPep8Naming
 def buildDriver(proxy):
@@ -22,7 +21,7 @@ def buildDriver(proxy):
 
 
 # noinspection PyPep8Naming
-class EspeakDriver(object):
+class EspeakDriver:
     _moduleInitialized = False
     _defaultVoice = ""
 
@@ -92,17 +91,16 @@ class EspeakDriver(object):
                 kwargs["age"] = v.age or None
                 voices.append(Voice(**kwargs))
             return voices
-        elif name == "voice":
+        if name == "voice":
             voice = _espeak.GetCurrentVoice()
-            return voice.contents.name.decode("utf-8")
-        elif name == "rate":
+            return voice.contents.name.decode("utf-8") if voice.contents.name else None
+        if name == "rate":
             return _espeak.GetParameter(_espeak.RATE)
-        elif name == "volume":
+        if name == "volume":
             return _espeak.GetParameter(_espeak.VOLUME) / 100.0
-        elif name == "pitch":
+        if name == "pitch":
             return _espeak.GetParameter(_espeak.PITCH)
-        else:
-            raise KeyError("unknown property %s" % name)
+        raise KeyError("unknown property %s" % name)
 
     @staticmethod
     def setProperty(name: str, value):
@@ -163,7 +161,6 @@ class EspeakDriver(object):
 
             if event.type == _espeak.EVENT_LIST_TERMINATED:
                 break
-
             elif event.type == _espeak.EVENT_WORD:
                 # Handle word events to notify on each word spoken
                 if self._text_to_say:

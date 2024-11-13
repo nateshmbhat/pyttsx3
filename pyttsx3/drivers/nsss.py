@@ -1,7 +1,7 @@
 # noinspection PyUnresolvedReferences
 import objc
 from AppKit import NSSpeechSynthesizer
-from Foundation import *
+from Foundation import NSURL, NSDate, NSDefaultRunLoopMode, NSObject, NSRunLoop, NSTimer
 from PyObjCTools import AppHelper
 
 # noinspection PyProtectedMember
@@ -119,13 +119,13 @@ class NSSpeechDriver(NSObject):
                 self._toVoice(NSSpeechSynthesizer.attributesForVoice_(v))
                 for v in list(NSSpeechSynthesizer.availableVoices())
             ]
-        elif name == "voice":
+        if name == "voice":
             return self._tts.voice()
-        elif name == "rate":
+        if name == "rate":
             return self._tts.rate()
-        elif name == "volume":
+        if name == "volume":
             return self._tts.volume()
-        elif name == "pitch":
+        if name == "pitch":
             print("Pitch adjustment not supported when using NSSS")
         else:
             raise KeyError("unknown property %s" % name)
@@ -150,10 +150,13 @@ class NSSpeechDriver(NSObject):
 
     @objc.python_method
     def save_to_file(self, text, filename):
+        """
+        Apple writes .aiff, not .wav. https://github.com/nateshmbhat/pyttsx3/issues/361
+        """
         self._proxy.setBusy(True)
         self._completed = True
         self._current_text = text
-        url = Foundation.NSURL.fileURLWithPath_(filename)
+        url = NSURL.fileURLWithPath_(filename)
         self._tts.startSpeakingString_toURL_(text, url)
 
     def speechSynthesizer_didFinishSpeaking_(self, tts, success):

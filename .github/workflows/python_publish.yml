@@ -1,4 +1,4 @@
-# This workflows will upload a Python Package using Twine when a release is created.
+# This workflow will upload a Python Package using Twine when a release is created.
 # https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
 name: CI
 
@@ -24,17 +24,27 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
         python-version: ['3.9', '3.11', '3.13']
       max-parallel: 9
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 10  # Save resources while our pytests are hanging
     steps:
       - if: runner.os == 'Linux'
+        run: sudo apt-get update -q -q && sudo apt-get install --yes espeak-ng libespeak1
+      - if: runner.os == 'macOS'
+        run: brew install espeak-ng
+      - name: Download and install eSpeak-NG
+        if: runner.os == 'Windows'
+        shell: pwsh
         run: |
-          sudo apt-get update -q -q
-          sudo apt-get install --yes espeak-ng libespeak1
+          Invoke-WebRequest -Uri "https://github.com/espeak-ng/espeak-ng/releases/download/1.51/espeak-ng-X64.msi" -OutFile "espeak-ng.msi"
+          Start-Process msiexec.exe -ArgumentList '/i espeak-ng.msi /quiet /norestart' -Wait
+          # dir "$env:ProgramFiles\eSpeak NG"
+          $env:Path += ";$env:ProgramFiles\eSpeak NG"
           espeak-ng --version
+      - if: runner.os != 'Windows'
+        run: espeak-ng --version
+
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
@@ -43,10 +53,11 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install pytest pytest-timeout
+          pip install pytest
           pip install --editable .
 
-      - run: pytest -s -vvv --timeout=600
+      - timeout-minutes: 10  # Save resources while our pytests are hanging
+        run: pytest -s -vvv --strict
 
   build:
     runs-on: ubuntu-latest

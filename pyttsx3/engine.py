@@ -10,7 +10,7 @@ from . import driver
 # The keys are values of Python sys.platform, the values are tuples of engine names.
 # The first engine in the value tuple is the default engine for that platform.
 _engines_by_sys_platform = {
-    "darwin": ("avsynth", "espeak"),  # NSSpeechSynthesizer (deprecated)
+    "darwin": ("avspeech", "espeak"),  # NSSpeechSynthesizer (deprecated)
     "win32": ("sapi5", "espeak"),
 }
 

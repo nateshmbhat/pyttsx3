@@ -4,7 +4,7 @@ pyttsx3\__init__.py
 pyttsx3\driver.py
 pyttsx3\drivers\__init__.py
 pyttsx3\drivers\_espeak.py
-pyttsx3\drivers\avsynth.py
+pyttsx3\drivers\avspeech.py
 pyttsx3\drivers\dummy.py
 pyttsx3\drivers\espeak.py
 pyttsx3\drivers\nsss.py

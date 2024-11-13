@@ -34,8 +34,13 @@ class AVSpeechDriver(NSObject):
 
     @objc.python_method
     def initialize_busy_state(self):
-        if self._proxy:
+        if self._proxy and hasattr(self._proxy, "_queue"):
             self._proxy.setBusy(False)
+        else:
+            # Optionally, retry after a small delay
+            NSTimer.scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_(
+                0.1, self, "initialize_busy_state", None, False
+            )
 
     def destroy(self):
         self._tts.setDelegate_(None)

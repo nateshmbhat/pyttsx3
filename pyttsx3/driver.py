@@ -24,7 +24,7 @@ class DriverProxy:
     @type _iterator: iterator
     """
 
-    def __init__(self, engine, driverName, debug):
+    def __init__(self, engine, driverName: str, debug: bool):
         """
         Constructor.
 
@@ -35,10 +35,7 @@ class DriverProxy:
         @param debug: Debugging output enabled or not
         @type debug: bool
         """
-        driverName = driverName or {
-            "darwin": "avspeech",
-            "win32": "sapi5",
-        }.get(sys.platform, "espeak")
+        assert driverName
         # import driver module
         self._module = importlib.import_module(f"pyttsx3.drivers.{driverName}")
         # build driver instance
@@ -107,9 +104,8 @@ class DriverProxy:
         @param busy: True when busy, false when idle
         @type busy: bool
         """
-
         self._busy = busy
-        if not self._busy and hasattr(self, "_queue"):
+        if not self._busy:
             self._pump()
 
     def isBusy(self):

@@ -35,7 +35,7 @@ def default_engine_by_sys_platform() -> str:
     return engines_by_sys_platform()[0]
 
 
-class Engine(object):
+class Engine:
     """
     @ivar proxy: Proxy to a driver implementation
     @type proxy: L{DriverProxy}
@@ -261,6 +261,6 @@ class Engine(object):
         """
         if not self._inLoop:
             raise RuntimeError("run loop not started")
-        elif self._driverLoop:
+        if self._driverLoop:
             raise RuntimeError("iterate not valid in driver run loop")
         self.proxy.iterate()

@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import time
 from ctypes import (
     CFUNCTYPE,
@@ -20,7 +18,7 @@ from ctypes import (
 
 
 def cfunc(name, dll, result, *args):
-    """build and apply a ctypes prototype complete with parameter flags"""
+    """Build and apply a ctypes prototype complete with parameter flags"""
     atypes = []
     aflags = []
     for arg in args:
@@ -36,6 +34,7 @@ def load_library():
     global dll
     paths = [
         # macOS paths
+        "/opt/homebrew/lib/libespeak-ng.1.dylib",
         "/usr/local/lib/libespeak-ng.1.dylib",
         "/usr/local/lib/libespeak.dylib",
         # Linux paths
@@ -212,6 +211,8 @@ def Synth(
     flags=0,
     user_data=None,
 ):
+    if isinstance(text, str):
+        text = text.encode("utf-8")
     return cSynth(
         text,
         len(text) * 10,
@@ -279,7 +280,7 @@ Synth.__doc__ = """Synthesize speech for the specified text.  The speech sound d
    Return: EE_OK: operation achieved
            EE_BUFFER_FULL: the command can not be buffered;
              you may try after a while to call the function again.
-	   EE_INTERNAL_ERROR."""
+           EE_INTERNAL_ERROR."""
 
 
 def Synth_Mark(text, index_mark, end_position=0, flags=CHARS_AUTO):
@@ -309,7 +310,7 @@ Synth_Mark.__doc__ = """Synthesize speech for the specified text.  Similar to es
    Return:  EE_OK: operation achieved
             EE_BUFFER_FULL: the command can not be buffered;
              you may try after a while to call the function again.
-	        EE_INTERNAL_ERROR."""
+                EE_INTERNAL_ERROR."""
 
 Key = cfunc("espeak_Key", dll, c_int, ("key_name", c_char_p, 1))
 Key.__doc__ = """Speak the name of a keyboard key.
@@ -318,7 +319,7 @@ Key.__doc__ = """Speak the name of a keyboard key.
    Return: EE_OK: operation achieved
            EE_BUFFER_FULL: the command can not be buffered;
              you may try after a while to call the function again.
-	   EE_INTERNAL_ERROR."""
+           EE_INTERNAL_ERROR."""
 
 Char = cfunc("espeak_Char", dll, c_int, ("character", c_wchar, 1))
 Char.__doc__ = """Speak the name of the given character
@@ -326,7 +327,7 @@ Char.__doc__ = """Speak the name of the given character
    Return: EE_OK: operation achieved
            EE_BUFFER_FULL: the command can not be buffered;
              you may try after a while to call the function again.
-	   EE_INTERNAL_ERROR."""
+           EE_INTERNAL_ERROR."""
 
 # Speech Parameters
 SILENCE = 0  # internal use
@@ -451,11 +452,13 @@ cListVoices.__doc__ = """Reads the voice files from espeak-data/voices and creat
 
 
 def ListVoices(voice_spec=None):
-    """Reads the voice files from espeak-data/voices and returns a list of VOICE objects.
+    """
+    Reads the voice files from espeak-data/voices and returns a list of VOICE objects.
 
     If voice_spec is None then all voices are listed.
     If voice spec is given, then only the voices which are compatible with the voice_spec
-    are listed, and they are listed in preference order."""
+    are listed, and they are listed in preference order.
+    """
     ppv = cListVoices(voice_spec)
     res = []
     i = 0
@@ -514,12 +517,12 @@ IsPlaying.__doc__ = """Returns 1 if audio is played, 0 otherwise."""
 Synchronize = cfunc("espeak_Synchronize", dll, c_int)
 Synchronize.__doc__ = """This function returns when all data have been spoken.
    Return:  EE_OK: operation achieved
-	        EE_INTERNAL_ERROR."""
+                EE_INTERNAL_ERROR."""
 
 Terminate = cfunc("espeak_Terminate", dll, c_int)
 Terminate.__doc__ = """last function to be called.
    Return:  EE_OK: operation achieved
-	        EE_INTERNAL_ERROR."""
+                EE_INTERNAL_ERROR."""
 
 Info = cfunc("espeak_Info", dll, c_char_p, ("ptr", c_void_p, 1, 0))
 Info.__doc__ = """Returns the version number string.
@@ -541,7 +544,7 @@ if __name__ == "__main__":
     SetSynthCallback(synth_cb)
     s = "This is a test, only a test. "
     uid = c_uint(0)
-    # print 'pitch=',GetParameter(PITCH)
+    # print('pitch=',GetParameter(PITCH))
     # SetParameter(PITCH, 50, 0)
     print(Synth(s))
     while IsPlaying():

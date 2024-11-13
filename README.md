@@ -93,14 +93,24 @@ engine.runAndWait()
 
 ### **Full documentation of the Library**
 
-https://pyttsx3.readthedocs.io/en/latest/
+https://pyttsx3.readthedocs.io
 
-#### Included TTS engines:
+#### Included Text-To-Speech Engines by Operating System
+|                         | Linux | macOS | Windows |
+|-------------------------|:-----:|:-----:|:-------:|
+| [AVSpeech][]            |       |   ✅︎  |         |
+| [eSpeak][]              |   ✅︎  |   ✅︎  |    ✅︎   |
+| [NSSpeechSynthesizer][] |       |   ✅︎  |         |
+| [SAPI5][]               |       |       |    ✅︎   |
 
-* avsynth on macOS
-* espeak on Linux, macOS, and Windows
-* nsss on macOS (deprecated by Apple)
-* sapi5 on Windows
+> [!NOTE]
+> * AVSpeechSynthesizer support is still experimental.
+> * NSSpeechSynthesizer is deprecated by Apple.
+
+[AVSpeech]: https://developer.apple.com/documentation/avfoundation/speech_synthesis
+[eSpeak]: https://github.com/espeak-ng/espeak-ng?tab=readme-ov-file#readme
+[NSSpeechSynthesizer]: https://developer.apple.com/documentation/appkit/nsspeechsynthesizer
+[SAPI5]: https://learn.microsoft.com/en-us/previous-versions/windows/desktop/ms723627(v=vs.85)
 
 Feel free to wrap another text-to-speech engine for use with ``pyttsx3``.
 

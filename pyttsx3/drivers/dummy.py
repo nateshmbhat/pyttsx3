@@ -1,5 +1,6 @@
-from ..voice import Voice
 import time
+
+from ..voice import Voice
 
 
 def buildDriver(proxy):
@@ -13,7 +14,7 @@ def buildDriver(proxy):
     return DummyDriver(proxy)
 
 
-class DummyDriver(object):
+class DummyDriver:
     """
     Dummy speech engine implementation. Documents the interface, notifications,
     properties, and sequencing responsibilities of a driver implementation.
@@ -55,7 +56,6 @@ class DummyDriver(object):
         destroyed. Can cleanup any resources to make sure the engine terminates
         properly.
         """
-        pass
 
     def startLoop(self):
         """
@@ -132,7 +132,6 @@ class DummyDriver(object):
         notification documented above and resetting the busy state of the
         proxy.
         """
-        pass
 
     def getProperty(self, name):
         """

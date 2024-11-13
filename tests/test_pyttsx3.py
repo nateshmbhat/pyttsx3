@@ -127,7 +127,6 @@ def test_apple_nsss_voices(engine):
 @pytest.mark.xfail(
     sys.platform == "darwin", reason="TODO: Fix this test to pass on macOS"
 )
-
 def test_saving_to_file(engine, tmp_path):
     """
     Apple writes .aiff, not .wav.  https://github.com/nateshmbhat/pyttsx3/issues/361

@@ -227,6 +227,8 @@ class Engine:
         self._inLoop = True
         self._driverLoop = True
         self.proxy.runAndWait()
+        self._inLoop = False
+        self.proxy.setBusy(False)
 
     def startLoop(self, useDriverLoop: bool = True) -> None:
         """

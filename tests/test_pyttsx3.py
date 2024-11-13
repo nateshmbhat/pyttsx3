@@ -39,7 +39,7 @@ def test_speaking_text(engine):
 @pytest.mark.skipif(
     sys.platform not in ("darwin", "ios"), reason="Testing only on macOS and iOS"
 )
-def test_apple_avsynth_voices(engine):
+def test_apple_avspeech_voices(engine):
     import platform
 
     macos_version, _, macos_hardware = platform.mac_ver()

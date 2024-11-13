@@ -32,7 +32,7 @@ jobs:
       - if: runner.os == 'Linux'
         run: |
           sudo apt-get update -q -q
-          sudo apt-get install --yes espeak-ng libespeak1 alsa-utils ffmpeg
+          sudo apt-get install --yes alsa-utils espeak-ng ffmpeg libespeak1
       - if: runner.os == 'macOS'
         run: brew install espeak-ng
       - name: Download and install eSpeak-NG
@@ -46,8 +46,6 @@ jobs:
           espeak-ng --version
       - if: runner.os != 'Windows'
         run: espeak-ng --version
-      - if: runner.os != 'macOS'
-        uses: FedericoCarboni/setup-ffmpeg@v3
 
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

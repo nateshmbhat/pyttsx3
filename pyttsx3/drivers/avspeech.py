@@ -1,16 +1,18 @@
+import logging
+
 import objc
 from AVFoundation import (
+    AVAudioSession,
+    AVSpeechBoundaryImmediate,
+    AVSpeechSynthesisVoice,
     AVSpeechSynthesizer,
     AVSpeechUtterance,
-    AVSpeechSynthesisVoice,
-    AVAudioSession,
     AVSpeechUtteranceDefaultSpeechRate,
-    AVSpeechBoundaryImmediate,
 )
-from Foundation import NSObject
 from CoreFoundation import CFRunLoopRunInMode, kCFRunLoopDefaultMode
-from ..voice import Voice
-import logging
+from Foundation import NSObject
+
+from pyttsx3.voice import Voice
 
 
 def buildDriver(proxy):
@@ -23,7 +25,8 @@ class AVSpeechDriver(NSObject):
     def init(self):
         self = objc.super(AVSpeechDriver, self).init()
         if self is None:
-            raise RuntimeError("Unable to instantiate an AVSpeechDriver")
+            msg = "Unable to instantiate an AVSpeechDriver"
+            raise RuntimeError(msg)
 
         session = AVAudioSession.sharedInstance()
         session.setCategory_error_("playback", None)
@@ -33,7 +36,7 @@ class AVSpeechDriver(NSObject):
         self._tts = AVSpeechSynthesizer.alloc().init()
         self._tts.setDelegate_(self)
         self._current_voice = AVSpeechSynthesisVoice.voiceWithIdentifier_(
-            "com.apple.voice.compact.en-US.Samantha"
+            "com.apple.voice.compact.en-US.Samantha",
         )
         self._rate = AVSpeechUtteranceDefaultSpeechRate
         self._volume = 1.0
@@ -42,29 +45,29 @@ class AVSpeechDriver(NSObject):
         return self
 
     @objc.python_method
-    def setProxy(self, proxy):
+    def setProxy(self, proxy) -> None:
         self._proxy = proxy
 
     @objc.python_method
-    def initialize_busy_state(self):
+    def initialize_busy_state(self) -> None:
         if self._proxy and hasattr(self._proxy, "_queue"):
             self._proxy.setBusy(False)
 
-    def destroy(self):
+    def destroy(self) -> None:
         self._tts.setDelegate_(None)
         self._tts = None
 
-    def startLoop(self):
+    def startLoop(self) -> None:
         self._should_stop_loop = False
         while not self._should_stop_loop and (self._queue or self._tts.isSpeaking()):
             self.processQueue_(None)
             CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.01, False)
 
-    def endLoop(self):
+    def endLoop(self) -> None:
         self._should_stop_loop = True
 
     @objc.typedSelector(b"v@:@")
-    def processQueue_(self, _):
+    def processQueue_(self, _) -> None:
         if not self._queue:
             self.endLoop()
             return
@@ -76,7 +79,7 @@ class AVSpeechDriver(NSObject):
             self._proxy.setBusy(True)
 
     @objc.python_method
-    def say(self, text):
+    def say(self, text) -> None:
         utterance = AVSpeechUtterance.speechUtteranceWithString_(text)
         if self._current_voice:
             utterance.setVoice_(self._current_voice)
@@ -85,19 +88,19 @@ class AVSpeechDriver(NSObject):
         self._queue.append((self._tts.speakUtterance_, (utterance,)))
         logging.debug(f"Queued utterance: {text}")  # Debugging: Track each queued item
 
-    def stop(self):
+    def stop(self) -> None:
         self._tts.stopSpeakingAtBoundary_(AVSpeechBoundaryImmediate)
         self.endLoop()
 
     # AVSpeechSynthesizer delegate methods
-    def speechSynthesizer_didFinishSpeechUtterance_(self, tts, utterance):
+    def speechSynthesizer_didFinishSpeechUtterance_(self, tts, utterance) -> None:
         # Debugging: Track each completed utterance
         logging.debug(f"Finished utterance: {utterance.speechString()}")
         self._proxy.notify("finished-utterance", completed=True)
         self._proxy.setBusy(False)
         self.processQueue_(None)  # Continue processing next in queue
 
-    def speechSynthesizer_willSpeakRangeOfSpeechString_(self, tts, info):
+    def speechSynthesizer_willSpeakRangeOfSpeechString_(self, tts, info) -> None:
         characterRange = info["NSRange"]
         utterance = info["AVSpeechSynthesisSpeechString"]
         current_word = utterance[
@@ -130,17 +133,17 @@ class AVSpeechDriver(NSObject):
                 )
                 for voice in AVSpeechSynthesisVoice.speechVoices()
             ]
-        elif name == "voice":
+        if name == "voice":
             return self._current_voice.identifier() if self._current_voice else None
-        elif name == "rate":
+        if name == "rate":
             return self._rate
-        elif name == "volume":
+        if name == "volume":
             return self._volume
-        else:
-            raise KeyError(f"Unknown property: {name}")
+        msg = f"Unknown property: {name}"
+        raise KeyError(msg)
 
     @objc.python_method
-    def setProperty(self, name, value):
+    def setProperty(self, name, value) -> None:
         if name == "voice":
             self._current_voice = AVSpeechSynthesisVoice.voiceWithIdentifier_(value)
         elif name == "rate":
@@ -148,4 +151,5 @@ class AVSpeechDriver(NSObject):
         elif name == "volume":
             self._volume = value
         else:
-            raise KeyError(f"Unknown property: {name}")
+            msg = f"Unknown property: {name}"
+            raise KeyError(msg)

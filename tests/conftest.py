@@ -1,6 +1,7 @@
 import os
 import pytest
 
+
 def pytest_collection_modifyitems(items):
     """Skip tests after `test_changing_volume` if in CI environment."""
     if "CI" not in os.environ:
@@ -11,4 +12,8 @@ def pytest_collection_modifyitems(items):
         if "test_changing_volume" in item.nodeid:
             skip = True
         elif skip:
-            item.add_marker(pytest.mark.skip(reason="Skipping in CI environment after test_changing_volume"))
+            item.add_marker(
+                pytest.mark.skip(
+                    reason="Skipping in CI environment after test_changing_volume"
+                )
+            )

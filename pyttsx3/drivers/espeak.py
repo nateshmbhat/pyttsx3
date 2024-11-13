@@ -1,3 +1,6 @@
+from ..voice import Voice
+from . import _espeak
+
 import ctypes
 import os
 import platform
@@ -11,9 +14,6 @@ logger = logging.getLogger(__name__)
 
 if platform.system() == "Windows":
     import winsound
-
-from ..voice import Voice
-from . import _espeak
 
 
 # noinspection PyPep8Naming

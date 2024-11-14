@@ -115,13 +115,7 @@ class SAPI5Driver:
 
         # Retrieve age
         age_attr = attr.GetAttribute("Age")
-        age_map = {
-            "Child": "Child",
-            "Teen": "Teen",
-            "Adult": "Adult",
-            "Senior": "Senior",
-        }
-        age = age_map.get(age_attr, None)
+        age = age_attr if age_attr in {"Child", "Teen", "Adult", "Senior"} else None
 
         # Create and return the Voice object with additional attributes
         return Voice(

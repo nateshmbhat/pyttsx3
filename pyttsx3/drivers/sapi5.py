@@ -111,12 +111,21 @@ class SAPI5Driver:
         # Retrieve gender
         gender_attr = attr.GetAttribute("Gender")
         gender = (
-            "male" if gender_attr == "1" else "female" if gender_attr == "2" else None
+            "Male"
+            if gender_attr.lower() == "male"
+            else "Female"
+            if gender_attr.lower() == "female"
+            else None
         )
 
         # Retrieve age
         age_attr = attr.GetAttribute("Age")
-        age_map = {"1": "Child", "2": "Teen", "3": "Adult", "4": "Senior"}
+        age_map = {
+            "Child": "Child",
+            "Teen": "Teen",
+            "Adult": "Adult",
+            "Senior": "Senior",
+        }
         age = age_map.get(age_attr, None)
 
         # Create and return the Voice object with additional attributes

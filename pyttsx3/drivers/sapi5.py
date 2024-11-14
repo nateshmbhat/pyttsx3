@@ -37,11 +37,11 @@ def buildDriver(proxy):
 
 def lcid_to_locale(language_code):
     primary, sub = language_code.split("-")
-    lcid = (int(sub) << 10) | int(primary)
+    locale_id = (int(sub) << 10) | int(primary)
     try:
-        return locale.windows_locale[lcid].replace("_", "-")
+        return locale.windows_locale[locale_id].replace("_", "-")
     except KeyError:
-        return "Unknown Locale"
+        return f"Unknown Locale: {locale_id}"
 
 
 # noinspection PyPep8Naming,PyShadowingNames

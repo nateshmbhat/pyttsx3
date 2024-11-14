@@ -41,6 +41,9 @@ def test_espeak_voices(driver_name):
     assert str(engine) == "espeak", "Expected engine name to be 'espeak'"
 
     # Retrieve and print voices without modifying `voice` property
+    # Linux eSpeak-NG v1.50 has 109 voices,
+    # macOS eSpeak-NG v1.51 has 131 voices,
+    # Windows eSpeak-NG v1.52-dev has 221 voices.
     voices = engine.getProperty("voices")
     print(f"{engine} has {len(voices)} voices.")
     assert len(voices) in {
@@ -51,12 +54,15 @@ def test_espeak_voices(driver_name):
 
     # Filter English voices
     english_voices = [voice for voice in voices if voice.id.startswith("English")]
+    # Linux eSpeak-NG v1.50 has 7 English voices,
+    # macOS eSpeak-NG v1.51 and Windows eSpeak-NG v1.52-dev have 8 English voices.
     assert len(english_voices) in {7, 8}, "Expected 7 or 8 English voices"
 
     # Queue a single utterance for each voice without calling `runAndWait()` in a loop
     names = []
     for _voice in english_voices:
         engine.setProperty("voice", _voice.id)
+        # English (America, New York City) --> America, New York City
         name = _voice.id[9:-1]  # Extract name for display
         names.append(name)
         engine.say(f"{name} says hello")  # Queue the utterance

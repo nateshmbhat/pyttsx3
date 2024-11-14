@@ -110,7 +110,7 @@ class SAPI5Driver:
 
         # Retrieve gender
         gender_attr = attr.GetAttribute("Gender")
-        gender_title_case = (gender or "").title()
+        gender_title_case = (gender_attr or "").title()
         gender = gender_title_case if gender_title_case in {"Male", "Female"} else None
 
         # Retrieve age

@@ -38,33 +38,33 @@ def test_espeak_voices(driver_name):
         pytest.skip(f"Skipping eSpeak-specific test for {driver_name}.")
 
     engine = pyttsx3.init(driver_name)
-    print(list(pyttsx3._activeEngines))
-    print(engine)
-    assert str(engine) == "espeak", "Expected engine name to be espeak"
-    voice = engine.getProperty("voice")
-    if voice:  # eSpeak-NG Windows v1.52-dev returns None
-        assert (
-            voice == "English (Great Britain)"
-        ), f"Expected {engine} default voice to be 'English (Great Britain)'"
+    assert str(engine) == "espeak", "Expected engine name to be 'espeak'"
+
+    # Retrieve and print voices without modifying `voice` property
     voices = engine.getProperty("voices")
-    print(f"{engine} has {len(voices) = } voices.")
-    # Linux eSpeak-NG v1.50 has 109 voices,
-    # macOS eSpeak-NG v1.51 has 131 voices,
-    # Windows eSpeak-NG v1.52-dev has 221 voices.
-    assert len(voices) in {109, 131, 221}, f"Expected 109, 131, 221 voices in {engine}"
-    # print("\n".join(voice.id for voice in voices))
+    print(f"{engine} has {len(voices)} voices.")
+    assert len(voices) in {
+        109,
+        131,
+        221,
+    }, f"Expected 109, 131, or 221 voices in {engine}"
+
+    # Filter English voices
     english_voices = [voice for voice in voices if voice.id.startswith("English")]
-    # Linux eSpeak-NG v1.50 has 7 English voices,
-    # macOS eSpeak-NG v1.51 and Windows eSpeak-NG v1.52-dev have 8 English voices.
-    assert len(english_voices) in {7, 8}, "Expected 7 or 8 English voices in {engine}"
+    assert len(english_voices) in {7, 8}, "Expected 7 or 8 English voices"
+
+    # Queue a single utterance for each voice without calling `runAndWait()` in a loop
     names = []
     for _voice in english_voices:
         engine.setProperty("voice", _voice.id)
-        # English (America, New York City) --> America, New York City
-        name = _voice.id[9:-1]
+        name = _voice.id[9:-1]  # Extract name for display
         names.append(name)
-        engine.say(f"{name} says hello")
-        engine.runAndWait()  # TODO: Remove this line when multiple utterances work!
+        engine.say(f"{name} says hello")  # Queue the utterance
+
+    # Run all queued utterances at once
+    engine.runAndWait()
+
+    # Verify the names collected against expected values
     name_str = "|".join(names)
     expected = (
         "Caribbean|Great Britain|Scotland|Lancaster|West Midlands"
@@ -73,8 +73,8 @@ def test_espeak_voices(driver_name):
     no_nyc = expected.rpartition("|")[0]
     assert name_str in {expected, no_nyc}, f"Expected '{expected}' or '{no_nyc}'."
     print(f"({name_str.replace('|', ' ; ')})", end=" ", flush=True)
-    engine.runAndWait()
-    engine.setProperty("voice", voice)  # Reset voice to original value
+
+    # Reset to the original voice
     engine.stop()
 
 

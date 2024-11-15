@@ -256,7 +256,7 @@ class EspeakDriver:
                                         check=True,
                                     )
                                 except subprocess.CalledProcessError:
-                                    logging.debug(
+                                    logger.debug(
                                         "Falling back to ffplay for audio playback."
                                     )
                                     subprocess.run(

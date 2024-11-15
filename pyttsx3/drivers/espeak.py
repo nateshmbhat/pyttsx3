@@ -341,10 +341,10 @@ class EspeakDriver:
             yield
 
     def say(self, text):
-        logging.debug(f"[DEBUG] EspeakDriver.say called with text: {text}")
+        logger.debug(f"[DEBUG] EspeakDriver.say called with text: {text}")
         self._queue.append(text)  # Add text to the local queue
         if not self._looping:
-            logging.debug("[DEBUG] Starting loop from say")
+            logger.debug("[DEBUG] Starting loop from say")
             self.startLoop()
 
     def runAndWait(self, timeout=0.01):
@@ -353,12 +353,12 @@ class EspeakDriver:
         """
         # First, check if the loop is already running
         if self._looping:
-            logging.debug("[DEBUG] Loop already active; waiting for completion.")
+            logger.debug("[DEBUG] Loop already active; waiting for completion.")
             start_time = time.time()
             while self._looping and (time.time() - start_time < timeout):
                 time.sleep(0.1)
             if self._looping:
-                logging.debug("[WARNING] Forcing loop exit due to timeout.")
+                logger.debug("[WARNING] Forcing loop exit due to timeout.")
                 self.endLoop()
                 self._proxy.setBusy(False)
 

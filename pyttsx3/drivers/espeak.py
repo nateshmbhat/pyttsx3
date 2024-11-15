@@ -70,7 +70,7 @@ class EspeakDriver:
 
     def stop(self):
         if not self._stopping:
-            logging.debug("[DEBUG] EspeakDriver.stop called")
+            logger.debug("[DEBUG] EspeakDriver.stop called")
             if self._looping:
                 self._stopping = True
                 self._looping = False

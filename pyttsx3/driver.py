@@ -1,6 +1,7 @@
 import importlib
 import traceback
 import weakref
+import logging
 
 
 class DriverProxy:
@@ -104,13 +105,17 @@ class DriverProxy:
         @param busy: True when busy, false when idle
         @type busy: bool
         """
+        if self._busy != busy:
+            logging.debug(
+                f"[DEBUG] Transitioning to {'busy' if busy else 'idle'} state."
+            )
         self._busy = busy
-        if not self._busy:
+        if not busy:
             self._pump()
 
     def isBusy(self):
         """
-        @return: True if the driver is busy, false if not
+        @return: True if the driver is busy, False if not
         @rtype: bool
         """
         return self._busy
@@ -191,19 +196,22 @@ class DriverProxy:
         if useDriverLoop:
             self._driver.startLoop()
         else:
-            self._iterator = self._driver.iterate()
+            self._iterator = self._driver.iterate() or iter([])
 
     def endLoop(self, useDriverLoop):
         """
         Called by the engine to stop an event loop.
         """
+        logging.debug(f"DriverProxy.endLoop called; useDriverLoop:: {useDriverLoop}")
         self._queue = []
         self._driver.stop()
         if useDriverLoop:
+            logging.debug("DriverProxy.endLoop calling driver.endLoop")
             self._driver.endLoop()
         else:
             self._iterator = None
-        self.setBusy(True)
+        # Set driver as not busy after loop finishes
+        self.setBusy(False)
 
     def iterate(self):
         """

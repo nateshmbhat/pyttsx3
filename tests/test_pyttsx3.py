@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sys
 import wave
+from pathlib import Path
 from unittest import mock
 
 import pytest
@@ -124,10 +125,7 @@ def test_apple_nsss_voices(engine):
     engine.setProperty("voice", voice)  # Reset voice to original value
 
 
-@pytest.mark.xfail(
-    sys.platform == "darwin", reason="TODO: Fix this test to pass on macOS"
-)
-def test_saving_to_file(engine, tmp_path):
+def test_saving_to_file(engine, tmp_path: Path) -> None:
     """
     Apple writes .aiff, not .wav.  https://github.com/nateshmbhat/pyttsx3/issues/361
     """

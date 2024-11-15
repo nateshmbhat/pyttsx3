@@ -312,7 +312,7 @@ class EspeakDriver:
         while self._looping:
             if not self._speaking and self._queue:
                 self._text_to_say = self._queue.pop(0)
-                logging.debug(f"Synthesizing text: {self._text_to_say}")
+                logger.debug(f"Synthesizing text: {self._text_to_say}")
                 self._start_synthesis(self._text_to_say)
 
             try:

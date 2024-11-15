@@ -77,7 +77,7 @@ class EspeakDriver:
                 # Use identifier as the unique ID
                 voice_id = v.identifier.decode(
                     "utf-8"
-                )  # Identifier corresponds to the "File" in espeak --voices
+                ).lower()  # Identifier corresponds to the "File" in espeak --voices
                 kwargs = {
                     "id": voice_id,  # Use "identifier" as the ID
                     "name": v.name.decode("utf-8"),  # Nice name
@@ -91,7 +91,7 @@ class EspeakDriver:
                         kwargs["languages"] = [language_code]
                     except UnicodeDecodeError:
                         kwargs["languages"] = ["Unknown"]
-                genders = [None, "male", "female"]
+                genders = [None, "Male", "Female"]
                 kwargs["gender"] = genders[v.gender]
                 kwargs["age"] = v.age or None
                 voices.append(Voice(**kwargs))
@@ -99,7 +99,7 @@ class EspeakDriver:
         if name == "voice":
             voice = _espeak.GetCurrentVoice()
             if voice and voice.contents.name:
-                return voice.contents.identifier.decode("utf-8")
+                return voice.contents.identifier.decode("utf-8").lower()
             return None
         if name == "rate":
             return _espeak.GetParameter(_espeak.RATE)

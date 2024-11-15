@@ -294,12 +294,12 @@ class EspeakDriver:
     def endLoop(self):
         """End the loop only when there’s no more text to say."""
         if self._queue or self._text_to_say:
-            logging.debug(
+            logger.debug(
                 "EndLoop called, but queue or text_to_say is not empty; continuing..."
             )
             return  # Keep looping if there’s still text
         else:
-            logging.debug("EndLoop called; stopping loop.")
+            logger.debug("EndLoop called; stopping loop.")
             self._looping = False
             self._proxy.setBusy(False)
 

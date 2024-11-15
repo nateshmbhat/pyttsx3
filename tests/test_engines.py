@@ -38,6 +38,8 @@ def test_espeak_voices(driver_name):
         pytest.skip(f"Skipping eSpeak-specific test for {driver_name}.")
 
     engine = pyttsx3.init(driver_name)
+    original_voice = engine.getProperty("voice")
+
     assert str(engine) == "espeak", "Expected engine name to be 'espeak'"
 
     # Retrieve and print voices without modifying `voice` property
@@ -80,7 +82,31 @@ def test_espeak_voices(driver_name):
     assert name_str in {expected, no_nyc}, f"Expected '{expected}' or '{no_nyc}'."
     print(f"({name_str.replace('|', ' ; ')})", end=" ", flush=True)
 
-    # Reset to the original voice
+    # Reset to the original voice and stop engine
+    engine.setProperty("voice", original_voice)
+    engine.stop()
+
+
+@pytest.mark.parametrize("driver_name", pyttsx3.engine.engines_by_sys_platform())
+def test_voice_reset_on_restart(driver_name):
+    engine = pyttsx3.init(driver_name)
+    original_voice = engine.getProperty("voice")
+
+    # Change voice
+    if voices := engine.getProperty("voices"):
+        engine.setProperty("voice", voices[1].id if len(voices) > 1 else voices[0].id)
+        assert engine.getProperty("voice") != original_voice, "Voice did not change."
+
+    # Stop and restart the engine
+    engine.stop()
+    engine = pyttsx3.init(driver_name)  # Re-initialize with the same driver
+    assert (
+        engine.getProperty("voice") == original_voice
+    ), "Voice did not reset to default after restart."
+
+    # Reset to original voice if needed and stop the engine
+    engine.setProperty("voice", original_voice)
+    engine.runAndWait()
     engine.stop()
 
 

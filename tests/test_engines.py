@@ -6,6 +6,7 @@ import pytest
 
 import pyttsx3
 
+sys.stdout.reconfigure(encoding="utf-8")
 quick_brown_fox = "The quick brown fox jumped over the lazy dog."
 
 

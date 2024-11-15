@@ -5,6 +5,7 @@ import subprocess
 import time
 import wave
 from tempfile import NamedTemporaryFile
+import logging
 
 if platform.system() == "Windows":
     import winsound
@@ -31,7 +32,12 @@ class EspeakDriver:
             rate = _espeak.Initialize(_espeak.AUDIO_OUTPUT_RETRIEVAL, 1000)
             if rate == -1:
                 raise RuntimeError("could not initialize espeak")
-            EspeakDriver._defaultVoice = "default"
+            current_voice = _espeak.GetCurrentVoice()
+            if current_voice and current_voice.contents.name:
+                EspeakDriver._defaultVoice = current_voice.contents.name.decode("utf-8")
+            else:
+                # Fallback to a known default if no voice is set
+                EspeakDriver._defaultVoice = "gmw/en"  # Adjust this as needed
             EspeakDriver._moduleInitialized = True
         self._proxy = proxy
         self._looping = False
@@ -68,7 +74,14 @@ class EspeakDriver:
         if name == "voices":
             voices = []
             for v in _espeak.ListVoices(None):
-                kwargs = {"id": v.name.decode("utf-8"), "name": v.name.decode("utf-8")}
+                # Use identifier as the unique ID
+                voice_id = v.identifier.decode(
+                    "utf-8"
+                ).lower()  # Identifier corresponds to the "File" in espeak --voices
+                kwargs = {
+                    "id": voice_id,  # Use "identifier" as the ID
+                    "name": v.name.decode("utf-8"),  # Nice name
+                }
                 if v.languages:
                     try:
                         language_code_bytes = v.languages[1:]
@@ -78,14 +91,16 @@ class EspeakDriver:
                         kwargs["languages"] = [language_code]
                     except UnicodeDecodeError:
                         kwargs["languages"] = ["Unknown"]
-                    genders = [None, "male", "female"]
+                genders = [None, "Male", "Female"]
                 kwargs["gender"] = genders[v.gender]
                 kwargs["age"] = v.age or None
                 voices.append(Voice(**kwargs))
             return voices
         if name == "voice":
             voice = _espeak.GetCurrentVoice()
-            return voice.contents.name.decode("utf-8") if voice.contents.name else None
+            if voice and voice.contents.name:
+                return voice.contents.identifier.decode("utf-8").lower()
+            return None
         if name == "rate":
             return _espeak.GetParameter(_espeak.RATE)
         if name == "volume":
@@ -101,9 +116,24 @@ class EspeakDriver:
                 return
             try:
                 utf8Value = str(value).encode("utf-8")
-                _espeak.SetVoiceByName(utf8Value)
+                logging.debug(f"Attempting to set voice to: {value}")
+                result = _espeak.SetVoiceByName(utf8Value)
+                if result == 0:  # EE_OK is 0
+                    logging.debug(f"Successfully set voice to: {value}")
+                elif result == 1:  # EE_BUFFER_FULL
+                    raise ValueError(
+                        f"SetVoiceByName failed: EE_BUFFER_FULL while setting voice to {value}"
+                    )
+                elif result == 2:  # EE_INTERNAL_ERROR
+                    raise ValueError(
+                        f"SetVoiceByName failed: EE_INTERNAL_ERROR while setting voice to {value}"
+                    )
+                else:
+                    raise ValueError(
+                        f"SetVoiceByName failed with unknown return code {result} for voice: {value}"
+                    )
             except ctypes.ArgumentError as e:
-                raise ValueError(str(e))
+                raise ValueError(f"Invalid voice name: {value}, error: {e}")
         elif name == "rate":
             try:
                 _espeak.SetParameter(_espeak.RATE, value, 0)

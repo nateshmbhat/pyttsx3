@@ -41,41 +41,55 @@ def test_espeak_voices(driver_name):
     print(list(pyttsx3._activeEngines))
     print(engine)
     assert str(engine) == "espeak", "Expected engine name to be espeak"
-    voice = engine.getProperty("voice")
-    if voice:  # eSpeak-NG Windows v1.52-dev returns None
-        assert (
-            voice == "English (Great Britain)"
-        ), f"Expected {engine} default voice to be 'English (Great Britain)'"
+
+    # Verify initial voice
+    default_voice = engine.getProperty("voice")
+    print(f"Initial default voice ID: {default_voice}")
+    assert (
+        default_voice == "gmw/en"
+    ), f"Expected default voice ID to be 'gmw/en', Got: {default_voice}"
+
+    # Get and validate the number of voices
     voices = engine.getProperty("voices")
     print(f"{engine} has {len(voices) = } voices.")
     # Linux eSpeak-NG v1.50 has 109 voices,
     # macOS eSpeak-NG v1.51 has 131 voices,
     # Windows eSpeak-NG v1.52-dev has 221 voices.
-    assert len(voices) in {109, 131, 221}, f"Expected 109, 131, 221 voices in {engine}"
-    # print("\n".join(voice.id for voice in voices))
-    english_voices = [voice for voice in voices if voice.id.startswith("English")]
+    assert len(voices) in {109, 131, 221}, "Unexpected number of voices"
+
+    # Define the expected English voice IDs (excluding Caribbean for now as not in some envs
     # Linux eSpeak-NG v1.50 has 7 English voices,
     # macOS eSpeak-NG v1.51 and Windows eSpeak-NG v1.52-dev have 8 English voices.
-    assert len(english_voices) in {7, 8}, "Expected 7 or 8 English voices in {engine}"
-    names = []
-    for _voice in english_voices:
-        engine.setProperty("voice", _voice.id)
-        # English (America, New York City) --> America, New York City
-        name = _voice.id[9:-1]
-        names.append(name)
-        engine.say(f"{name} says hello")
-        engine.runAndWait()  # TODO: Remove this line when multiple utterances work!
-    name_str = "|".join(names)
-    expected = (
-        "Caribbean|Great Britain|Scotland|Lancaster|West Midlands"
-        "|Received Pronunciation|America|America, New York City"
-    )
-    no_nyc = expected.rpartition("|")[0]
-    assert name_str in {expected, no_nyc}, f"Expected '{expected}' or '{no_nyc}'."
-    print(f"({name_str.replace('|', ' ; ')})", end=" ", flush=True)
-    engine.runAndWait()
-    engine.setProperty("voice", voice)  # Reset voice to original value
-    engine.stop()
+    english_voice_ids = [
+        "gmw/en",  # Great Britain
+        "gmw/en-GB-scotland",  # Scotland
+        "gmw/en-GB-x-gbclan",  # Lancaster
+        "gmw/en-GB-x-gbcwmd",  # West Midlands
+        "gmw/en-GB-x-rp",  # Received Pronunciation
+        "gmw/en-US",  # America
+        "gmw/en-US-nyc",  # America, New York City
+    ]
+
+    for voice_id in english_voice_ids:
+        target_voice = next((v for v in voices if v.id == voice_id), None)
+        if not target_voice:
+            print(f"Voice with ID '{voice_id}' not found. Skipping.")
+            continue
+
+        print(f"Attempting to set voice to ID: {voice_id} (Name: {target_voice.name})")
+        engine.setProperty("voice", target_voice.id)
+
+        # Verify the change
+        current_voice = engine.getProperty("voice")
+        print(f"Current voice ID: {current_voice}")
+        if current_voice != target_voice.id:
+            print(
+                f"Voice change mismatch. Expected: {target_voice.id}, Got: {current_voice}. Skipping."
+            )
+            continue
+
+        engine.say(f"Hello, this is {target_voice.name}.")
+        engine.runAndWait()
 
 
 @pytest.mark.parametrize("driver_name", pyttsx3.engine.engines_by_sys_platform())

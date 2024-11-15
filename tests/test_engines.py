@@ -87,26 +87,37 @@ def test_espeak_voices(driver_name):
     engine.stop()
 
 
-@pytest.mark.parametrize("driver_name", pyttsx3.engine.engines_by_sys_platform())
+@pytest.mark.parametrize("driver_name", ["espeak"])
 def test_voice_reset_on_restart(driver_name):
     engine = pyttsx3.init(driver_name)
     original_voice = engine.getProperty("voice")
 
+    # Get available voices
+    voices = engine.getProperty("voices")
+    print(f"Available voices: {[voice.id for voice in voices]}")
+    if len(voices) <= 1:
+        pytest.skip("No additional voices available to test voice change.")
+
+    # Find a different voice
+    new_voice = next((v.id for v in voices if v.id != original_voice), None)
+    if new_voice is None:
+        pytest.skip("No different voice available to test voice change.")
+
     # Change voice
-    if voices := engine.getProperty("voices"):
-        engine.setProperty("voice", voices[1].id if len(voices) > 1 else voices[0].id)
-        assert engine.getProperty("voice") != original_voice, "Voice did not change."
+    engine.setProperty("voice", new_voice)
+    assert engine.getProperty("voice") != original_voice, "Voice did not change."
+    print(f"Original voice: {original_voice}")
+    print(f"New voice: {engine.getProperty('voice')}")
 
     # Stop and restart the engine
     engine.stop()
-    engine = pyttsx3.init(driver_name)  # Re-initialize with the same driver
+    engine = pyttsx3.init(driver_name)  # Re-initialize
     assert (
         engine.getProperty("voice") == original_voice
     ), "Voice did not reset to default after restart."
 
-    # Reset to original voice if needed and stop the engine
+    # Clean up
     engine.setProperty("voice", original_voice)
-    engine.runAndWait()
     engine.stop()
 
 

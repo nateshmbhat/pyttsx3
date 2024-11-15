@@ -52,9 +52,14 @@ def test_espeak_voices(driver_name):
     # Get and validate the number of voices
     voices = engine.getProperty("voices")
     print(f"{engine} has {len(voices) = } voices.")
+    # Linux eSpeak-NG v1.50 has 109 voices,
+    # macOS eSpeak-NG v1.51 has 131 voices,
+    # Windows eSpeak-NG v1.52-dev has 221 voices.
     assert len(voices) in {109, 131, 221}, "Unexpected number of voices"
 
-    # Define the expected English voice IDs (excluding Caribbean for now)
+    # Define the expected English voice IDs (excluding Caribbean for now as not in some envs
+    # Linux eSpeak-NG v1.50 has 7 English voices,
+    # macOS eSpeak-NG v1.51 and Windows eSpeak-NG v1.52-dev have 8 English voices.
     english_voice_ids = [
         "gmw/en",  # Great Britain
         "gmw/en-GB-scotland",  # Scotland

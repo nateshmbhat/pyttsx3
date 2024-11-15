@@ -268,7 +268,7 @@ class EspeakDriver:
 
                         os.remove(temp_wav_name)
                     except Exception as e:
-                        logging.debug(f"Playback error: {e}")
+                        logger.debug(f"Playback error: {e}")
 
                 logger.debug(
                     "[DEBUG] Utterance complete; resetting text_to_say and speaking flag."

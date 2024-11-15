@@ -6,6 +6,8 @@ import pytest
 
 import pyttsx3
 
+sys.stdout.reconfigure(encoding="utf-8")
+
 quick_brown_fox = "The quick brown fox jumped over the lazy dog."
 
 
@@ -42,6 +44,7 @@ def test_espeak_voices(driver_name):
     print(engine)
     assert str(engine) == "espeak", "Expected engine name to be espeak"
     voice = engine.getProperty("voice")
+    print(f"Initial voice: {voice}")
     if voice:  # eSpeak-NG Windows v1.52-dev returns None
         assert (
             voice == "English (Great Britain)"
@@ -60,7 +63,10 @@ def test_espeak_voices(driver_name):
     names = []
     for _voice in english_voices:
         engine.setProperty("voice", _voice.id)
+        print(f"Attempting to change to voice: {_voice.id}")
         # English (America, New York City) --> America, New York City
+        current_voice = engine.getProperty("voice")
+        print(f"Current voice: {current_voice}")
         name = _voice.id[9:-1]
         names.append(name)
         engine.say(f"{name} says hello")

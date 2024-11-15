@@ -28,6 +28,7 @@ class EspeakDriver:
     _defaultVoice = ""
 
     def __init__(self, proxy):
+        
         if not EspeakDriver._moduleInitialized:
             # espeak cannot initialize more than once per process and has
             # issues when terminating from python (assert error on close)
@@ -125,10 +126,10 @@ class EspeakDriver:
                 return
             try:
                 utf8Value = str(value).encode("utf-8")
-                logging.debug(f"Attempting to set voice to: {value}")
+                logger.debug(f"Attempting to set voice to: {value}")
                 result = _espeak.SetVoiceByName(utf8Value)
                 if result == 0:  # EE_OK is 0
-                    logging.debug(f"Successfully set voice to: {value}")
+                    logger.debug(f"Successfully set voice to: {value}")
                 elif result == 1:  # EE_BUFFER_FULL
                     raise ValueError(
                         f"SetVoiceByName failed: EE_BUFFER_FULL while setting voice to {value}"
@@ -211,6 +212,7 @@ class EspeakDriver:
                 # Handle utterance completion
                 if self._save_file:
                     # Save audio to file if requested
+                    print('Saving to file')
                     try:
                         with wave.open(self._save_file, "wb") as f:
                             f.setnchannels(1)  # Mono

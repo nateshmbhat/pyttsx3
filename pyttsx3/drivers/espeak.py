@@ -375,8 +375,8 @@ class EspeakDriver:
         # Main wait loop to ensure commands are fully processed
         while self._queue or self._text_to_say or self._speaking:
             if time.time() - start_time > timeout:
-                logging.debug("[WARNING] runAndWait timeout reached.")
+                logger.debug("[WARNING] runAndWait timeout reached.")
                 break
             time.sleep(0.1)  # Allow time for the loop to process items in the queue
 
-        logging.debug("[DEBUG] runAndWait completed.")
+        logger.debug("[DEBUG] runAndWait completed.")

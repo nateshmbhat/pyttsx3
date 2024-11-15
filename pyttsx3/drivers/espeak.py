@@ -239,7 +239,7 @@ class EspeakDriver:
                             subprocess.run(["afplay", temp_wav_name], check=True)
                         elif platform.system() == "Linux":
                             if "CI" in os.environ:
-                                logging.debug(
+                                logger.debug(
                                     "Running in CI environment; using ffmpeg for silent processing."
                                 )
                                 # Use ffmpeg to process the audio file without playback

@@ -305,7 +305,7 @@ class EspeakDriver:
 
     def startLoop(self, external=False):
         """Start the synthesis loop."""
-        logging.debug("Starting loop")
+        logger.debug("Starting loop")
         self._looping = True
         self._is_external_loop = external
 

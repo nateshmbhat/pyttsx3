@@ -32,7 +32,12 @@ class EspeakDriver:
             rate = _espeak.Initialize(_espeak.AUDIO_OUTPUT_RETRIEVAL, 1000)
             if rate == -1:
                 raise RuntimeError("could not initialize espeak")
-            EspeakDriver._defaultVoice = "gmw/en-US-nyc"
+            current_voice = _espeak.GetCurrentVoice()
+            if current_voice and current_voice.contents.name:
+                EspeakDriver._defaultVoice = current_voice.contents.name.decode("utf-8")
+            else:
+                # Fallback to a known default if no voice is set
+                EspeakDriver._defaultVoice = "gmw/en"  # Adjust this as needed
             EspeakDriver._moduleInitialized = True
         self._proxy = proxy
         self._looping = False

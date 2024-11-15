@@ -28,7 +28,6 @@ class EspeakDriver:
     _defaultVoice = ""
 
     def __init__(self, proxy):
-        
         if not EspeakDriver._moduleInitialized:
             # espeak cannot initialize more than once per process and has
             # issues when terminating from python (assert error on close)
@@ -212,7 +211,6 @@ class EspeakDriver:
                 # Handle utterance completion
                 if self._save_file:
                     # Save audio to file if requested
-                    print('Saving to file')
                     try:
                         with wave.open(self._save_file, "wb") as f:
                             f.setnchannels(1)  # Mono

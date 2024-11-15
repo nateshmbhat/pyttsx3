@@ -270,7 +270,7 @@ class EspeakDriver:
                     except Exception as e:
                         logging.debug(f"Playback error: {e}")
 
-                logging.debug(
+                logger.debug(
                     "[DEBUG] Utterance complete; resetting text_to_say and speaking flag."
                 )
                 self._text_to_say = None  # Clear text once utterance completes

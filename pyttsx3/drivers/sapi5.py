@@ -15,6 +15,7 @@ import math
 import os
 import time
 import weakref
+import locale
 
 import pythoncom
 
@@ -32,6 +33,15 @@ E_REG = {MSSAM: (137.89, 1.11), MSMARY: (156.63, 1.11), MSMIKE: (154.37, 1.11)}
 # noinspection PyPep8Naming
 def buildDriver(proxy):
     return SAPI5Driver(proxy)
+
+
+def lcid_to_locale(language_code):
+    primary, sub = language_code.split("-")
+    locale_id = (int(sub) << 10) | int(primary)
+    try:
+        return locale.windows_locale[locale_id].replace("_", "-")
+    except KeyError:
+        return f"Unknown Locale: {locale_id}"
 
 
 # noinspection PyPep8Naming,PyShadowingNames
@@ -88,7 +98,29 @@ class SAPI5Driver:
 
     @staticmethod
     def _toVoice(attr):
-        return Voice(attr.Id, attr.GetDescription())
+        # Retrieve voice ID and description (name)
+        voice_id = attr.Id
+        voice_name = attr.GetDescription()
+
+        # Retrieve and convert language code
+        language_attr = attr.GetAttribute("Language")
+        language_code = int(language_attr, 16)
+        primary_sub_code = f"{language_code & 0x3FF}-{(language_code >> 10) & 0x3FF}"
+        languages = [lcid_to_locale(primary_sub_code)]
+
+        # Retrieve gender
+        gender_attr = attr.GetAttribute("Gender")
+        gender_title_case = (gender_attr or "").title()
+        gender = gender_title_case if gender_title_case in {"Male", "Female"} else None
+
+        # Retrieve age
+        age_attr = attr.GetAttribute("Age")
+        age = age_attr if age_attr in {"Child", "Teen", "Adult", "Senior"} else None
+
+        # Create and return the Voice object with additional attributes
+        return Voice(
+            id=voice_id, name=voice_name, languages=languages, gender=gender, age=age
+        )
 
     def _tokenFromId(self, id_):
         tokens = self._tts.GetVoices()

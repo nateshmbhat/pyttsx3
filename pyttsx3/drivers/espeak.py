@@ -217,7 +217,7 @@ class EspeakDriver:
                             f.setsampwidth(2)  # 16-bit samples
                             f.setframerate(22050)  # 22,050 Hz sample rate
                             f.writeframes(self._data_buffer)
-                        logging.debug(f"Audio saved to {self._save_file}")
+                        logger.debug(f"Audio saved to {self._save_file}")
                     except Exception as e:
                         raise RuntimeError(f"Error saving WAV file: {e}")
                 else:

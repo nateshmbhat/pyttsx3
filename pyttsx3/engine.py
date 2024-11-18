@@ -42,10 +42,10 @@ class Engine:
     @ivar _driverLoop: Using a driver event loop or not
     @type _driverLoop: bool
     @ivar _debug: Print exceptions or not
-    @type _debug: bool
+    @type _debug: bool.
     """
 
-    def __init__(self, driverName: str | None = None, debug: bool = False):
+    def __init__(self, driverName: str | None = None, debug: bool = False) -> None:
         """
         Constructs a new TTS engine instance.
 
@@ -63,16 +63,12 @@ class Engine:
         self._inLoop = False
 
     def __repr__(self) -> str:
-        """
-        repr(pyttsx3.init('nsss')) -> "pyttsx3.engine.Engine('nsss', debug=False)"
-        """
+        """repr(pyttsx3.init('nsss')) -> "pyttsx3.engine.Engine('nsss', debug=False)"."""
         module_and_class = f"{self.__class__.__module__}.{self.__class__.__name__}"
         return f"{module_and_class}('{self.driver_name}', debug={self._debug})"
 
     def __str__(self) -> str:
-        """
-        str(pyttsx3.init('nsss')) -> 'nsss'
-        """
+        """str(pyttsx3.init('nsss')) -> 'nsss'."""
         return self.driver_name
 
     def _notify(self, topic: str, **kwargs) -> None:
@@ -128,7 +124,7 @@ class Engine:
         if len(arr) == 0:
             del self._connects[topic]
 
-    def say(self, text: str | None, name: str | None = None):
+    def say(self, text: str | None, name: str | None = None) -> str | None:
         """
         Adds an utterance to speak to the event queue.
 
@@ -140,13 +136,11 @@ class Engine:
         """
         if str(text or "").strip():
             self.proxy.say(text, name)
-        else:
-            return "Argument value can't be None or empty"
+            return None
+        return "Argument value can't be None or empty"
 
     def stop(self) -> None:
-        """
-        Stops the current utterance and clears the event queue.
-        """
+        """Stops the current utterance and clears the event queue."""
         self.proxy.stop()
 
     def save_to_file(self, text: str, filename: str, name: str | None = None) -> None:
@@ -160,12 +154,14 @@ class Engine:
             notifications about this utterance.
         @type name: str
         """
+        assert text
+        assert filename
         self.proxy.save_to_file(text, filename, name)
 
     def isBusy(self) -> bool:
         """
         @return: True if an utterance is currently being spoken, false if not
-        @rtype: bool
+        @rtype: bool.
         """
         return self.proxy.isBusy()
 
@@ -219,7 +215,8 @@ class Engine:
         @raise RuntimeError: When the loop is already running
         """
         if self._inLoop:
-            raise RuntimeError("run loop already started")
+            msg = "run loop already started"
+            raise RuntimeError(msg)
         self._inLoop = True
         self._driverLoop = True
         self.proxy.runAndWait()
@@ -237,7 +234,8 @@ class Engine:
         @raise RuntimeError: When the loop is already running
         """
         if self._inLoop:
-            raise RuntimeError("run loop already started")
+            msg = "run loop already started"
+            raise RuntimeError(msg)
         self._inLoop = True
         self._driverLoop = useDriverLoop
         self.proxy.startLoop(self._driverLoop)
@@ -249,16 +247,17 @@ class Engine:
         @raise RuntimeError: When the loop is not running
         """
         if not self._inLoop:
-            raise RuntimeError("run loop not started")
+            msg = "run loop not started"
+            raise RuntimeError(msg)
         self.proxy.endLoop(self._driverLoop)
         self._inLoop = False
 
-    def iterate(self):
-        """
-        Must be called regularly when using an external event loop.
-        """
+    def iterate(self) -> None:
+        """Must be called regularly when using an external event loop."""
         if not self._inLoop:
-            raise RuntimeError("run loop not started")
+            msg = "run loop not started"
+            raise RuntimeError(msg)
         if self._driverLoop:
-            raise RuntimeError("iterate not valid in driver run loop")
+            msg = "iterate not valid in driver run loop"
+            raise RuntimeError(msg)
         self.proxy.iterate()

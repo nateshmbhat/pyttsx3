@@ -1,17 +1,14 @@
 class Voice:
-    def __init__(self, id, name=None, languages=[], gender=None, age=None):
+    def __init__(self, id, name=None, languages=None, gender=None, age=None) -> None:
         self.id = id
         self.name = name
-        self.languages = languages
+        self.languages = languages or []
         self.gender = gender
         self.age = age
 
-    def __str__(self):
-        return (
-            """<Voice id=%(id)s
-          name=%(name)s
-          languages=%(languages)s
-          gender=%(gender)s
-          age=%(age)s>"""
-            % self.__dict__
-        )
+    def __str__(self) -> str:
+        return """<Voice id={id}
+          name={name}
+          languages={languages}
+          gender={gender}
+          age={age}>""".format(**self.__dict__)

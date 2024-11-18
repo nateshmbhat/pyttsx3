@@ -56,8 +56,8 @@ jobs:
           pip install pytest
           pip install --editable .
 
-      - timeout-minutes: 10  # Save resources while our pytests are hanging
-        run: pytest -s -vvv --strict
+      - timeout-minutes: 15  # Save resources while our pytests are hanging
+        run: pytest --full-trace -s -vvv --strict
 
   build:
     runs-on: ubuntu-latest

@@ -26,7 +26,7 @@ def init(driverName=None, debug=False):
     return eng
 
 
-def speak(text):
+def speak(text) -> None:
     engine = init()
     engine.say(text)
     engine.runAndWait()

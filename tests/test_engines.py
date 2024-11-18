@@ -10,7 +10,7 @@ quick_brown_fox = "The quick brown fox jumped over the lazy dog."
 
 
 @pytest.mark.parametrize("driver_name", pyttsx3.engine.engines_by_sys_platform())
-def test_engine_name(driver_name):
+def test_engine_name(driver_name) -> None:
     engine = pyttsx3.init(driver_name)
     assert engine.driver_name == driver_name
     assert str(engine) == driver_name
@@ -22,7 +22,7 @@ def test_engine_name(driver_name):
     sys.platform == "win32", reason="TODO: Make this test pass on eSpeak-NG on Windows"
 )
 @pytest.mark.parametrize("driver_name", pyttsx3.engine.engines_by_sys_platform())
-def test_speaking_text(driver_name):
+def test_speaking_text(driver_name) -> None:
     engine = pyttsx3.init(driver_name)
     engine.say("Sally sells seashells by the seashore.")
     engine.say(quick_brown_fox)
@@ -33,7 +33,7 @@ def test_speaking_text(driver_name):
 
 
 @pytest.mark.parametrize("driver_name", pyttsx3.engine.engines_by_sys_platform())
-def test_espeak_voices(driver_name):
+def test_espeak_voices(driver_name) -> None:
     if driver_name != "espeak":
         pytest.skip(f"Skipping eSpeak-specific test for {driver_name}.")
 
@@ -93,7 +93,7 @@ def test_espeak_voices(driver_name):
 
 
 @pytest.mark.parametrize("driver_name", pyttsx3.engine.engines_by_sys_platform())
-def test_apple_nsss_voices(driver_name):
+def test_apple_nsss_voices(driver_name) -> None:
     if driver_name != "nsss":
         pytest.skip(f"Skipping nsss-specific test for {driver_name}.")
 

@@ -1,4 +1,4 @@
-"""pyttsx3 examples"""
+"""pyttsx3 examples."""
 
 import pyttsx3
 

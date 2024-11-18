@@ -60,7 +60,7 @@ class NSSpeechDriver(NSObject):
         self._proxy.setBusy(False)
 
     def startLoop(self) -> None:
-        # https://github.com/ronaldoussoren/pyobjc/blob/master/pyobjc-framework-Cocoa/Lib/PyObjCTools/AppHelper.py#L243C25-L243C25  # noqa
+        # https://github.com/ronaldoussoren/pyobjc/blob/master/pyobjc-framework-Cocoa/Lib/PyObjCTools/AppHelper.py#L243C25-L243C25  # noqa: E501
         NSTimer.scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_(
             0.0, self, "onPumpFirst:", None, False
         )
@@ -69,9 +69,7 @@ class NSSpeechDriver(NSObject):
         PyObjCAppHelperRunLoopStopper.addRunLoopStopper_toRunLoop_(stopper, runLoop)
         while stopper.shouldRun():
             nextfire = runLoop.limitDateForMode_(NSDefaultRunLoopMode)
-            soon = NSDate.dateWithTimeIntervalSinceNow_(
-                0
-            )  # maxTimeout in runConsoleEventLoop
+            soon = NSDate.dateWithTimeIntervalSinceNow_(0)  # maxTimeout in runConsoleEventLoop
             if nextfire is not None:
                 nextfire = soon.earlierDate_(nextfire)
             if not runLoop.runMode_beforeDate_(NSDefaultRunLoopMode, nextfire):
@@ -163,10 +161,11 @@ class NSSpeechDriver(NSObject):
         self._proxy.setBusy(False)
 
     def speechSynthesizer_willSpeakWord_ofString_(self, tts, rng, text) -> None:
-        if self._current_text:
-            current_word = self._current_text[rng.location : rng.location + rng.length]
-        else:
-            current_word = "Unknown"
+        current_word = (
+            self._current_text[rng.location : rng.location + rng.length]
+            if self._current_text
+            else "Unknown"
+        )
 
         self._proxy.notify(
             "started-word", name=current_word, location=rng.location, length=rng.length

@@ -2,12 +2,15 @@ from __future__ import annotations
 
 import sys
 import wave
-from pathlib import Path
+from typing import TYPE_CHECKING
 from unittest import mock
 
 import pytest
 
 import pyttsx3
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 quick_brown_fox = "The quick brown fox jumped over the lazy dog."
 
@@ -27,9 +30,7 @@ def test_engine_name(engine) -> None:
     assert repr(engine) == f"pyttsx3.engine.Engine('{expected}', debug=False)"
 
 
-@pytest.mark.skipif(
-    sys.platform == "win32", reason="TODO: Fix this test to pass on Windows"
-)
+@pytest.mark.skipif(sys.platform == "win32", reason="TODO: Fix this test to pass on Windows")
 def test_speaking_text(engine) -> None:
     engine.say("Sally sells seashells by the seashore.")
     engine.say(quick_brown_fox)
@@ -37,9 +38,7 @@ def test_speaking_text(engine) -> None:
     engine.runAndWait()
 
 
-@pytest.mark.skipif(
-    sys.platform not in ("darwin", "ios"), reason="Testing only on macOS and iOS"
-)
+@pytest.mark.skipif(sys.platform not in ("darwin", "ios"), reason="Testing only on macOS and iOS")
 def test_apple_avspeech_voices(engine):
     import platform
 
@@ -64,12 +63,8 @@ def test_apple_avspeech_voices(engine):
     print(f"On macOS v{macos_version}, {engine} has {len(voices) = } voices.")
     assert len(voices) in (176, 143), "Expected 176 or 143 voices on macOS and iOS"
     # print("\n".join(voice.id for voice in voices))
-    en_us_voices = [
-        voice for voice in voices if voice.id.startswith("com.apple.eloquence.en-US.")
-    ]
-    assert (
-        len(en_us_voices) == 8
-    ), "Expected 8 com.apple.eloquence.en-US voices on macOS and iOS"
+    en_us_voices = [voice for voice in voices if voice.id.startswith("com.apple.eloquence.en-US.")]
+    assert len(en_us_voices) == 8, "Expected 8 com.apple.eloquence.en-US voices on macOS and iOS"
     names = []
     for _voice in en_us_voices:
         engine.setProperty("voice", _voice.id)
@@ -83,9 +78,7 @@ def test_apple_avspeech_voices(engine):
     engine.setProperty("voice", voice)  # Reset voice to original value
 
 
-@pytest.mark.skipif(
-    sys.platform not in ("darwin", "ios"), reason="Testing only on macOS and iOS"
-)
+@pytest.mark.skipif(sys.platform not in ("darwin", "ios"), reason="Testing only on macOS and iOS")
 def test_apple_nsss_voices(engine):
     import platform
 
@@ -97,8 +90,9 @@ def test_apple_nsss_voices(engine):
     voice = engine.getProperty("voice")
     # On macOS v14.x, the default nsss voice is com.apple.voice.compact.en-US.Samantha.
     # ON macOS v15.x, the default nsss voice is ""
-    assert (
-        voice in ("", "com.apple.voice.compact.en-US.Samantha")
+    assert voice in (
+        "",
+        "com.apple.voice.compact.en-US.Samantha",
     ), "Expected default voice to be com.apple.voice.compact.en-US.Samantha on macOS and iOS"
     voices = engine.getProperty("voices")
     # On macOS v14.x, nsss has 143 voices.
@@ -106,12 +100,8 @@ def test_apple_nsss_voices(engine):
     print(f"On macOS v{macos_version}, {engine} has {len(voices) = } voices.")
     assert len(voices) in (176, 143), "Expected 176 or 143 voices on macOS and iOS"
     # print("\n".join(voice.id for voice in voices))
-    en_us_voices = [
-        voice for voice in voices if voice.id.startswith("com.apple.eloquence.en-US.")
-    ]
-    assert (
-        len(en_us_voices) == 8
-    ), "Expected 8 com.apple.eloquence.en-US voices on macOS and iOS"
+    en_us_voices = [voice for voice in voices if voice.id.startswith("com.apple.eloquence.en-US.")]
+    assert len(en_us_voices) == 8, "Expected 8 com.apple.eloquence.en-US voices on macOS and iOS"
     names = []
     for _voice in en_us_voices:
         engine.setProperty("voice", _voice.id)
@@ -151,9 +141,7 @@ def test_saving_to_file(engine, tmp_path: Path) -> None:
         assert sys.platform in {"darwin", "ios"}, "Apple writes .aiff, not .wav files."
 
 
-@pytest.mark.skipif(
-    sys.platform == "win32", reason="TODO: Fix this test to pass on Windows"
-)
+@pytest.mark.skipif(sys.platform == "win32", reason="TODO: Fix this test to pass on Windows")
 def test_listening_for_events(engine) -> None:
     onStart = mock.Mock()
     onWord = mock.Mock()
@@ -190,9 +178,7 @@ def test_interrupting_utterance(engine) -> None:
     assert onWord_mock.called
 
 
-@pytest.mark.skipif(
-    sys.platform == "win32", reason="TODO: Fix this test to pass on Windows"
-)
+@pytest.mark.skipif(sys.platform == "win32", reason="TODO: Fix this test to pass on Windows")
 def test_changing_speech_rate(engine) -> None:
     rate = engine.getProperty("rate")
     rate_plus_fifty = rate + 50
@@ -202,9 +188,7 @@ def test_changing_speech_rate(engine) -> None:
     engine.setProperty("rate", rate)  # Reset rate to original value
 
 
-@pytest.mark.skipif(
-    sys.platform == "win32", reason="TODO: Fix this test to pass on Windows"
-)
+@pytest.mark.skipif(sys.platform == "win32", reason="TODO: Fix this test to pass on Windows")
 def test_changing_volume(engine) -> None:
     volume = engine.getProperty("volume")
     volume_minus_a_quarter = volume - 0.25
@@ -214,22 +198,16 @@ def test_changing_volume(engine) -> None:
     engine.setProperty("volume", volume)  # Reset volume to original value
 
 
-@pytest.mark.skipif(
-    sys.platform == "win32", reason="TODO: Fix this test to pass on Windows"
-)
+@pytest.mark.skipif(sys.platform == "win32", reason="TODO: Fix this test to pass on Windows")
 def test_changing_voices(engine) -> None:
     voices = engine.getProperty("voices")
-    for (
-        voice
-    ) in voices:  # TODO: This could be lots of voices! (e.g. 176 on macOS v15.x)
+    for voice in voices:  # TODO: This could be lots of voices! (e.g. 176 on macOS v15.x)
         engine.setProperty("voice", voice.id)
         engine.say(f"{voice.id = }. {quick_brown_fox}")
     engine.runAndWait()
 
 
-@pytest.mark.skipif(
-    sys.platform == "win32", reason="TODO: Fix this test to pass on Windows"
-)
+@pytest.mark.skipif(sys.platform == "win32", reason="TODO: Fix this test to pass on Windows")
 def test_running_driver_event_loop(engine) -> None:
     def onStart(name) -> None:
         print("starting", name)

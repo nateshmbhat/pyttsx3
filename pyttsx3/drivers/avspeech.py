@@ -28,7 +28,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
 
 
-def buildDriver(proxy):  # noqa: N802, ANN001, ANN201
+def buildDriver(proxy):
     """Build an AVSpeech driver instance."""
     driver = AVSpeechDriver.alloc().init()
     driver.setProxy(proxy)

@@ -1,16 +1,17 @@
 import ctypes
+import logging
 import os
 import platform
 import subprocess
 import time
 import wave
 from tempfile import NamedTemporaryFile
-import logging
 
 if platform.system() == "Windows":
     import winsound
 
-from ..voice import Voice
+from pyttsx3.voice import Voice
+
 from . import _espeak
 
 
@@ -31,7 +32,8 @@ class EspeakDriver:
             # so just keep it alive and init once
             rate = _espeak.Initialize(_espeak.AUDIO_OUTPUT_RETRIEVAL, 1000)
             if rate == -1:
-                raise RuntimeError("could not initialize espeak")
+                msg = "could not initialize espeak"
+                raise RuntimeError(msg)
             current_voice = _espeak.GetCurrentVoice()
             if current_voice and current_voice.contents.name:
                 EspeakDriver._defaultVoice = current_voice.contents.name.decode("utf-8")
@@ -85,9 +87,7 @@ class EspeakDriver:
                 if v.languages:
                     try:
                         language_code_bytes = v.languages[1:]
-                        language_code = language_code_bytes.decode(
-                            "utf-8", errors="ignore"
-                        )
+                        language_code = language_code_bytes.decode("utf-8", errors="ignore")
                         kwargs["languages"] = [language_code]
                     except UnicodeDecodeError:
                         kwargs["languages"] = ["Unknown"]
@@ -107,33 +107,35 @@ class EspeakDriver:
             return _espeak.GetParameter(_espeak.VOLUME) / 100.0
         if name == "pitch":
             return _espeak.GetParameter(_espeak.PITCH)
-        raise KeyError("unknown property %s" % name)
+        msg = f"unknown property {name}"
+        raise KeyError(msg)
 
     @staticmethod
-    def setProperty(name: str, value):
+    def setProperty(name: str, value):  # noqa: C901,PLR0912
         if name == "voice":
             if value is None:
                 return
             try:
                 utf8Value = str(value).encode("utf-8")
-                logging.debug(f"Attempting to set voice to: {value}")
+                logging.debug(f"Attempting to set voice to: {value}")  # noqa: G004
                 result = _espeak.SetVoiceByName(utf8Value)
                 if result == 0:  # EE_OK is 0
-                    logging.debug(f"Successfully set voice to: {value}")
+                    logging.debug(f"Successfully set voice to: {value}")  # noqa: G004
                 elif result == 1:  # EE_BUFFER_FULL
-                    raise ValueError(
-                        f"SetVoiceByName failed: EE_BUFFER_FULL while setting voice to {value}"
-                    )
+                    msg = f"SetVoiceByName failed: EE_BUFFER_FULL while setting voice to {value}"
+                    raise ValueError(msg)
                 elif result == 2:  # EE_INTERNAL_ERROR
-                    raise ValueError(
-                        f"SetVoiceByName failed: EE_INTERNAL_ERROR while setting voice to {value}"
-                    )
+                    msg = f"SetVoiceByName failed: EE_INTERNAL_ERROR while setting voice to {value}"
+                    raise ValueError(msg)
                 else:
-                    raise ValueError(
-                        f"SetVoiceByName failed with unknown return code {result} for voice: {value}"
+                    msg = (
+                        "SetVoiceByName "
+                        f"ailed with unknown return code {result} for voice: {value}"
                     )
+                    raise ValueError(msg)
             except ctypes.ArgumentError as e:
-                raise ValueError(f"Invalid voice name: {value}, error: {e}")
+                msg = f"Invalid voice name: {value}, error: {e}"
+                raise ValueError(msg)
         elif name == "rate":
             try:
                 _espeak.SetParameter(_espeak.RATE, value, 0)
@@ -150,7 +152,8 @@ class EspeakDriver:
             except TypeError as e:
                 raise ValueError(str(e))
         else:
-            raise KeyError("unknown property %s" % name)
+            msg = f"unknown property {name}"
+            raise KeyError(msg)
 
     def save_to_file(self, text, filename):
         """
@@ -165,15 +168,16 @@ class EspeakDriver:
         self._speaking = True
         self._data_buffer = b""  # Ensure buffer is cleared before starting
         try:
-            _espeak.Synth(
-                str(text).encode("utf-8"), flags=_espeak.ENDPAUSE | _espeak.CHARS_UTF8
-            )
+            _espeak.Synth(str(text).encode("utf-8"), flags=_espeak.ENDPAUSE | _espeak.CHARS_UTF8)
         except Exception as e:
             self._proxy.setBusy(False)
             self._proxy.notify("error", exception=e)
             raise
 
-    def _onSynth(self, wav, numsamples, events):
+    def _onSynth(self, wav, numsamples, events):  # noqa: C901,PLR0912,PLR0915
+        """
+        TODO: Refactor this function because it is too complex by several measures.
+        """
         if not self._speaking:
             return 0
 
@@ -208,12 +212,11 @@ class EspeakDriver:
                             f.writeframes(self._data_buffer)
                         print(f"Audio saved to {self._save_file}")
                     except Exception as e:
-                        raise RuntimeError(f"Error saving WAV file: {e}")
+                        msg = f"Error saving WAV file: {e}"
+                        raise RuntimeError(msg)
                 else:
                     try:
-                        with NamedTemporaryFile(
-                            suffix=".wav", delete=False
-                        ) as temp_wav:
+                        with NamedTemporaryFile(suffix=".wav", delete=False) as temp_wav:
                             with wave.open(temp_wav, "wb") as f:
                                 f.setnchannels(1)  # Mono
                                 f.setsampwidth(2)  # 16-bit samples
@@ -232,7 +235,7 @@ class EspeakDriver:
                             winsound.PlaySound(temp_wav_name, winsound.SND_FILENAME)
 
                         # Remove the file after playback
-                        os.remove(temp_wav_name)
+                        os.remove(temp_wav_name)  # noqa: PTH107
                     except Exception as e:
                         print(f"Playback error: {e}")
 
@@ -248,9 +251,7 @@ class EspeakDriver:
 
         # Accumulate audio data if available
         if numsamples > 0:
-            self._data_buffer += ctypes.string_at(
-                wav, numsamples * ctypes.sizeof(ctypes.c_short)
-            )
+            self._data_buffer += ctypes.string_at(wav, numsamples * ctypes.sizeof(ctypes.c_short))
 
         return 0
 

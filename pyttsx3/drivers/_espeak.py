@@ -31,8 +31,8 @@ dll = None
 
 
 def load_library() -> bool:
-    global dll
-    paths = [
+    global dll  # noqa: PLW0603
+    paths = (
         # macOS paths
         "/opt/homebrew/lib/libespeak-ng.1.dylib",
         "/usr/local/lib/libespeak-ng.1.dylib",
@@ -44,13 +44,13 @@ def load_library() -> bool:
         # Windows paths
         r"C:\Program Files\eSpeak NG\libespeak-ng.dll",
         r"C:\Program Files (x86)\eSpeak NG\libespeak-ng.dll",
-    ]
+    )
 
     for path in paths:
         try:
             dll = cdll.LoadLibrary(path)
             return True
-        except Exception:
+        except Exception:  # noqa: PERF203
             continue  # Try the next path
     return False
 
@@ -74,11 +74,11 @@ EVENT_MSG_TERMINATED = 6
 
 
 class numberORname(Union):
-    _fields_ = [("number", c_int), ("name", c_char_p)]
+    _fields_ = (("number", c_int), ("name", c_char_p))
 
 
 class EVENT(Structure):
-    _fields_ = [
+    _fields_ = (
         ("type", c_int),
         ("unique_identifier", c_uint),
         ("text_position", c_int),
@@ -87,7 +87,7 @@ class EVENT(Structure):
         ("sample", c_int),
         ("user_data", c_void_p),
         ("id", numberORname),
-    ]
+    )
 
 
 AUDIO_OUTPUT_PLAYBACK = 0
@@ -126,7 +126,7 @@ SynthCallback = None
 
 
 def SetSynthCallback(cb) -> None:
-    global SynthCallback
+    global SynthCallback  # noqa: PLW0603
     SynthCallback = t_espeak_callback(cb)
     cSetSynthCallback(SynthCallback)
 
@@ -155,14 +155,12 @@ int SynthCallback(short *wav, int numsamples, espeak_EVENT *events);
 
 t_UriCallback = CFUNCTYPE(c_int, c_int, c_char_p, c_char_p)
 
-cSetUriCallback = cfunc(
-    "espeak_SetUriCallback", dll, None, ("UriCallback", t_UriCallback, 1)
-)
+cSetUriCallback = cfunc("espeak_SetUriCallback", dll, None, ("UriCallback", t_UriCallback, 1))
 UriCallback = None
 
 
 def SetUriCallback(cb) -> None:
-    global UriCallback
+    global UriCallback  # noqa: PLW0603
     UriCallback = t_UriCallback(UriCallback)
     cSetUriCallback(UriCallback)
 
@@ -202,7 +200,7 @@ POS_WORD = 2
 POS_SENTENCE = 3
 
 
-def Synth(
+def Synth(  # noqa: PLR0913
     text,
     position=0,
     position_type=POS_CHARACTER,
@@ -384,9 +382,7 @@ GetParameter = cfunc("espeak_GetParameter", dll, c_int, ("parameter", c_int, 1))
 GetParameter.__doc__ = """current=0  Returns the default value of the specified parameter.
    current=1  Returns the current value of the specified parameter, as set by SetParameter()"""
 
-SetPunctuationList = cfunc(
-    "espeak_SetPunctuationList", dll, c_int, ("punctlist", c_wchar, 1)
-)
+SetPunctuationList = cfunc("espeak_SetPunctuationList", dll, c_int, ("punctlist", c_wchar, 1))
 SetPunctuationList.__doc__ = """Specified a list of punctuation characters whose names are
 to be spoken when the value of the Punctuation parameter is set to "some".
 
@@ -419,7 +415,7 @@ CompileDictionary.__doc__ = """Compile pronunciation dictionary for a language w
 
 
 class VOICE(Structure):
-    _fields_ = [
+    _fields_ = (
         ("name", c_char_p),
         ("languages", c_char_p),
         ("identifier", c_char_p),
@@ -429,14 +425,12 @@ class VOICE(Structure):
         ("xx1", c_ubyte),
         ("score", c_int),
         ("spare", c_void_p),
-    ]
+    )
 
     def __repr__(self) -> str:
         """Print the fields."""
-        res = []
-        for field in self._fields_:
-            res.append(f"{field[0]}={getattr(self, field[0])!r}")
-        return self.__class__.__name__ + "(" + ",".join(res) + ")"
+        res = ",".join(f"{field[0]}={getattr(self, field[0])!r}" for field in self._fields_)
+        return f"{self.__class__.__name__}({res})"
 
 
 cListVoices = cfunc(

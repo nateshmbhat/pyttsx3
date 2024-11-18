@@ -11,11 +11,11 @@ except ImportError:
     from comtypes.gen import SpeechLib
 
 # noinspection PyUnresolvedReferences
+import locale
 import math
 import os
 import time
 import weakref
-import locale
 
 import pythoncom
 
@@ -85,7 +85,7 @@ class SAPI5Driver:
         self._tts.Speak("", 3)
 
     def save_to_file(self, text, filename) -> None:
-        cwd = os.getcwd()
+        cwd = os.getcwd()  # noqa: PTH109
         stream = comtypes.client.CreateObject("SAPI.SPFileStream")
         stream.Open(filename, SpeechLib.SSFMCreateForWrite)
         temp_stream = self._tts.AudioOutputStream
@@ -118,9 +118,7 @@ class SAPI5Driver:
         age = age_attr if age_attr in {"Child", "Teen", "Adult", "Senior"} else None
 
         # Create and return the Voice object with additional attributes
-        return Voice(
-            id=voice_id, name=voice_name, languages=languages, gender=gender, age=age
-        )
+        return Voice(id=voice_id, name=voice_name, languages=languages, gender=gender, age=age)
 
     def _tokenFromId(self, id_):
         tokens = self._tts.GetVoices()
@@ -199,9 +197,7 @@ class SAPI5DriverEventSink:
         self._driver = driver
 
     def _ISpeechVoiceEvents_StartStream(self, stream_number, stream_position) -> None:
-        self._driver._proxy.notify(
-            "started-word", location=stream_number, length=stream_position
-        )
+        self._driver._proxy.notify("started-word", location=stream_number, length=stream_position)
 
     def _ISpeechVoiceEvents_EndStream(self, stream_number, stream_position) -> None:
         d = self._driver
@@ -212,14 +208,11 @@ class SAPI5DriverEventSink:
         d._proxy.setBusy(False)
         d.endLoop()  # hangs if you dont have this
 
-    def _ISpeechVoiceEvents_Word(
-        self, stream_number, stream_position, char, length
-    ) -> None:
-        if current_text := self._driver._current_text:
-            current_word = current_text[char : char + length]
-        else:
-            current_word = "Unknown"
-
-        self._driver._proxy.notify(
-            "started-word", name=current_word, location=char, length=length
+    def _ISpeechVoiceEvents_Word(self, stream_number, stream_position, char, length) -> None:
+        current_word = (
+            current_text[char : char + length]
+            if (current_text := self._driver._current_text)
+            else "Unknown"
         )
+
+        self._driver._proxy.notify("started-word", name=current_word, location=char, length=length)

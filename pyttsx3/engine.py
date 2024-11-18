@@ -83,7 +83,7 @@ class Engine:
         for cb in self._connects.get(topic, []):
             try:
                 cb(**kwargs)
-            except Exception:
+            except Exception:  # noqa: PERF203
                 if self._debug:
                     traceback.print_exc()
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3  # noqa: EXE001
 #
 # pyttsx3 documentation build configuration file, created by
 # sphinx-quickstart on Sun Jun 25 11:19:31 2017.

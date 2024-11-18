@@ -60,7 +60,7 @@ def test_espeak_voices(driver_name) -> None:
     # Define the expected English voice IDs (excluding Caribbean for now as not in some envs
     # Linux eSpeak-NG v1.50 has 7 English voices,
     # macOS eSpeak-NG v1.51 and Windows eSpeak-NG v1.52-dev have 8 English voices.
-    english_voice_ids = [
+    english_voice_ids = (
         "gmw/en",  # Great Britain
         "gmw/en-GB-scotland",  # Scotland
         "gmw/en-GB-x-gbclan",  # Lancaster
@@ -68,7 +68,7 @@ def test_espeak_voices(driver_name) -> None:
         "gmw/en-GB-x-rp",  # Received Pronunciation
         "gmw/en-US",  # America
         "gmw/en-US-nyc",  # America, New York City
-    ]
+    )
 
     for voice_id in english_voice_ids:
         target_voice = next((v for v in voices if v.id == voice_id), None)
@@ -84,7 +84,8 @@ def test_espeak_voices(driver_name) -> None:
         print(f"Current voice ID: {current_voice}")
         if current_voice != target_voice.id:
             print(
-                f"Voice change mismatch. Expected: {target_voice.id}, Got: {current_voice}. Skipping."
+                "Voice change mismatch. "
+                f"Expected: {target_voice.id}, Got: {current_voice}. Skipping."
             )
             continue
 
@@ -108,21 +109,18 @@ def test_apple_nsss_voices(driver_name) -> None:
     voice = engine.getProperty("voice")
     # On macOS v14.x, the default nsss voice is com.apple.voice.compact.en-US.Samantha.
     # ON macOS v15.x, the default nsss voice is ""
-    assert (
-        voice in {"", "com.apple.voice.compact.en-US.Samantha"}
-    ), "Expected default voice to be com.apple.voice.compact.en-US.Samantha on macOS and iOS"
+    if voice:
+        assert (
+            voice == "com.apple.voice.compact.en-US.Samantha"
+        ), "Expected default voice to be com.apple.voice.compact.en-US.Samantha on macOS and iOS"
     voices = engine.getProperty("voices")
     # On macOS v13.x or v14.x, nsss has 143 voices.
     # On macOS v15.x, nsss has 176 voices
     print(f"On macOS v{macos_version}, {engine} has {len(voices) = } voices.")
     assert len(voices) in {176, 143}, "Expected 176 or 143 voices on macOS and iOS"
     # print("\n".join(voice.id for voice in voices))
-    en_us_voices = [
-        voice for voice in voices if voice.id.startswith("com.apple.eloquence.en-US.")
-    ]
-    assert (
-        len(en_us_voices) == 8
-    ), "Expected 8 com.apple.eloquence.en-US voices on macOS and iOS"
+    en_us_voices = [voice for voice in voices if voice.id.startswith("com.apple.eloquence.en-US.")]
+    assert len(en_us_voices) == 8, "Expected 8 com.apple.eloquence.en-US voices on macOS and iOS"
     names = []
     for _voice in en_us_voices:
         engine.setProperty("voice", _voice.id)

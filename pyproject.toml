@@ -54,5 +54,81 @@ packages = [ "pyttsx3", "pyttsx3.drivers" ]
 include-package-data = false
 
 [tool.ruff]
+line-length = 100
 target-version = "py39"
-line-length = 88
+
+[tool.ruff.lint]
+select = [
+  "AIR",    # Airflow
+  "ASYNC",  # flake8-async
+  "B",      # flake8-bugbear
+  "BLE",    # flake8-blind-except
+  "C4",     # flake8-comprehensions
+  "C90",    # McCabe cyclomatic complexity
+  "DJ",     # flake8-django
+  "DTZ",    # flake8-datetimez
+  "E",      # pycodestyle
+  "EM",     # flake8-errmsg
+  "EXE",    # flake8-executable
+  "F",      # Pyflakes
+  "FA",     # flake8-future-annotations
+  "FLY",    # flynt
+  "FURB",   # refurb
+  "G",      # flake8-logging-format
+  "I",      # isort
+  "ICN",    # flake8-import-conventions
+  "INP",    # flake8-no-pep420
+  "INT",    # flake8-gettext
+  "ISC",    # flake8-implicit-str-concat
+  "LOG",    # flake8-logging
+  "NPY",    # NumPy-specific rules
+  "PD",     # pandas-vet
+  "PERF",   # Perflint
+  "PGH",    # pygrep-hooks
+  "PIE",    # flake8-pie
+  "PL",     # Pylint
+  "PT",     # flake8-pytest-style
+  "PTH",    # flake8-use-pathlib
+  "PYI",    # flake8-pyi
+  "RET",    # flake8-return
+  "RSE",    # flake8-raise
+  "RUF",    # Ruff-specific rules
+  "SIM",    # flake8-simplify
+  "SLOT",   # flake8-slots
+  "T10",    # flake8-debugger
+  "TCH",    # flake8-type-checking
+  "TID",    # flake8-tidy-imports
+  "UP",     # pyupgrade
+  "W",      # pycodestyle
+  "YTT",    # flake8-2020
+  # "A",    # flake8-builtins
+  # "ANN",  # flake8-annotations
+  # "ARG",  # flake8-unused-arguments
+  # "COM",  # flake8-commas
+  # "CPY",  # flake8-copyright
+  # "D",    # pydocstyle
+  # "DOC",  # pydoclint
+  # "ERA",  # eradicate
+  # "FAST", # FastAPI
+  # "FBT",  # flake8-boolean-trap
+  # "FIX",  # flake8-fixme
+  # "N",    # pep8-naming
+  # "Q",    # flake8-quotes
+  # "S",    # flake8-bandit
+  # "SLF",  # flake8-self
+  # "T20",  # flake8-print
+  # "TD",   # flake8-todos
+  # "TRY",  # tryceratops
+]
+ignore = [
+  "B904",   #	raise-without-from-inside-except
+  "BLE001", # blind-except
+  "D212",   # Multi-line docstring summary should start at the first line
+  "ISC001", # implicit-str-concat conflicts with ruff format
+  "S101",   #	assert
+]
+[tool.ruff.lint.per-file-ignores]
+"pyttsx3/drivers/_espeak.py" = ["E101", "E501"]
+
+[tool.ruff.lint.pylint]
+allow-magic-value-types = ["int", "str"]

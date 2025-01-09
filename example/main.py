@@ -29,7 +29,7 @@ engine.setProperty("pitch", 75)  # Set the pitch (default 50) to 75 out of 100
 engine.say('My current speaking rate is ' + str(rate))
 
 # Saving Voice to a file
-# On Linux, make sure that 'espeak-ng' is installed
-engine.save_to_file('Hello World', 'test.mp3')
+# On Linux, make sure that 'espeak' is installed
+engine.save_to_file('Hello World', "test.mp3")
 engine.runAndWait()
 engine.stop()

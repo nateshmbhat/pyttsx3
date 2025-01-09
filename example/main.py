@@ -30,6 +30,6 @@ engine.say('My current speaking rate is ' + str(rate))
 
 # Saving Voice to a file
 # On Linux, make sure that 'espeak' is installed
-engine.save_to_file('Hello World', "test.mp3")
+engine.save_to_file("Hello World", "test.mp3")
 engine.runAndWait()
 engine.stop()

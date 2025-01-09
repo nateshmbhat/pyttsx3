@@ -80,15 +80,14 @@ voices = engine.getProperty('voices')       # getting details of current voice
 #engine.setProperty('voice', voices[0].id)  # changing index, changes voices. o for male
 engine.setProperty('voice', voices[1].id)   # changing index, changes voices. 1 for female
 
-engine.say("Hello World!")
+# speak at the new rate
 engine.say('My current speaking rate is ' + str(rate))
-engine.runAndWait()
-engine.stop()
 
 # Saving Voice to a file
 # On Linux, make sure that 'espeak-ng' is installed
 engine.save_to_file('Hello World', 'test.mp3')
 engine.runAndWait()
+engine.stop()
 ```
 
 ### **Full documentation of the Library**

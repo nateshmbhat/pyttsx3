@@ -25,13 +25,11 @@ pitch = engine.getProperty("pitch")  # Get current pitch value
 print(pitch)  # Print current pitch value
 engine.setProperty("pitch", 75)  # Set the pitch (default 50) to 75 out of 100
 
-engine.say("Hello World!")
-engine.say("My current speaking rate is " + str(rate))
-engine.runAndWait()
-engine.stop()
-
+# speak at the new rate
+engine.say('My current speaking rate is ' + str(rate))
 
 # Saving Voice to a file
-# On linux make sure that 'espeak' is installed
-engine.save_to_file("Hello World", "test.mp3")
+# On Linux, make sure that 'espeak-ng' is installed
+engine.save_to_file('Hello World', 'test.mp3')
 engine.runAndWait()
+engine.stop()

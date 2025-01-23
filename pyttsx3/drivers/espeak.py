@@ -129,8 +129,8 @@ class EspeakDriver:
                     raise ValueError(msg)
                 else:
                     msg = (
-                        "SetVoiceByName "
-                        f"ailed with unknown return code {result} for voice: {value}"
+                        "SetVoiceByName failed with unknown return code "
+                        f"{result} for voice: {value}"
                     )
                     raise ValueError(msg)
             except ctypes.ArgumentError as e:

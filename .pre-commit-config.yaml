@@ -42,14 +42,14 @@ repos:
       - id: auto-walrus
 
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.0
+    rev: v2.4.1
     hooks:
       - id: codespell # See pyproject.toml for args
         additional_dependencies:
           - tomli
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.3
+    rev: v0.11.5
     hooks:  # Format before linting
       - id: ruff
       - id: ruff-format

@@ -1,3 +1,12 @@
+#!/usr/bin/env -S uv run --script  # noqa: EXE003
+
+# /// script
+# requires-python = ">=3.9"
+# dependencies = [
+#     "pyttsx3",
+# ]
+# ///
+
 """pyttsx3 examples."""
 
 import pyttsx3

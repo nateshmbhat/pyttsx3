@@ -1,3 +1,15 @@
+#!/usr/bin/env -S uv run --script  # noqa: EXE003
+
+# /// script
+# requires-python = ">=3.9"
+# dependencies = [
+#     "PyAudio",
+#     "pyttsx3",
+#     "SpeechRecognition",
+# ]
+# ///
+
+
 # pip3 install SpeechRecognition
 import speech_recognition  # A speech-to-text conversion library in Python
 

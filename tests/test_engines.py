@@ -45,9 +45,9 @@ def test_espeak_voices(driver_name) -> None:
     # Verify initial voice
     default_voice = engine.getProperty("voice")
     print(f"Initial default voice ID: {default_voice}")
-    assert (
-        default_voice == "gmw/en"
-    ), f"Expected default voice ID to be 'gmw/en', Got: {default_voice}"
+    assert default_voice == "gmw/en", (
+        f"Expected default voice ID to be 'gmw/en', Got: {default_voice}"
+    )
 
     # Get and validate the number of voices
     voices = engine.getProperty("voices")
@@ -110,9 +110,9 @@ def test_apple_nsss_voices(driver_name) -> None:
     # On macOS v14.x, the default nsss voice is com.apple.voice.compact.en-US.Samantha.
     # ON macOS v15.x, the default nsss voice is ""
     if voice:
-        assert (
-            voice == "com.apple.voice.compact.en-US.Samantha"
-        ), "Expected default voice to be com.apple.voice.compact.en-US.Samantha on macOS and iOS"
+        assert voice == "com.apple.voice.compact.en-US.Samantha", (
+            "Expected default voice to be com.apple.voice.compact.en-US.Samantha on macOS and iOS"
+        )
     voices = engine.getProperty("voices")
     # On macOS v13.x or v14.x, nsss has 143 voices.
     # On macOS v15.x, nsss has 176 voices

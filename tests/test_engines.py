@@ -98,7 +98,7 @@ def test_apple_nsss_voices(driver_name) -> None:
     if driver_name != "nsss":
         pytest.skip(f"Skipping nsss-specific test for {driver_name}.")
 
-    import platform
+    import platform  # noqa: PLC0415  # Only needed on macOS and iOS
 
     engine = pyttsx3.init(driver_name)
     macos_version, _, macos_hardware = platform.mac_ver()

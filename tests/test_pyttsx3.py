@@ -40,7 +40,7 @@ def test_speaking_text(engine) -> None:
 
 @pytest.mark.skipif(sys.platform not in ("darwin", "ios"), reason="Testing only on macOS and iOS")
 def test_apple_avspeech_voices(engine):
-    import platform
+    import platform  # noqa: PLC0415  # Only needed on macOS and iOS
 
     macos_version, _, macos_hardware = platform.mac_ver()
     print(f"{sys.platform = }, {macos_version = } on {macos_hardware = }")
@@ -80,7 +80,7 @@ def test_apple_avspeech_voices(engine):
 
 @pytest.mark.skipif(sys.platform not in ("darwin", "ios"), reason="Testing only on macOS and iOS")
 def test_apple_nsss_voices(engine):
-    import platform
+    import platform  # noqa: PLC0415  # Only needed on macOS and iOS
 
     macos_version, _, macos_hardware = platform.mac_ver()
     print(f"{sys.platform = }, {macos_version = } on {macos_hardware = }")

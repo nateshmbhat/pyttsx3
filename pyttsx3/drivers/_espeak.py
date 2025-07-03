@@ -23,7 +23,7 @@ def cfunc(name, dll, result, *args):
     aflags = []
     for arg in args:
         atypes.append(arg[1])
-        aflags.append((arg[2], arg[0]) + arg[3:])
+        aflags.append((arg[2], arg[0], *arg[3:]))
     return CFUNCTYPE(result, *atypes)((name, dll), tuple(aflags))
 
 

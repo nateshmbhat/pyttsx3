@@ -1,5 +1,10 @@
+from __future__ import annotations
+
+import contextlib
+import sys
 import time
 from ctypes import (
+    CDLL,
     CFUNCTYPE,
     POINTER,
     Structure,
@@ -16,6 +21,8 @@ from ctypes import (
     cdll,
 )
 
+dll: CDLL | None = None
+
 
 def cfunc(name, dll, result, *args):
     """Build and apply a ctypes prototype complete with parameter flags."""
@@ -27,37 +34,42 @@ def cfunc(name, dll, result, *args):
     return CFUNCTYPE(result, *atypes)((name, dll), tuple(aflags))
 
 
-dll = None
+def get_libespeak_paths(sys_platform: str) -> tuple[str, ...]:
+    """Try to put more common or more modern paths first.
+
+    TODO(cclauss): Add support for iOS paths.
+    """
+    try:
+        return {
+            "darwin": (
+                "/opt/homebrew/lib/libespeak-ng.1.dylib",
+                "/usr/local/lib/libespeak-ng.1.dylib",
+                "/usr/local/lib/libespeak.dylib",
+            ),
+            "linux": ("libespeak-ng.so.1", "/usr/local/lib/libespeak-ng.so.1", "libespeak.so.1"),
+            "win32": (
+                r"C:\Program Files\eSpeak NG\libespeak-ng.dll",
+                r"C:\Program Files (x86)\eSpeak NG\libespeak-ng.dll",
+            ),
+        }.get(sys.platform)
+    except KeyError as e:
+        msg = f"{sys.platform} is not a supported platform."
+        raise RuntimeError(msg) from e
 
 
-def load_library() -> bool:
-    global dll  # noqa: PLW0603
-    paths = (
-        # macOS paths
-        "/opt/homebrew/lib/libespeak-ng.1.dylib",
-        "/usr/local/lib/libespeak-ng.1.dylib",
-        "/usr/local/lib/libespeak.dylib",
-        # Linux paths
-        "libespeak-ng.so.1",
-        "/usr/local/lib/libespeak-ng.so.1",
-        "libespeak.so.1",
-        # Windows paths
-        r"C:\Program Files\eSpeak NG\libespeak-ng.dll",
-        r"C:\Program Files (x86)\eSpeak NG\libespeak-ng.dll",
-    )
+def load_libespeak() -> CDLL:
+    global dll
 
-    for path in paths:
-        try:
-            dll = cdll.LoadLibrary(path)
-            return True
-        except Exception:  # noqa: PERF203
-            continue  # Try the next path
-    return False
+    for path in get_libespeak_paths(sys_platform=sys.platform):
+        with contextlib.suppress(Exception):
+            if dll := cdll.LoadLibrary(path):
+                return dll
+    return None
 
 
 try:
-    if not load_library():
-        msg = "This means you probably do not have eSpeak or eSpeak-ng installed!"
+    if not load_libespeak():
+        msg = f"eSpeak or eSpeak-ng is not installed on {sys.platform}!"
         raise RuntimeError(msg)
 except Exception:
     raise

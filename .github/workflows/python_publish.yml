@@ -75,7 +75,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install build twine
+          pip install build
 
       - name: Clean previous builds
         run: |
@@ -84,21 +84,32 @@ jobs:
       - name: Build package
         run: |
           python -m build
-          python -m twine check --strict dist/*
+          pipx run twine check --strict dist/*
+
+      - name: Upload dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
 
   deploy:
     needs: [build]
     runs-on: ubuntu-latest
-    if: github.event_name == 'release' && github.event.action == 'created'  # Only on release creation
+    environment:
+      name: "pypi"
+      url: https://pypi.org/p/pyttsx3
+    permissions:
+      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
+    # if: github.event_name == 'release' && github.event.action == 'created'  # Only on release creation
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Download dist
+        uses: actions/download-artifact@v4
         with:
-          python-version: '3.x'
-
+          name: dist
+          path: dist
+      - run: pipx run twine check --strict dist/*
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.PYPI_PASSWORD }}
+        # with:
+        #  password: ${{ secrets.PYPI_PASSWORD }}

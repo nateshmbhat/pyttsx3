@@ -100,7 +100,7 @@ jobs:
       url: https://pypi.org/p/pyttsx3
     permissions:
       id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
-    if: github.event_name == 'release' && github.event.action == 'created'  # Only on release creation
+    # if: github.event_name == 'release' && github.event.action == 'created'  # Only on release creation
 
     steps:
       - name: Download dist
@@ -111,5 +111,6 @@ jobs:
       - run: pipx run twine check --strict dist/*
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-        # with:
-        #  password: ${{ secrets.PYPI_PASSWORD }}
+        with:
+          attestations: false
+          password: ${{ secrets.PYPI_API_TOKEN }}

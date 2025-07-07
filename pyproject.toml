@@ -5,9 +5,10 @@ requires = [ "setuptools>=61.2" ]
 
 [project]
 name = "pyttsx3"
-version = "2.98"
+version = "2.99"
 description = "Text to Speech (TTS) library for Python 3. Works without internet connection or delay. Supports multiple TTS engines, including Sapi5, nsss, and espeak."
 readme = "README.md"
+license = "MPL-2.0"
 keywords = [
   "gtts",
   "ivona",
@@ -29,7 +30,6 @@ classifiers = [
   "Intended Audience :: End Users/Desktop",
   "Intended Audience :: Information Technology",
   "Intended Audience :: System Administrators",
-  "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
   "Operating System :: MacOS :: MacOS X",
   "Operating System :: Microsoft :: Windows",
   "Operating System :: POSIX",

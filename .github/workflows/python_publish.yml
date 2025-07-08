@@ -1,5 +1,9 @@
 # This workflow will upload a Python Package using Twine when a release is created.
 # https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
+
+# CAUTION: Renaming this file will break Trusted Publishing to PyPI.
+# https://github.com/pypa/gh-action-pypi-publish
+
 name: CI
 
 on:
@@ -100,7 +104,7 @@ jobs:
       url: https://pypi.org/p/pyttsx3
     permissions:
       id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
-    # if: github.event_name == 'release' && github.event.action == 'created'  # Only on release creation
+    if: github.event_name == 'release' && github.event.action == 'created'  # Only on release creation
 
     steps:
       - name: Download dist

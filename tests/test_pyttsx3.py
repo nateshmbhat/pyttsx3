@@ -59,9 +59,9 @@ def test_apple_avspeech_voices(engine):
     ), f"Expected default voice {voice} to be com.apple.voice.compact.en-US.Samantha"
     voices = engine.getProperty("voices")
     # On macOS v14.x, nsss has 143 voices.
-    # On macOS v15.x, nsss has 176 voices
+    # On macOS v15.x, nsss has 177 voices
     print(f"On macOS v{macos_version}, {engine} has {len(voices) = } voices.")
-    assert len(voices) in (176, 143), "Expected 176 or 143 voices on macOS and iOS"
+    assert len(voices) in {177, 143}, "Expected 177 or 143 voices on macOS and iOS"
     # print("\n".join(voice.id for voice in voices))
     en_us_voices = [voice for voice in voices if voice.id.startswith("com.apple.eloquence.en-US.")]
     assert len(en_us_voices) == 8, "Expected 8 com.apple.eloquence.en-US voices on macOS and iOS"
@@ -96,9 +96,9 @@ def test_apple_nsss_voices(engine):
     ), "Expected default voice to be com.apple.voice.compact.en-US.Samantha on macOS and iOS"
     voices = engine.getProperty("voices")
     # On macOS v14.x, nsss has 143 voices.
-    # On macOS v15.x, nsss has 176 voices
+    # On macOS v15.x, nsss has 177 voices
     print(f"On macOS v{macos_version}, {engine} has {len(voices) = } voices.")
-    assert len(voices) in (176, 143), "Expected 176 or 143 voices on macOS and iOS"
+    assert len(voices) in {177, 143}, "Expected 177 or 143 voices on macOS and iOS"
     # print("\n".join(voice.id for voice in voices))
     en_us_voices = [voice for voice in voices if voice.id.startswith("com.apple.eloquence.en-US.")]
     assert len(en_us_voices) == 8, "Expected 8 com.apple.eloquence.en-US voices on macOS and iOS"
@@ -201,7 +201,7 @@ def test_changing_volume(engine) -> None:
 @pytest.mark.skipif(sys.platform == "win32", reason="TODO: Fix this test to pass on Windows")
 def test_changing_voices(engine) -> None:
     voices = engine.getProperty("voices")
-    for voice in voices:  # TODO: This could be lots of voices! (e.g. 176 on macOS v15.x)
+    for voice in voices:  # TODO: This could be lots of voices! (e.g. 177 on macOS v15.x)
         engine.setProperty("voice", voice.id)
         engine.say(f"{voice.id = }. {quick_brown_fox}")
     engine.runAndWait()

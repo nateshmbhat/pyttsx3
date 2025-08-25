@@ -115,9 +115,9 @@ def test_apple_nsss_voices(driver_name) -> None:
         )
     voices = engine.getProperty("voices")
     # On macOS v13.x or v14.x, nsss has 143 voices.
-    # On macOS v15.x, nsss has 176 voices
+    # On macOS v15.x, nsss has 177 voices
     print(f"On macOS v{macos_version}, {engine} has {len(voices) = } voices.")
-    assert len(voices) in {176, 143}, "Expected 176 or 143 voices on macOS and iOS"
+    assert len(voices) in {177, 143}, "Expected 177 or 143 voices on macOS and iOS"
     # print("\n".join(voice.id for voice in voices))
     en_us_voices = [voice for voice in voices if voice.id.startswith("com.apple.eloquence.en-US.")]
     assert len(en_us_voices) == 8, "Expected 8 com.apple.eloquence.en-US voices on macOS and iOS"

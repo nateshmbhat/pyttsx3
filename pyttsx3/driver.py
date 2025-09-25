@@ -134,7 +134,7 @@ class DriverProxy:
         # clear queue up to first end loop command
         while True:
             try:
-                mtd, args, name = self._queue[0]
+                mtd, _args, _name = self._queue[0]
             except IndexError:
                 break
             if mtd == self._engine.endLoop:

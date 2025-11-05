@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+import threading
 import wave
 from typing import TYPE_CHECKING
 from unittest import mock
@@ -12,6 +13,7 @@ import pyttsx3
 if TYPE_CHECKING:
     from pathlib import Path
 
+lock = threading.Lock()
 quick_brown_fox = "The quick brown fox jumped over the lazy dog."
 
 
@@ -23,11 +25,13 @@ def engine(driver_name: str | None = None) -> pyttsx3.engine.Engine:
     engine.stop()  # Ensure the engine stops after tests
 
 
+@pytest.mark.parallel_threads(1)
 def test_engine_name(engine) -> None:
-    expected = pyttsx3.engine.default_engine_by_sys_platform()
-    assert engine.driver_name == expected
-    assert str(engine) == expected
-    assert repr(engine) == f"pyttsx3.engine.Engine('{expected}', debug=False)"
+    with lock:
+        expected = pyttsx3.engine.default_engine_by_sys_platform()
+        assert engine.driver_name == expected
+        assert str(engine) == expected
+        assert repr(engine) == f"pyttsx3.engine.Engine('{expected}', debug=False)"
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="TODO: Fix this test to pass on Windows")
@@ -210,6 +214,7 @@ def test_changing_voices(engine) -> None:
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="TODO: Fix this test to pass on Windows")
+@pytest.mark.iterations(1)
 def test_running_driver_event_loop(engine) -> None:
     def onStart(name) -> None:
         print("starting", name)

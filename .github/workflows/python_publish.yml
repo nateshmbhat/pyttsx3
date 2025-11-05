@@ -28,14 +28,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest]  # , ubuntu-latest, windows-latest]  TODO(cclauss): Test all OSes.
+        os: [ubuntu-latest]  # macos-latest, ubuntu-latest, windows-latest]  TODO(cclauss): Test all OSes.
         python-version: ['3.10', '3.12', '3.14', '3.14t']
         exclude:  # https://github.com/nateshmbhat/pyttsx3/pull/430
           - os: windows-latest
             python-version: '3.14t'
         include:
+        #  - os: macos-26
+        #    python-version: '3.x'
           - os: macos-26
             python-version: '3.x'
+
     runs-on: ${{ matrix.os }}
     steps:
       - if: runner.os == 'Linux'
@@ -68,10 +71,11 @@ jobs:
 
       - timeout-minutes: 15  # Save resources while our pytests are hanging
         run: pytest --full-trace -s -vvv --strict
+      - if: runner.os == 'Linux' || runner.os == 'Windows'
+        timeout-minutes: 15  # Save resources while our pytests are hanging
+        run: pytest --full-trace --iterations=8 -s --strict
       - timeout-minutes: 15  # Save resources while our pytests are hanging
-        run: pytest --full-trace --iterations=8 -s -vvv --strict || true
-      - timeout-minutes: 15  # Save resources while our pytests are hanging
-        run: pytest --full-trace --parallel-threads=auto -s -vvv --strict || true
+        run: pytest --full-trace --parallel-threads=auto --strict || true
 
   build:
     runs-on: ubuntu-latest

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import sys
-import threading
 import wave
 from typing import TYPE_CHECKING
 from unittest import mock
@@ -13,7 +12,6 @@ import pyttsx3
 if TYPE_CHECKING:
     from pathlib import Path
 
-lock = threading.Lock()
 quick_brown_fox = "The quick brown fox jumped over the lazy dog."
 
 
@@ -27,14 +25,14 @@ def engine(driver_name: str | None = None) -> pyttsx3.engine.Engine:
 
 @pytest.mark.parallel_threads(1)
 def test_engine_name(engine) -> None:
-    with lock:
-        expected = pyttsx3.engine.default_engine_by_sys_platform()
-        assert engine.driver_name == expected
-        assert str(engine) == expected
-        assert repr(engine) == f"pyttsx3.engine.Engine('{expected}', debug=False)"
+    expected = pyttsx3.engine.default_engine_by_sys_platform()
+    assert engine.driver_name == expected
+    assert str(engine) == expected
+    assert repr(engine) == f"pyttsx3.engine.Engine('{expected}', debug=False)"
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="TODO: Fix this test to pass on Windows")
+# @pytest.mark.parallel_threads(1)
 def test_speaking_text(engine) -> None:
     engine.say("Sally sells seashells by the seashore.")
     engine.say(quick_brown_fox)
@@ -43,6 +41,7 @@ def test_speaking_text(engine) -> None:
 
 
 @pytest.mark.skipif(sys.platform not in ("darwin", "ios"), reason="Testing only on macOS and iOS")
+@pytest.mark.parallel_threads(1)
 def test_apple_avspeech_voices(engine):
     import platform  # noqa: PLC0415  # Only needed on macOS and iOS
 
@@ -84,6 +83,7 @@ def test_apple_avspeech_voices(engine):
 
 
 @pytest.mark.skipif(sys.platform not in ("darwin", "ios"), reason="Testing only on macOS and iOS")
+@pytest.mark.parallel_threads(1)
 def test_apple_nsss_voices(engine):
     import platform  # noqa: PLC0415  # Only needed on macOS and iOS
 
@@ -121,6 +121,7 @@ def test_apple_nsss_voices(engine):
     engine.setProperty("voice", voice)  # Reset voice to original value
 
 
+@pytest.mark.parallel_threads(1)
 def test_saving_to_file(engine, tmp_path: Path) -> None:
     """
     Apple writes .aiff, not .wav.  https://github.com/nateshmbhat/pyttsx3/issues/361
@@ -148,6 +149,7 @@ def test_saving_to_file(engine, tmp_path: Path) -> None:
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="TODO: Fix this test to pass on Windows")
+@pytest.mark.parallel_threads(1)
 def test_listening_for_events(engine) -> None:
     onStart = mock.Mock()
     onWord = mock.Mock()
@@ -170,6 +172,7 @@ def test_listening_for_events(engine) -> None:
     sys.platform in ("linux", "win32"),
     reason="TODO: Fix this test to pass on Linux and Windows",
 )
+@pytest.mark.parallel_threads(1)
 def test_interrupting_utterance(engine) -> None:
     def onWord(name, location, length) -> None:
         if location > 10:
@@ -185,6 +188,7 @@ def test_interrupting_utterance(engine) -> None:
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="TODO: Fix this test to pass on Windows")
+@pytest.mark.parallel_threads(1)
 def test_changing_speech_rate(engine) -> None:
     rate = engine.getProperty("rate")
     rate_plus_fifty = rate + 50
@@ -195,6 +199,7 @@ def test_changing_speech_rate(engine) -> None:
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="TODO: Fix this test to pass on Windows")
+@pytest.mark.parallel_threads(1)
 def test_changing_volume(engine) -> None:
     volume = engine.getProperty("volume")
     volume_minus_a_quarter = volume - 0.25
@@ -205,6 +210,7 @@ def test_changing_volume(engine) -> None:
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="TODO: Fix this test to pass on Windows")
+@pytest.mark.parallel_threads(1)
 def test_changing_voices(engine) -> None:
     voices = engine.getProperty("voices")
     for voice in voices:  # TODO: This could be lots of voices! (e.g. 177 on macOS v15.x)
@@ -215,6 +221,7 @@ def test_changing_voices(engine) -> None:
 
 @pytest.mark.skipif(sys.platform == "win32", reason="TODO: Fix this test to pass on Windows")
 @pytest.mark.iterations(1)
+@pytest.mark.parallel_threads(1)
 def test_running_driver_event_loop(engine) -> None:
     def onStart(name) -> None:
         print("starting", name)
@@ -239,6 +246,7 @@ def test_running_driver_event_loop(engine) -> None:
     sys.platform in ("linux", "win32"),
     reason="TODO: Fix this test to pass on Linux and Windows",
 )
+@pytest.mark.parallel_threads(1)
 def test_external_event_loop(engine) -> None:
     def externalLoop() -> None:
         for _ in range(5):

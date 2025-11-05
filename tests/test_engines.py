@@ -10,6 +10,7 @@ quick_brown_fox = "The quick brown fox jumped over the lazy dog."
 
 
 @pytest.mark.parametrize("driver_name", pyttsx3.engine.engines_by_sys_platform())
+@pytest.mark.parallel_threads(1)
 def test_engine_name(driver_name) -> None:
     engine = pyttsx3.init(driver_name)
     assert engine.driver_name == driver_name
@@ -21,6 +22,7 @@ def test_engine_name(driver_name) -> None:
 @pytest.mark.skipif(
     sys.platform == "win32", reason="TODO: Make this test pass on eSpeak-NG on Windows"
 )
+@pytest.mark.parallel_threads(1)
 @pytest.mark.parametrize("driver_name", pyttsx3.engine.engines_by_sys_platform())
 def test_speaking_text(driver_name) -> None:
     engine = pyttsx3.init(driver_name)
@@ -32,6 +34,7 @@ def test_speaking_text(driver_name) -> None:
     engine.stop()
 
 
+@pytest.mark.parallel_threads(1)
 @pytest.mark.parametrize("driver_name", pyttsx3.engine.engines_by_sys_platform())
 def test_espeak_voices(driver_name) -> None:
     if driver_name != "espeak":
@@ -93,6 +96,7 @@ def test_espeak_voices(driver_name) -> None:
         engine.runAndWait()
 
 
+@pytest.mark.parallel_threads(1)
 @pytest.mark.parametrize("driver_name", pyttsx3.engine.engines_by_sys_platform())
 def test_apple_nsss_voices(driver_name) -> None:
     if driver_name != "nsss":

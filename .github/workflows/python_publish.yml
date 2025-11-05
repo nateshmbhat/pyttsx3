@@ -36,6 +36,7 @@ jobs:
         include:
           - os: macos-26
             python-version: '3.x'
+
     runs-on: ${{ matrix.os }}
     steps:
       - if: runner.os == 'Linux'
@@ -63,11 +64,22 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install pytest
+          pip install pytest pytest-run-parallel
           pip install --editable .
 
       - timeout-minutes: 15  # Save resources while our pytests are hanging
         run: pytest --full-trace -s -vvv --strict
+      - if: runner.os == 'Linux'
+        timeout-minutes: 15  # Save resources while our pytests are hanging
+        run: pytest --full-trace --iterations=8 -s --strict
+      #- timeout-minutes: 15  # Save resources while our pytests are hanging
+      #  env:
+      #    PYTEST_RUN_PARALLEL_VERBOSE: 1
+      #  run: pytest --full-trace --parallel-threads=auto --strict tests/test_engines.py || true
+      #- timeout-minutes: 15  # Save resources while our pytests are hanging
+      #  env:
+      #    PYTEST_RUN_PARALLEL_VERBOSE: 1
+      #  run: pytest --full-trace --parallel-threads=auto --strict tests/test_pyttsx3.py || true
 
   build:
     runs-on: ubuntu-latest

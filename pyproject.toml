@@ -45,7 +45,6 @@ dependencies = [
   "pyobjc-framework-cocoa>=2.4; platform_system=='Darwin'",
   "pyobjc-framework-AVFoundation>=2.4; platform_system=='Darwin'",
   "pyobjc-framework-ExceptionHandling>=2.4; platform_system=='Darwin'",
-  "pypiwin32; platform_system=='Windows'",
   "pywin32; platform_system=='Windows'",
 ]
 

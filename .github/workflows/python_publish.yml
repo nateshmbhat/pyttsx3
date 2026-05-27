@@ -2,7 +2,7 @@
 # https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
 
 # CAUTION: Renaming this file will break Trusted Publishing to PyPI.
-# https://github.com/pypa/gh-action-pypi-publish
+# https://github.com/pypa/gh-action-pypi-publish 
 
 name: CI
 

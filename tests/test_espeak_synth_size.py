@@ -62,10 +62,21 @@ def test_large_utterance_does_not_segfault() -> None:
     returns 1 (abort) on the first buffer, so on the fixed driver it stops
     almost immediately instead of synthesizing all 2 MB — keeping the passing
     case fast while still exercising the full-size copy.
+
+    The child exits via ``os._exit(0)`` the instant it survives the synth call.
+    espeak keeps a background worker thread alive, and on Python 3.14 that
+    thread's local-storage teardown aborts interpreter finalization (SIGABRT,
+    ``gilstate_tss_set: failed to set current tstate``) — unrelated to the
+    over-read this test guards, and it would otherwise mask a clean pass as a
+    crash.  A real regression still dies *inside* ``Synth`` (SIGSEGV, returncode
+    -11) long before that exit is reached, so the check keeps its teeth.
     """
     pytest.importorskip("pyttsx3.drivers._espeak", reason="libespeak-ng not installed")
 
     child = """
+import os
+import sys
+
 from pyttsx3.drivers import _espeak
 
 rate = _espeak.Initialize(_espeak.AUDIO_OUTPUT_RETRIEVAL, 1000)
@@ -79,6 +90,11 @@ _espeak.SetSynthCallback(on_synth)   # module wraps + keeps the C callback alive
 # before on_synth is ever called.
 _espeak.Synth("x" * 2_000_000, flags=_espeak.CHARS_UTF8)
 print("OK: survived the 2 MB utterance")
+sys.stdout.flush()
+# Surviving Synth is the whole assertion.  Skip interpreter finalization (and
+# espeak's background-thread TSS teardown, which aborts on Python 3.14) so the
+# probe reports the synth result, not an unrelated shutdown wart.
+os._exit(0)
 """
     result = subprocess.run(
         [sys.executable, "-c", child],

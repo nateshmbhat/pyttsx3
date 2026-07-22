@@ -212,7 +212,7 @@ def Synth(  # noqa: PLR0913
         text = text.encode("utf-8")
     return cSynth(
         text,
-        len(text) * 10,
+        len(text) + 1,
         position,
         position_type,
         end_position,

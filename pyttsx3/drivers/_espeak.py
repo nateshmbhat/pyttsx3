@@ -212,7 +212,14 @@ def Synth(  # noqa: PLR0913
         text = text.encode("utf-8")
     return cSynth(
         text,
-        len(text) * 10,
+        # The true buffer size: the UTF-8 payload plus its NUL terminator
+        # (CPython bytes objects are NUL-terminated).  espeak-ng copies
+        # exactly `size` bytes from the caller's pointer into its internal
+        # utterance buffer, so any larger value makes it read past the end
+        # of the Python bytes object — up to a segfault when the buffer sits
+        # near the end of a mapping (see issue #448).  Synth_Mark below
+        # already passes len(text) + 1.
+        len(text) + 1,
         position,
         position_type,
         end_position,

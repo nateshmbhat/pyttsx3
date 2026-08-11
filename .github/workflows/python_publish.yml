@@ -30,13 +30,9 @@ jobs:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
         python-version: ['3.10', '3.12', '3.14', '3.14t']
-        exclude:  # https://github.com/nateshmbhat/pyttsx3/pull/430
-          - os: windows-latest
-            python-version: '3.14t'
         include:
           - os: macos-26
             python-version: '3.x'
-
     runs-on: ${{ matrix.os }}
     steps:
       - if: runner.os == 'Linux'

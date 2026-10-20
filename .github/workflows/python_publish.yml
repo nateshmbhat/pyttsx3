@@ -34,7 +34,7 @@ jobs:
           - os: windows-latest
             python-version: '3.14t'
         include:
-          - os: macos-26
+          - os: macos-27
             python-version: '3.x'
 
     runs-on: ${{ matrix.os }}

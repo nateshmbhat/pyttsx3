@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Literal
 
 import sys
 import traceback
@@ -165,7 +166,7 @@ class Engine:
         """
         return self.proxy.isBusy()
 
-    def getProperty(self, name: str) -> object:
+    def getProperty(self, name: Literal['voices', 'voice', 'rate', 'volume']) -> object:
         """
         Gets the current value of a property. Valid names and values include:
 
@@ -186,7 +187,7 @@ class Engine:
         assert name
         return self.proxy.getProperty(name)
 
-    def setProperty(self, name: str, value: str | float) -> None:
+    def setProperty(self, name: Literal['voice', 'rate', 'volume'], value: str | float) -> None:
         """
         Adds a property value to set to the event queue. Valid names and values
         include:

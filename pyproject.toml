@@ -130,6 +130,7 @@ ignore = [
   "S101",   #	assert
 ]
 [tool.ruff.lint.per-file-ignores]
+"docs/conf.py" = ["INP001"]
 "pyttsx3/drivers/_espeak.py" = ["E101", "E501"]
 
 [tool.ruff.lint.pylint]

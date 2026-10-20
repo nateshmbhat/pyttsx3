@@ -200,7 +200,7 @@ POS_WORD = 2
 POS_SENTENCE = 3
 
 
-def Synth(  # noqa: PLR0913
+def Synth(  # noqa: PLR0913, PLR0917
     text,
     position=0,
     position_type=POS_CHARACTER,
